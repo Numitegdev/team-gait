@@ -1,0 +1,23 @@
+export const rooms = [
+  "Pos GA",
+  "Gudang Mapuk",
+  "Voucher",
+  "Mushola",
+  "Gudang GA",
+  "HRD",
+  "UKS",
+  "Ruangan Meeting",
+  "Finance",
+  "ACT",
+  "Gudang Produksi",
+  "Admin",
+  "Direktur",
+  "SPV",
+  "Gudang Mentah",
+  "Tele OP CS Meja 1",
+  "Tele OP CS Meja 2",
+  "Server Utama",
+  "Ruang Marketing",
+  "Pak Bos",
+   
+];
