@@ -4,10 +4,9 @@ import {
 from "next/server";
 
 import {
-  createTask,
+  supabaseAdmin,
 }
-from "@/modules/driver/driver-task/services/driver-task-service";
-
+from "@/lib/supabase/admin";
 export async function POST(
   req: Request
 ) {
@@ -35,33 +34,45 @@ export async function POST(
   );
 
   if (
-    caption.startsWith(
-      "/pengiriman"
+  caption.startsWith(
+    "/pengiriman"
+  )
+) {
+
+  const content =
+    caption
+      .replace(
+        "/pengiriman",
+        ""
+      )
+      .trim();
+
+  const [
+
+    pengirim,
+
+    nomorResi,
+
+    deskripsi,
+
+  ] =
+    content.split(
+      "_"
+    );
+
+  const nomorTask =
+    `DRV-${Date.now()}`;
+
+  await supabaseAdmin
+
+    .from(
+      "driver_tasks"
     )
-  ) {
 
-    const content =
-      caption
-        .replace(
-          "/pengiriman",
-          ""
-        )
-        .trim();
+    .insert({
 
-    const [
-
-      pengirim,
-
-      nomorResi,
-
-      deskripsi,
-
-    ] =
-      content.split(
-        "_"
-      );
-
-    await createTask({
+      nomor_task:
+        nomorTask,
 
       jenis:
         "pengiriman",
@@ -76,38 +87,54 @@ export async function POST(
 
       deskripsi,
 
+      status:
+        "pending",
+
     });
 
-  }
+}
 
-  if (
-    caption.startsWith(
-      "/pengambilan"
+
+if (
+  caption.startsWith(
+    "/pengambilan"
+  )
+) {
+
+  const content =
+    caption
+      .replace(
+        "/pengambilan",
+        ""
+      )
+      .trim();
+
+  const [
+
+    penerima,
+
+    nomorResi,
+
+    deskripsi,
+
+  ] =
+    content.split(
+      "_"
+    );
+
+  const nomorTask =
+    `DRV-${Date.now()}`;
+
+  await supabaseAdmin
+
+    .from(
+      "driver_tasks"
     )
-  ) {
 
-    const content =
-      caption
-        .replace(
-          "/pengambilan",
-          ""
-        )
-        .trim();
+    .insert({
 
-    const [
-
-      penerima,
-
-      nomorResi,
-
-      deskripsi,
-
-    ] =
-      content.split(
-        "_"
-      );
-
-    await createTask({
+      nomor_task:
+        nomorTask,
 
       jenis:
         "penerimaan",
@@ -122,9 +149,12 @@ export async function POST(
 
       deskripsi,
 
+      status:
+        "pending",
+
     });
 
-  }
+}
 
   return NextResponse.json({
     ok: true,
