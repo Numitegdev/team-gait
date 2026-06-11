@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { adminSupabase } from "@/lib/supabase/admin";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export async function POST(req: Request) {
   try {
@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     const { email, password, role, full_name } = body;
 
     const { data, error } =
-      await adminSupabase.auth.admin.createUser({
+      await supabaseAdmin.auth.admin.createUser({
         email,
         password,
         email_confirm: true,
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       );
     }
 
-    await adminSupabase
+    await supabaseAdmin
       .from("profiles")
       .update({
         role,
