@@ -42,10 +42,7 @@ return data;
 export async function createTask(
 payload: any
 ) {
- console.log(
-    "CREATE TASK MASUK",
-    payload
-  );
+
 
 const nomorTask =
 `DRV-${Date.now()}`;

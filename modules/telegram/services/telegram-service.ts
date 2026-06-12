@@ -31,10 +31,7 @@ export async function sendTelegramMessage(
   const result =
     await response.json();
 
-  console.log(
-    "TELEGRAM RESULT",
-    result
-  );
+
 
   return result;
 }

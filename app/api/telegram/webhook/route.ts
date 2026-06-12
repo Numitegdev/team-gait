@@ -29,11 +29,10 @@ export async function POST(
   message.caption ||
   message.text ||
   "";
-
-  console.log(
-    "CAPTION:",
-    caption
-  );
+console.log(
+  "PHOTO:",
+  message.photo
+);
 
   if (
   caption.startsWith(
