@@ -11,21 +11,6 @@ export async function sendTelegramMessage(
   text: string
 ) {
 
-  console.log(
-    "SEND TELEGRAM",
-    text
-  );
-
-  console.log(
-    "TOKEN",
-    TELEGRAM_BOT_TOKEN
-  );
-
-  console.log(
-    "CHAT",
-    TELEGRAM_CHAT_ID
-  );
-
   const response =
     await fetch(
       `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
@@ -47,12 +32,13 @@ export async function sendTelegramMessage(
     await response.json();
 
   console.log(
-    "RESULT",
+    "TELEGRAM RESULT",
     result
   );
 
   return result;
 }
+
 export async function sendTelegramPhoto(
 
   photoUrl: string,
