@@ -19,6 +19,9 @@ export function AppSidebar({ role }: Props) {
   const [openMenu, setOpenMenu] =
     useState<string | null>("IT");
 
+const [openSubMenu, setOpenSubMenu] =
+  useState<string | null>(null);
+  
   return (
     <aside
   className="
@@ -135,37 +138,126 @@ export function AppSidebar({ role }: Props) {
                 openMenu ===
                   menu.title && (
                   <div className="ml-8 mt-2 space-y-1">
-                    {children.map(
-                      (child: any) => {
-                        const childActive =
-                          pathname ===
-                          child.url;
+                   {children.map(
+  (child: any) => {
 
-                        return (
-                          <Link
-                            key={child.url}
-                            href={child.url}
-                          >
-                            <div
-                              className={`
-                                rounded-lg
-                                px-3
-                                py-2
-                                text-sm
+    const hasSubChildren =
+      child.children?.length > 0;
 
-                                ${
-                                  childActive
-                                    ? "bg-slate-700"
-                                    : "hover:bg-blue-400"
-                                }
-                              `}
-                            >
-                              {child.title}
-                            </div>
-                          </Link>
-                        );
-                      }
-                    )}
+    return (
+      <div key={child.title}>
+
+        {hasSubChildren ? (
+
+          <div>
+
+            <div
+              onClick={() =>
+                setOpenSubMenu(
+                  openSubMenu === child.title
+                    ? null
+                    : child.title
+                )
+              }
+              className="
+                flex
+                items-center
+                justify-between
+                rounded-lg
+                px-3
+                py-2
+                text-sm
+                cursor-pointer
+                hover:bg-blue-400
+              "
+            >
+              <span>
+                {child.title}
+              </span>
+
+              <ChevronDown
+                size={14}
+                className={
+                  openSubMenu === child.title
+                    ? "rotate-180"
+                    : ""
+                }
+              />
+            </div>
+
+            {openSubMenu === child.title && (
+
+              <div className="ml-4 mt-1 space-y-1">
+
+                {child.children.map(
+                  (subChild: any) => {
+
+                    const active =
+                      pathname ===
+                      subChild.url;
+
+                    return (
+                      <Link
+                        key={subChild.url}
+                        href={subChild.url}
+                      >
+                        <div
+                          className={`
+                            rounded-lg
+                            px-3
+                            py-2
+                            text-sm
+
+                            ${
+                              active
+                                ? "bg-slate-700"
+                                : "hover:bg-blue-400"
+                            }
+                          `}
+                        >
+                          {subChild.title}
+                        </div>
+                      </Link>
+                    );
+
+                  }
+                )}
+
+              </div>
+
+            )}
+
+          </div>
+
+        ) : (
+
+          <Link
+            href={child.url}
+          >
+            <div
+              className={`
+                rounded-lg
+                px-3
+                py-2
+                text-sm
+
+                ${
+                  pathname === child.url
+                    ? "bg-slate-700"
+                    : "hover:bg-blue-400"
+                }
+              `}
+            >
+              {child.title}
+            </div>
+          </Link>
+
+        )}
+
+      </div>
+    );
+  }
+)}
                   </div>
                 )}
             </div>
