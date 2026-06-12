@@ -12,6 +12,7 @@ export const roleRoutes = {
   it_staff: [
     "/dashboard",
     "/dashboard/it",
+     "/dashboard/driver",
   ],
 
   ga_admin: [
@@ -20,6 +21,7 @@ export const roleRoutes = {
     "/dashboard/chef",
     "/dashboard/security",
     "/dashboard/officeboy",
+     "/dashboard/system-config",
   ],
 
   staff_driver: [
@@ -30,6 +32,7 @@ export const roleRoutes = {
   staff_cheff: [
     "/dashboard",
     "/dashboard/chef",
+     "/dashboard/driver",
   ],
 
   staff_security: [
@@ -41,5 +44,6 @@ export const roleRoutes = {
   staff_officeboy: [
     "/dashboard",
     "/dashboard/officeboy",
+     "/dashboard/driver",
   ],
 };

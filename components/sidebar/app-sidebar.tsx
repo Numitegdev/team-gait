@@ -21,21 +21,19 @@ export function AppSidebar({ role }: Props) {
 
   return (
     <aside
-      className="
-        h-screen
-        w-64
-        overflow-y-auto
-        shrink-0
-
-        bg-slate-950
-        text-slate-100
-
-        border-r
-        border-slate-800
-
-        p-4
-      "
-    >
+  className="
+    sidebar-scroll
+    h-screen
+    w-64
+    overflow-y-auto
+    shrink-0
+    bg-slate-950
+    text-slate-100
+    border-r
+    border-slate-800
+    p-4
+  "
+>
     <div
         className="
           mb-8

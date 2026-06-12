@@ -69,9 +69,9 @@ export default function LoginPage() {
       className="
         min-h-screen
         bg-gradient-to-br
-        from-slate-900
-        via-slate-800
-        to-slate-950
+        from-slate-200
+        via-slate-200
+        to-slate-300
         flex
         items-center
         justify-center
@@ -99,19 +99,19 @@ export default function LoginPage() {
             items-center
             justify-center
             bg-slate-100
-            p-10
+            
           "
         >
 
           <Image
-            src="/asw.png"
+            src="/asw2.png"
             alt="Login"
             width={700}
             height={700}
             className="
               h-auto
               w-full
-              max-w-md
+             
             "
           />
 
@@ -131,6 +131,7 @@ export default function LoginPage() {
             className="
               w-full
               max-w-md
+              text-center
             "
           >
 
@@ -141,7 +142,7 @@ export default function LoginPage() {
                 text-slate-900
               "
             >
-              Welcome Back
+              Selamat Datang
             </h1>
 
             <p

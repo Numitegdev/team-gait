@@ -142,11 +142,11 @@ export const sidebarMenu: Record<
       url: "/dashboard/officeboy",
       icon: Briefcase,
     },
-    {
-      title: "System Config",
-      url: "/dashboard/system-config",
-      icon: Settings,
-    },
+    // {
+    //   title: "System Config",
+    //   url: "/dashboard/system-config",
+    //   icon: Settings,
+    // },
     {
     title: "Users",
     url: "/dashboard/system-config/users",
@@ -265,12 +265,32 @@ export const sidebarMenu: Record<
       title: "Security",
       url: "/dashboard/security",
       icon: Shield,
+       children: [
+        {
+          title: "Security Check",
+          url: "/dashboard/security/security-check",
+        },
+          {
+          title: "Security Monitoring",
+          url: "/dashboard/security/security-monitoring",
+        },
+        {
+          title: "Security Location",
+          url: "/dashboard/security/security-location",
+        },
+  
+      ],
       
     },
     {
       title: "Office Boy",
       url: "/dashboard/officeboy",
       icon: Briefcase,
+    },
+       {
+    title: "Users",
+    url: "/dashboard/system-config/users",
+    icon: Settings,
     },
   ],
 
@@ -307,6 +327,13 @@ export const sidebarMenu: Record<
       title: "Chef",
       url: "/dashboard/chef",
       icon: ChefHat,
+       children: [
+  
+         {
+          title: "Driver Task (Security)",
+          url: "/dashboard/driver/driver-task",
+        },
+      ],
     },
   ],
 
@@ -348,6 +375,13 @@ export const sidebarMenu: Record<
       title: "Office Boy",
       url: "/dashboard/officeboy",
       icon: Briefcase,
+       children: [
+      
+         {
+          title: "Driver Task (Security)",
+          url: "/dashboard/driver/driver-task",
+        },
+      ],
     },
   ],
 };
