@@ -25,14 +25,42 @@ export async function POST(
 
   }
 
- const caption =
+const caption =
   message.caption ||
   message.text ||
   "";
+
 console.log(
   "PHOTO:",
   message.photo
 );
+
+if (message.photo) {
+
+  const biggestPhoto =
+    message.photo[
+      message.photo.length - 1
+    ];
+
+  const fileId =
+    biggestPhoto.file_id;
+
+  const telegramFile =
+    await fetch(
+
+`https://api.telegram.org/bot${process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN}/getFile?file_id=${fileId}`
+
+    );
+
+  const telegramData =
+    await telegramFile.json();
+
+  console.log(
+    "FILE DATA",
+    telegramData
+  );
+
+}
 
   if (
   caption.startsWith(
