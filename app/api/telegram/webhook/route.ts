@@ -38,40 +38,99 @@ export async function POST(
     message.photo
   );
 
-  if (message.photo) {
+if (message.photo) {
 
-    const biggestPhoto =
-      message.photo[
-        message.photo.length - 1
-      ];
+  const biggestPhoto =
+    message.photo[
+      message.photo.length - 1
+    ];
 
-    const fileId =
-      biggestPhoto.file_id;
+  const fileId =
+    biggestPhoto.file_id;
 
-    const telegramFile =
-      await fetch(
+  const telegramFile =
+    await fetch(
 
 `https://api.telegram.org/bot${process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN}/getFile?file_id=${fileId}`
 
-      );
+    );
 
-    const telegramData =
-      await telegramFile.json();
+  const telegramData =
+    await telegramFile.json();
 
-    const filePath =
-      telegramData.result
-        .file_path;
+  const filePath =
+    telegramData.result
+      .file_path;
 
-    telegramPhotoUrl =
+  const originalTelegramUrl =
 
 `https://api.telegram.org/file/bot${process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN}/${filePath}`;
 
+  const imageResponse =
+    await fetch(
+      originalTelegramUrl
+    );
+
+  const imageBuffer =
+    Buffer.from(
+      await imageResponse.arrayBuffer()
+    );
+
+  const fileName =
+    `telegram-${Date.now()}.jpg`;
+
+  const {
+    error: uploadError,
+  } =
+    await supabaseAdmin.storage
+
+      .from(
+        "driver_photos"
+      )
+
+      .upload(
+        fileName,
+        imageBuffer,
+        {
+          contentType:
+            "image/jpeg",
+        }
+      );
+
+  if (uploadError) {
+
+    console.error(
+      "UPLOAD ERROR:",
+      uploadError
+    );
+
+  } else {
+
+    const {
+      data: photoData,
+    } =
+      supabaseAdmin.storage
+
+        .from(
+          "driver_photos"
+        )
+
+        .getPublicUrl(
+          fileName
+        );
+
+    telegramPhotoUrl =
+      photoData.publicUrl;
+
     console.log(
-      "TELEGRAM PHOTO URL",
+      "SUPABASE PHOTO URL:",
       telegramPhotoUrl
     );
 
   }
+
+}
+  
 
   if (
     caption.startsWith(
