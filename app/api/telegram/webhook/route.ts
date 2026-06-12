@@ -1,12 +1,11 @@
 import {
   NextResponse,
-}
-from "next/server";
+} from "next/server";
 
 import {
   supabaseAdmin,
-}
-from "@/lib/supabase/admin";
+} from "@/lib/supabase/admin";
+
 export async function POST(
   req: Request
 ) {
@@ -25,165 +24,182 @@ export async function POST(
 
   }
 
-const caption =
-  message.caption ||
-  message.text ||
-  "";
+  const caption =
+    message.caption ||
+    message.text ||
+    "";
 
-console.log(
-  "PHOTO:",
-  message.photo
-);
+  let telegramPhotoUrl:
+    string | null =
+      null;
 
-if (message.photo) {
+  console.log(
+    "PHOTO:",
+    message.photo
+  );
 
-  const biggestPhoto =
-    message.photo[
-      message.photo.length - 1
-    ];
+  if (message.photo) {
 
-  const fileId =
-    biggestPhoto.file_id;
+    const biggestPhoto =
+      message.photo[
+        message.photo.length - 1
+      ];
 
-  const telegramFile =
-    await fetch(
+    const fileId =
+      biggestPhoto.file_id;
+
+    const telegramFile =
+      await fetch(
 
 `https://api.telegram.org/bot${process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN}/getFile?file_id=${fileId}`
 
+      );
+
+    const telegramData =
+      await telegramFile.json();
+
+    const filePath =
+      telegramData.result
+        .file_path;
+
+    telegramPhotoUrl =
+
+`https://api.telegram.org/file/bot${process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN}/${filePath}`;
+
+    console.log(
+      "TELEGRAM PHOTO URL",
+      telegramPhotoUrl
     );
 
-  const telegramData =
-    await telegramFile.json();
-
-  console.log(
-    "FILE DATA",
-    telegramData
-  );
-
-}
+  }
 
   if (
-  caption.startsWith(
-    "/pengiriman"
-  )
-) {
-
-  const content =
-    caption
-      .replace(
-        "/pengiriman",
-        ""
-      )
-      .trim();
-
-  const [
-
-    pengirim,
-
-    nomorResi,
-
-    deskripsi,
-
-  ] =
-    content.split(
-      "_"
-    );
-
-  const nomorTask =
-    `DRV-${Date.now()}`;
-
-  await supabaseAdmin
-
-    .from(
-      "driver_tasks"
+    caption.startsWith(
+      "/pengiriman"
     )
+  ) {
 
-    .insert({
+    const content =
+      caption
+        .replace(
+          "/pengiriman",
+          ""
+        )
+        .trim();
 
-      nomor_task:
-        nomorTask,
-
-      jenis:
-        "pengiriman",
+    const [
 
       pengirim,
 
-      penerima:
-        "-",
-
-      nomor_resi:
-        nomorResi,
+      nomorResi,
 
       deskripsi,
 
-      status:
-        "pending",
+    ] =
+      content.split(
+        "_"
+      );
 
-    });
+    const nomorTask =
+      `DRV-${Date.now()}`;
 
-}
+    await supabaseAdmin
 
-
-if (
-  caption.startsWith(
-    "/pengambilan"
-  )
-) {
-
-  const content =
-    caption
-      .replace(
-        "/pengambilan",
-        ""
+      .from(
+        "driver_tasks"
       )
-      .trim();
 
-  const [
+      .insert({
 
-    penerima,
+        nomor_task:
+          nomorTask,
 
-    nomorResi,
+        jenis:
+          "pengiriman",
 
-    deskripsi,
+        pengirim,
 
-  ] =
-    content.split(
-      "_"
-    );
+        penerima:
+          "-",
 
-  const nomorTask =
-    `DRV-${Date.now()}`;
+        nomor_resi:
+          nomorResi,
 
-  await supabaseAdmin
+        deskripsi,
 
-    .from(
-      "driver_tasks"
+        status:
+          "pending",
+
+        task_photo_url:
+          telegramPhotoUrl,
+
+      });
+
+  }
+
+  if (
+    caption.startsWith(
+      "/pengambilan"
     )
+  ) {
 
-    .insert({
+    const content =
+      caption
+        .replace(
+          "/pengambilan",
+          ""
+        )
+        .trim();
 
-      nomor_task:
-        nomorTask,
-
-      jenis:
-        "penerimaan",
-
-      pengirim:
-        "-",
+    const [
 
       penerima,
 
-      nomor_resi:
-        nomorResi,
+      nomorResi,
 
       deskripsi,
 
-      status:
-        "pending",
+    ] =
+      content.split(
+        "_"
+      );
 
-    });
+    const nomorTask =
+      `DRV-${Date.now()}`;
 
-}
+    await supabaseAdmin
+
+      .from(
+        "driver_tasks"
+      )
+
+      .insert({
+
+        nomor_task:
+          nomorTask,
+
+        jenis:
+          "penerimaan",
+
+        pengirim:
+          "-",
+
+        penerima,
+
+        nomor_resi:
+          nomorResi,
+
+        deskripsi,
+
+        status:
+          "pending",
+
+        task_photo_url:
+          telegramPhotoUrl,
+
+      });
+
+  }
 
   return NextResponse.json({
     ok: true,
