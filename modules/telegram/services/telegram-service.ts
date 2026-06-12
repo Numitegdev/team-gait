@@ -8,46 +8,51 @@ import {
 from "../constants/telegram-config";
 
 export async function sendTelegramMessage(
-
   text: string
-
 ) {
+
+  console.log(
+    "SEND TELEGRAM",
+    text
+  );
+
+  console.log(
+    "TOKEN",
+    TELEGRAM_BOT_TOKEN
+  );
+
+  console.log(
+    "CHAT",
+    TELEGRAM_CHAT_ID
+  );
 
   const response =
     await fetch(
-
       `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
-
       {
-
-        method:
-          "POST",
-
+        method: "POST",
         headers: {
-
           "Content-Type":
             "application/json",
-
         },
-
-        body:
-          JSON.stringify({
-
-            chat_id:
-              TELEGRAM_CHAT_ID,
-
-            text,
-
-          }),
-
+        body: JSON.stringify({
+          chat_id:
+            TELEGRAM_CHAT_ID,
+          text,
+        }),
       }
-
     );
 
-  return await response.json();
+  const result =
+    await response.json();
 
+  console.log(
+    "RESULT",
+    result
+  );
+
+  return result;
 }
-
 export async function sendTelegramPhoto(
 
   photoUrl: string,

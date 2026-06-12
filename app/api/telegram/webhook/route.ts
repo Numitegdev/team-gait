@@ -25,8 +25,10 @@ export async function POST(
 
   }
 
-  const caption =
-    message.caption || "";
+ const caption =
+  message.caption ||
+  message.text ||
+  "";
 
   console.log(
     "CAPTION:",
