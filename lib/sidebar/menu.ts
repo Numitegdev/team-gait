@@ -20,11 +20,11 @@ export const sidebarMenu: Record<
   SidebarItem[]
 > = {
   it_admin: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: LayoutDashboard,
-    },
+    // {
+    //   title: "Dashboard",
+    //   url: "/dashboard",
+    //   icon: LayoutDashboard,
+    // },
     {
   title: "IT",
   url: "/dashboard/it",
@@ -175,11 +175,11 @@ export const sidebarMenu: Record<
   ],
 
   it_staff: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: LayoutDashboard,
-    },
+    // {
+    //   title: "Dashboard",
+    //   url: "/dashboard",
+    //   icon: LayoutDashboard,
+    // },
   {
   title: "IT",
   url: "/dashboard/it",
@@ -255,11 +255,11 @@ export const sidebarMenu: Record<
   ],
 
   ga_admin: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: LayoutDashboard,
-    },
+    // {
+    //   title: "Dashboard",
+    //   url: "/dashboard",
+    //   icon: LayoutDashboard,
+    // },
     {
       title: "Driver",
       url: "/dashboard/driver",
@@ -315,11 +315,11 @@ export const sidebarMenu: Record<
   ],
 
   staff_driver: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: LayoutDashboard,
-    },
+    // {
+    //   title: "Dashboard",
+    //   url: "/dashboard",
+    //   icon: LayoutDashboard,
+    // },
     {
       title: "Driver",
       url: "/dashboard/driver",
@@ -338,11 +338,11 @@ export const sidebarMenu: Record<
   ],
 
   staff_cheff: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: LayoutDashboard,
-    },
+    // {
+    //   title: "Dashboard",
+    //   url: "/dashboard",
+    //   icon: LayoutDashboard,
+    // },
     {
       title: "Chef",
       url: "/dashboard/chef",
@@ -358,11 +358,11 @@ export const sidebarMenu: Record<
   ],
 
   staff_security: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: LayoutDashboard,
-    },
+    // {
+    //   title: "Dashboard",
+    //   url: "/dashboard",
+    //   icon: LayoutDashboard,
+    // },
     {
       title: "Security",
       url: "/dashboard/security",
@@ -386,11 +386,11 @@ export const sidebarMenu: Record<
   ],
 
   staff_officeboy: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: LayoutDashboard,
-    },
+    // {
+    //   title: "Dashboard",
+    //   url: "/dashboard",
+    //   icon: LayoutDashboard,
+    // },
     {
       title: "Office Boy",
       url: "/dashboard/officeboy",
