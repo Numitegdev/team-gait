@@ -104,7 +104,7 @@ export default function LoginPage() {
         >
 
           <Image
-            src="/asw2.png"
+            src="/a.jpg"
             alt="Login"
             width={700}
             height={700}
@@ -199,8 +199,8 @@ export default function LoginPage() {
                     pl-11
                     pr-4
                     outline-none
-                    transition
-                    focus:border-blue-500
+                    // transition
+                    // focus:border-blue-500
                   "
                 />
 
