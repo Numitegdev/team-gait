@@ -5,7 +5,7 @@ export default function Page() {
 
   return (
     <NetworkMapViewer
-      model="/models/briza.glb"
+      model="/models/Briza.glb"
     />
   );
 }
