@@ -232,33 +232,27 @@ useEffect(() => {
 
 }
 
-  const stats = {
+  const filteredStats = {
 
-    total:
-      tasks.length,
+  total:
+    filteredTasks.length,
 
-    pending:
-      tasks.filter(
-        (x) =>
-          x.status ===
-          "pending"
-      ).length,
+  pending:
+    filteredTasks.filter(
+      x => x.status === "pending"
+    ).length,
 
-    onProgress:
-      tasks.filter(
-        (x) =>
-          x.status ===
-          "on_progress"
-      ).length,
+  onProgress:
+    filteredTasks.filter(
+      x => x.status === "on_progress"
+    ).length,
 
-    completed:
-      tasks.filter(
-        (x) =>
-          x.status ===
-          "completed"
-      ).length,
+  completed:
+    filteredTasks.filter(
+      x => x.status === "completed"
+    ).length,
 
-  };
+};
 
 
   const filteredTasks =
@@ -381,7 +375,7 @@ const paginatedTasks =
 
   loading,
 
-  stats,
+  stats: filteredStats,
 
   search,
 
