@@ -4,6 +4,7 @@ export const rooms = [
   "Voucher",
   "Mushola",
   "Gudang GA",
+  "Data Analis",
   "HRD",
   "UKS",
   "Ruangan Meeting",
