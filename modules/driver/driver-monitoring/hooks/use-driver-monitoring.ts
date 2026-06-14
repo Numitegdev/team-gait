@@ -232,30 +232,7 @@ useEffect(() => {
 
 }
 
-  const filteredStats = {
-
-  total:
-    filteredTasks.length,
-
-  pending:
-    filteredTasks.filter(
-      x => x.status === "pending"
-    ).length,
-
-  onProgress:
-    filteredTasks.filter(
-      x => x.status === "on_progress"
-    ).length,
-
-  completed:
-    filteredTasks.filter(
-      x => x.status === "completed"
-    ).length,
-
-};
-
-
-  const filteredTasks =
+const filteredTasks =
   tasks.filter(
     (item) => {
  const taskDate =
@@ -330,6 +307,31 @@ const matchDriver =
 
     }
   );
+  
+  const filteredStats = {
+
+  total:
+    filteredTasks.length,
+
+  pending:
+    filteredTasks.filter(
+      x => x.status === "pending"
+    ).length,
+
+  onProgress:
+    filteredTasks.filter(
+      x => x.status === "on_progress"
+    ).length,
+
+  completed:
+    filteredTasks.filter(
+      x => x.status === "completed"
+    ).length,
+
+};
+
+
+  
 
  const PAGE_SIZE =
   10;
