@@ -181,75 +181,95 @@ export const sidebarMenu: Record<
     //   icon: LayoutDashboard,
     // },
   {
-  title: "IT",
+ title: "IT",
   url: "/dashboard/it",
   icon: Monitor,
 
   children: [
     {
-      title: "Info Perangkat",
-      url: "/dashboard/it/hardware-tools/info-perangkat",
-    },
+       title: "Hardware",
+      url: "",
 
-    {
-      title: "Keyboard Test",
-      url: "/dashboard/it/hardware-tools/keyboard-test",
-    },
+      children: [
+                  {
+                    title: "Info Perangkat",
+                    url: "/dashboard/it/hardware-tools/info-perangkat",
+                    
+                  },
 
-    {
-      title: "Webcam Test",
-      url: "/dashboard/it/hardware-tools/webcam-test",
-    },
+                  {
+                    title: "Keyboard Test",
+                    url: "/dashboard/it/hardware-tools/keyboard-test",
+                  },
 
-    {
-      title: "Audio Test",
-      url: "/dashboard/it/hardware-tools/audio-test",
-    },
+                  {
+                    title: "Webcam Test",
+                    url: "/dashboard/it/hardware-tools/webcam-test",
+                  },
 
-    {
-      title: "Monitor Test",
-      url: "/dashboard/it/hardware-tools/monitor-test",
-    },
+                  {
+                    title: "Audio Test",
+                    url: "/dashboard/it/hardware-tools/audio-test",
+                  },
 
-    {
-      title: "Burn In Test",
-      url: "/dashboard/it/hardware-tools/burn-in-test",
-    },
+                  {
+                    title: "Monitor Test",
+                    url: "/dashboard/it/hardware-tools/monitor-test",
+                  },
 
-    {
-      title: "Network Tools",
-      url: "/dashboard/it/network-tools/network-tools",
-    },
+                  {
+                    title: "Burn In Test",
+                    url: "/dashboard/it/hardware-tools/burn-in-test",
+                  },
+              ]
+      },
+      {
+          title: "Network",
+          url: "",
 
-    {
-      title: "Network Map",
-      url: "/dashboard/it/network-tools/network-map",
-    },
+          children: [
+        {
+          title: "Network tools",
+          url: "/dashboard/it/network-tools/network-tools",
+        },
 
-    {
-      title: "IP Management",
-      url: "/dashboard/it/network-tools/ip-management",
-    },
+        {
+          title: "Network Map",
+          url: "/dashboard/it/network-tools/network-map",
+        },
 
-    {
-      title: "Maintenance Schedule",
-      url: "/dashboard/it/maintenance-tools/maintenance-schedule",
+        {
+          title: "IP Management",
+          url: "/dashboard/it/network-tools/ip-management",
+        },
+      ]
     },
+    {
+          title: "Maintenance",
+          url: "",
 
-    {
-      title: "Maintenance Form",
-      url: "/dashboard/it/maintenance-tools/maintenance-form",
-    },
+          children: [
+            {
+              title: "Maintenance Schedule",
+              url: "/dashboard/it/maintenance-tools/maintenance-schedule",
+            },
 
-    {
-      title: "Maintenance History",
-      url: "/dashboard/it/maintenance-tools/maintenance-history",
-    },
+            {
+              title: "Maintenance Form",
+              url: "/dashboard/it/maintenance-tools/maintenance-form",
+            },
 
-    {
-      title: "Maintenance Tool",
-      url: "/dashboard/it/maintenance-tools/maintenance-tool",
-    },
+            {
+              title: "Maintenance History",
+              url: "/dashboard/it/maintenance-tools/maintenance-history",
+            },
+
+            {
+              title: "Maintenance Tool",
+              url: "/dashboard/it/maintenance-tools/maintenance-tool",
+            },
+          ]
+        },
   ],
 },
   ],
