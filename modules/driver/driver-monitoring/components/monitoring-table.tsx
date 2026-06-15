@@ -5,12 +5,17 @@ from "../helpers/duration-helper";
 
 interface Props {
 
-data: any[];
+  data: any[];
 
-onView:
-(
-item: any
-) => void;
+  onView: (
+    item: any
+  ) => void;
+
+  onVerify?: (
+    id: number
+  ) => void;
+
+  canVerify?: boolean;
 
 }
 
@@ -57,9 +62,10 @@ default:
 
 export function MonitoringTable({
 
-data,
-
-onView,
+  data,
+  onView,
+  onVerify,
+  canVerify,
 
 }: Props) {
 
@@ -229,6 +235,10 @@ return (
           <th className="p-4 text-left">
             Durasi
           </th>
+         
+          <th className="p-4 text-left">
+          Verifikasi
+          </th>
 
           <th className="p-4 text-left">
             Action
@@ -314,31 +324,90 @@ return (
                   }
 
                 </td>
-
                 <td className="p-4">
 
+                  {item.is_verified ? (
+
+                    <span
+                      className="
+                        rounded-full
+                        bg-green-100
+                        px-3
+                        py-1
+                        text-xs
+                        text-green-700
+                      "
+                    >
+                      Verified
+                    </span>
+
+                  ) : (
+
+                    <span
+                      className="
+                        rounded-full
+                        bg-red-100
+                        px-3
+                        py-1
+                        text-xs
+                        text-red-700
+                      "
+                    >
+                      Pending
+                    </span>
+
+                  )}
+
+                </td>
+              <td className="p-4">
+
+                <div className="flex gap-2">
+
                   <button
-
-                    onClick={() =>
-                      onView(
-                        item
-                      )
-                    }
-
+                    onClick={() => onView(item)}
                     className="
                       rounded-lg
                       border
                       px-3
                       py-1
                     "
-
                   >
-
                     Detail
-
                   </button>
 
-                </td>
+                  {item.status ===
+                      "completed"
+
+                    &&
+
+                    !item.is_verified
+
+                    &&
+
+                    canVerify && (
+
+                    <button
+                    onClick={() =>
+                        onVerify?.(
+                          item.id
+                        )
+                      }
+                      className="
+                        rounded-lg
+                        bg-green-600
+                        px-3
+                        py-1
+                        text-white
+                      "
+                    >
+                      Verifikasi
+                    </button>
+
+                  )}
+
+                </div>
+
+              </td>
 
               </tr>
 

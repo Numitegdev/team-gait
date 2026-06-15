@@ -66,6 +66,13 @@ export default function DriverMonitoringPage() {
 
   handleView,
 
+    handleVerify,
+  canVerify,
+
+  verifyFilter,
+setVerifyFilter,
+
+
 }
 =
 useDriverMonitoring();
@@ -241,6 +248,39 @@ return (
 
     </select>
 
+    <select
+
+      value={verifyFilter}
+
+      onChange={(e) =>
+        setVerifyFilter(
+          e.target.value
+        )
+      }
+
+      className="
+        rounded-lg
+        border
+        px-3
+        py-2
+      "
+
+    >
+
+      <option value="all">
+        Semua Verifikasi
+      </option>
+
+      <option value="verified">
+        Sudah Verifikasi
+      </option>
+
+      <option value="unverified">
+        Belum Verifikasi
+      </option>
+
+    </select>
+
     <input
 
       type="date"
@@ -322,16 +362,23 @@ return (
     shadow-sm
   "
 >
+<MonitoringTable
 
-  <MonitoringTable
+  data={tasks}
 
-    data={tasks}
+  onView={
+    handleView
+  }
 
-    onView={
-      handleView
-    }
+  onVerify={
+    handleVerify
+  }
 
-  />
+  canVerify={
+    canVerify
+  }
+
+/>
 
 </div>
 

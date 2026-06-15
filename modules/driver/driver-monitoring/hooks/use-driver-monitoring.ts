@@ -7,6 +7,7 @@ import {
 
 import {
   getMonitoring,
+  verifyTask,
 }
 from "../services/driver-monitoring-service";
 
@@ -68,6 +69,20 @@ const [
 
 ] = useState("all");
 
+const [
+  verifyFilter,
+  setVerifyFilter,
+] = useState("all");
+
+const [
+
+  profile,
+
+  setProfile,
+
+] = useState<any>(
+  null
+);
 
 
 const [
@@ -109,13 +124,10 @@ useEffect(() => {
 }, [
 
   search,
-
   statusFilter,
-
   driverFilter,
-
+  verifyFilter,
   dateFrom,
-
   dateTo,
 
 ]);
@@ -208,7 +220,42 @@ useEffect(() => {
 
   await cleanupDriverPhotos();
 
+  await loadProfile();
+
   await loadData();
+
+}
+
+async function loadProfile() {
+
+  const supabase =
+    createClient();
+
+  const {
+    data: { user },
+  } =
+    await supabase.auth.getUser();
+
+  if (!user)
+    return;
+
+  const {
+    data,
+  } =
+    await supabase
+
+      .from("profiles")
+
+      .select("*")
+
+      .eq(
+        "id",
+        user.id
+      )
+
+      .single();
+
+  setProfile(data);
 
 }
 
@@ -298,40 +345,37 @@ const matchDriver =
     ?.full_name ===
     driverFilter;
 
-      return (
-         matchSearch && matchStatus &&
-           matchDate  && matchDriver
-      );
+const matchVerify =
 
+  verifyFilter === "all"
+
+  ||
+
+  (
+    verifyFilter === "verified"
+    &&
+    item.is_verified === true
+  )
+
+  ||
+
+  (
+    verifyFilter === "unverified"
+    &&
+    !item.is_verified
+  );
+   
+  return (
+  matchSearch &&
+  matchStatus &&
+  matchDate &&
+  matchDriver &&
+  matchVerify
+);
      
 
     }
-  );
-  
-  const filteredStats = {
-
-  total:
-    filteredTasks.length,
-
-  pending:
-    filteredTasks.filter(
-      x => x.status === "pending"
-    ).length,
-
-  onProgress:
-    filteredTasks.filter(
-      x => x.status === "on_progress"
-    ).length,
-
-  completed:
-    filteredTasks.filter(
-      x => x.status === "completed"
-    ).length,
-
-};
-
-
-  
+  ); 
 
  const PAGE_SIZE =
   10;
@@ -370,6 +414,67 @@ const paginatedTasks =
   ),
 
 ];
+
+const canVerify =
+
+  profile?.role ===
+    "ga_admin"
+
+  // ||
+
+  // profile?.role ===
+  //   "it_admin";
+
+
+async function handleVerify(
+  taskId: number
+) {
+
+  try {
+
+    await verifyTask(
+      taskId
+    );
+
+    await loadData();
+
+  } catch (error) {
+
+    console.error(
+      error
+    );
+
+    alert(
+      "Gagal verifikasi"
+    );
+
+  }
+
+}
+
+ 
+  const filteredStats = {
+
+  total:
+    filteredTasks.length,
+
+  pending:
+    filteredTasks.filter(
+      x => x.status === "pending"
+    ).length,
+
+  onProgress:
+    filteredTasks.filter(
+      x => x.status === "on_progress"
+    ).length,
+
+  completed:
+    filteredTasks.filter(
+      x => x.status === "completed"
+    ).length,
+
+};
+
  return {
 
   tasks:
@@ -409,6 +514,13 @@ drivers,
 
     dateTo,
     setDateTo,
+
+     handleVerify,
+
+  canVerify,
+
+verifyFilter,
+  setVerifyFilter,
 
     };
 
