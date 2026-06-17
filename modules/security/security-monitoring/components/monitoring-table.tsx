@@ -3,11 +3,10 @@
 import {
   format,
 } from "date-fns";
+import { Eye, FileText, Trash2 } from "lucide-react";
 
 interface Props {
-
   data: any[];
-
   role: string;
 
   onView: (
@@ -22,6 +21,9 @@ interface Props {
     id: number
   ) => void;
 
+  onVerify: (
+    id: number
+  ) => void;
 }
 
 export function MonitoringTable({
@@ -35,6 +37,8 @@ export function MonitoringTable({
   onDelete,
 
   onExportPdf,
+
+   onVerify,
 
 }: Props) {
 
@@ -107,6 +111,14 @@ export function MonitoringTable({
                 "
               >
                 Catatan
+              </th>
+              <th
+                className="
+                  p-4
+                  text-center
+                "
+              >
+                Verifikasi
               </th>
 
               <th
@@ -187,6 +199,40 @@ export function MonitoringTable({
 
                   </td>
 
+                <td
+                  className="
+                    p-4
+                    text-center
+                  "
+                >
+                  {item.is_verified ? (
+                    <span
+                      className="
+                        rounded-lg
+                        bg-green-100
+                        px-2
+                        py-1
+                        text-green-700
+                      "
+                    >
+                      Verified
+                    </span>
+                  ) : (
+                    <span
+                      className="
+                        rounded-lg
+                        bg-yellow-100
+                        px-2
+                        py-1
+                        text-yellow-700
+                      "
+                    >
+                      Not Verified
+                    </span>
+                  )}
+                </td>
+
+
                   <td
                     className="
                       p-4
@@ -211,7 +257,7 @@ export function MonitoringTable({
                       "
                     >
 
-                      View
+                   <Eye className="h-4 w-4" />
 
                     </button>
                   {[
@@ -236,7 +282,7 @@ export function MonitoringTable({
                     "
                   >
 
-                    PDF
+                   <FileText className="h-4 w-4" />
 
                   </button>
 
@@ -259,10 +305,11 @@ export function MonitoringTable({
                         text-white
                       "
                     >
-                      Delete
+                     <Trash2 className="h-4 w-4" />
                     </button>
                   )}
 
+                 
                   </td>
 
                 </tr>
@@ -275,7 +322,7 @@ export function MonitoringTable({
               <tr>
 
                 <td
-                  colSpan={5}
+                  colSpan={6}
                   className="
                     p-8
                     text-center

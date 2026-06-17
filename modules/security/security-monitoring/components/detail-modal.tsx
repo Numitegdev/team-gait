@@ -9,6 +9,12 @@ interface Props {
 
   data: any;
 
+  role: string;
+
+  onVerify: (
+    id: number
+  ) => void;
+
 }
 const supabase =
   createClient();
@@ -41,6 +47,10 @@ export function DetailModal({
   onClose,
 
   data,
+
+  role,
+
+  onVerify,
 
 }: Props) {
 
@@ -179,7 +189,21 @@ export function DetailModal({
               }
             </div>
 
+            <div>
 
+              <strong>
+                Verifikasi :
+              </strong>
+
+              <div>
+
+                {data.is_verified
+                  ? "Verified"
+                  : "Not Verified"}
+
+              </div>
+
+            </div>
 
 
           </div>
@@ -336,6 +360,43 @@ export function DetailModal({
             )
 
           )}
+
+
+        <div
+          className="
+            mt-6
+            flex
+            justify-end
+            gap-2
+          "
+        >
+
+          {role === "ga_admin" &&
+          !data.is_verified && (
+
+            <button
+
+              onClick={() =>
+                onVerify(data.id)
+              }
+
+              className="
+                rounded-lg
+                bg-purple-600
+                px-4
+                py-2
+                text-white
+              "
+            >
+
+              Verify
+
+            </button>
+
+          )}
+
+        </div>
+
 
         </div>
 

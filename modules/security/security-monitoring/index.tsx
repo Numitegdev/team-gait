@@ -40,6 +40,8 @@ export default function SecurityMonitoringPage() {
 
   handleExportPdf,
 
+  handleVerify,
+
   closeModal,
 
 }
@@ -352,6 +354,7 @@ const paginatedChecks =
   onView={handleView}
   onDelete={handleDelete}
   onExportPdf={handleExportPdf}
+   onVerify={handleVerify}
 
 />
 
@@ -426,20 +429,12 @@ const paginatedChecks =
 </div>
 
       <DetailModal
-
-        open={
-          openModal
-        }
-
-        onClose={
-          closeModal
-        }
-
-        data={
-          selectedData
-        }
-
-      />
+  open={openModal}
+  onClose={closeModal}
+  data={selectedData}
+  role={role}
+  onVerify={handleVerify}
+/>
 
     </div>
 

@@ -103,6 +103,7 @@ return (
                 flex
                 items-start
                 justify-between
+                mt-1
               "
             >
 
@@ -135,7 +136,17 @@ return (
 
               </div>
 
-              <span
+               
+
+            </div>
+
+            <div className="flex
+                items-start
+                justify-between
+                p-4
+                ">
+
+             <span
 
                 className={`
                   rounded-full
@@ -154,30 +165,91 @@ return (
 
               </span>
 
-            </div>
 
-            <button
 
-              onClick={() =>
-                onView(
-                  item
-                )
-              }
+                  {item.is_verified ? (
 
-              className="
-                mt-3
-                w-full
-                rounded-lg
-                border
-                px-3
-                py-2
-              "
+                    <span
+                      className="
+                        rounded-full
+                        bg-green-100
+                        px-3
+                        py-1
+                        text-xs
+                        text-green-700
+                      "
+                    >
+                      Verified
+                    </span>
 
-            >
+                  ) : (
 
-              Detail
+                    <span
+                      className="
+                        rounded-full
+                        bg-red-100
+                        px-3
+                        py-1
+                        text-xs
+                        text-red-700
+                      "
+                    >
+                       Not Verified
+                    </span>
 
-            </button>
+                  )}
+
+                </div>
+
+
+            <div className="flex
+                items-start
+                justify-between
+                p-4">
+
+                  <button
+                    onClick={() => onView(item)}
+                    className="
+                      rounded-lg
+                      border
+                      px-3
+                      py-1
+                    "
+                  >
+                    Detail
+                  </button>
+
+                  {item.status ===
+                      "completed"
+
+                    &&
+
+                    !item.is_verified
+
+                    &&
+
+                    canVerify && (
+
+                    <button
+                    onClick={() =>
+                        onVerify?.(
+                          item.id
+                        )
+                      }
+                      className="
+                        rounded-lg
+                        bg-green-600
+                        px-3
+                        py-1
+                        text-white
+                      "
+                    >
+                      Verifikasi
+                    </button>
+
+                  )}
+
+                </div>
 
           </div>
 
@@ -353,7 +425,7 @@ return (
                         text-red-700
                       "
                     >
-                      Pending
+                      Not Verified
                     </span>
 
                   )}

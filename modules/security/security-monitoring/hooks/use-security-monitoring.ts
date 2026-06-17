@@ -21,6 +21,7 @@ import {
 
   deleteCheck,
 
+    verifyCheck,
 }
 from "../services/security-monitoring-service";
 
@@ -130,6 +131,29 @@ async function initialize() {
 
   }
 
+async function handleVerify(
+  id: number
+) {
+
+  try {
+
+    setLoading(true);
+
+    await verifyCheck(id);
+
+    setOpenModal(false);
+
+    setSelectedData(null);
+
+    await loadChecks();
+
+  } finally {
+
+    setLoading(false);
+
+  }
+
+}
   async function handleDelete(
   id: number
 ) {
@@ -169,6 +193,8 @@ async function initialize() {
 
   }
 
+
+  
   return {
 
   checks,
@@ -187,6 +213,8 @@ async function initialize() {
   handleDelete,
 
   handleExportPdf,
+
+   handleVerify,
 
   closeModal,
 
@@ -215,4 +243,7 @@ async function handleExportPdf(
   }
 
 }
+
+
+
 }

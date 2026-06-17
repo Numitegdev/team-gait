@@ -106,3 +106,28 @@ export async function deleteCheck(
     throw error;
 
 }
+
+export async function verifyCheck(
+  id: number
+) {
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { error } =
+    await supabase
+      .from("security_checks")
+      .update({
+        is_verified: true,
+        verified_by: user?.id,
+        verified_at:
+          new Date()
+            .toISOString(),
+      })
+      .eq("id", id);
+
+  if (error)
+    throw error;
+
+}
