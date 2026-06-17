@@ -41,6 +41,7 @@ export default function DriverTaskPage() {
     selectedTask,
 
     closeModal,
+      role,
 
   } = useDriverTask();
 
@@ -95,6 +96,8 @@ export default function DriverTaskPage() {
 
       {/* FORM */}
 
+{["ga_admin", "it_admin","staff_gudang","staff_admin"].includes(role) && (
+
       <div
         className="
           rounded-xl
@@ -140,7 +143,7 @@ export default function DriverTaskPage() {
         </div>
 
       </div>
-
+)}
       {/* TABLE */}
 
       <div

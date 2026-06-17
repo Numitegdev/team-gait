@@ -38,12 +38,24 @@ export const roleRoutes = {
   staff_security: [
     "/dashboard",
     "/dashboard/security",
-        "/dashboard/driver",
+    "/dashboard/driver",
   ],
 
   staff_officeboy: [
     "/dashboard",
     "/dashboard/officeboy",
-     "/dashboard/driver",
+    "/dashboard/driver",
+    "/dashboard/security",
+  ],
+
+    staff_gudang: [
+    "/dashboard",
+    "/dashboard/driver",
+  ],
+
+  
+    staff_admin: [
+    "/dashboard",
+    "/dashboard/driver",
   ],
 };

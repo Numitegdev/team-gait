@@ -416,12 +416,59 @@ export const sidebarMenu: Record<
       url: "/dashboard/officeboy",
       icon: Briefcase,
        children: [
-      
+       {
+          title: "Security Check (OB)",
+          url: "/dashboard/security/security-check",
+        },
          {
-          title: "Driver Task (Security)",
+          title: "Security Monitoring (OB)",
+          url: "/dashboard/security/security-monitoring",
+        },
+         {
+          title: "Driver Task (OB)",
           url: "/dashboard/driver/driver-task",
         },
       ],
     },
   ],
+
+staff_gudang: [
+    // {
+    //   title: "Dashboard",
+    //   url: "/dashboard",
+    //   icon: LayoutDashboard,
+    // },
+    {
+      title: "Gudang",
+      url: "/dashboard/officeboy",
+      icon: Briefcase,
+       children: [
+         {
+          title: "Driver Task (Gudang)",
+          url: "/dashboard/driver/driver-task",
+        },
+      ],
+    },
+  ],
+
+  staff_admin: [
+    // {
+    //   title: "Dashboard",
+    //   url: "/dashboard",
+    //   icon: LayoutDashboard,
+    // },
+    {
+      title: "Admin",
+      url: "/dashboard/officeboy",
+      icon: Briefcase,
+       children: [
+         {
+          title: "Driver Task (Admin)",
+          url: "/dashboard/driver/driver-task",
+        },
+      ],
+    },
+  ],
+
+
 };

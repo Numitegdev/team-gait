@@ -105,8 +105,12 @@ export function CreateUserForm() {
             IT Staff
           </option>
 
-          <option value="ga_admin">
-            GA Admin
+          <option value="staff_admin">
+            Staff Admin
+          </option>
+
+             <option value="staff_gudang">
+            Staff Gudang
           </option>
         </select>
 

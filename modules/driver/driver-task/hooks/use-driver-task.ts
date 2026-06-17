@@ -30,6 +30,7 @@ import {
 }
 from "@/lib/supabase/client";
 export function useDriverTask() {
+const [role, setRole] = useState("");
 
 const [
 
@@ -77,7 +78,7 @@ useEffect(() => {
 
 
 loadTasks();
-
+  loadRole();
 
 }, []);
 
@@ -312,6 +313,24 @@ useEffect(() => {
   };
 
 }, []);
+
+
+async function loadRole() {
+  const supabase = createClient();
+
+  const { data: authData } =
+    await supabase.auth.getUser();
+
+  if (!authData.user) return;
+
+  const { data } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", authData.user.id)
+    .single();
+
+  setRole(data?.role || "");
+}
 return {
 
   tasks,
@@ -334,6 +353,9 @@ return {
 
   refresh:
     loadTasks,
+
+  
+  role,
 
 };
 

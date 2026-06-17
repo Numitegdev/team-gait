@@ -29,4 +29,8 @@ export const rolePermissions = {
   staff_security: ["dashboard", "security"],
 
   staff_officeboy: ["dashboard", "officeboy"],
+
+   staff_gudang: ["dashboard", "gudang"],
+
+    staff_admin: ["dashboard", "admin"],
 };
