@@ -11,7 +11,7 @@ export async function getVehicles() {
 
       .from("vehicles")
 
-      .select("*")
+ .select("*")
 
       .order(
         "id",
@@ -138,3 +138,27 @@ export async function uploadVehiclePhoto(
   return data.publicUrl;
 
 }
+export async function getVehicleReminders() {
+
+  const supabase =
+    createClient();
+
+  const {
+    data,
+    error,
+  } =
+    await supabase
+
+      .from(
+        "vehicle_reminders"
+      )
+
+      .select("*");
+
+  if (error)
+    throw error;
+
+  return data ?? [];
+
+}
+

@@ -2,7 +2,9 @@ interface Props {
 
   vehicle: any;
 
-  onEdit?: (
+reminderLogs: any[];
+  
+onEdit?: (
     vehicle: any
   ) => void;
 
@@ -17,6 +19,11 @@ interface Props {
 
 }
 
+import {
+  getNearestReminder,
+}
+from "../helpers/reminder-helper";
+
 export function VehicleCard({
 
   vehicle,
@@ -27,7 +34,47 @@ export function VehicleCard({
 
   onDetail,
 
+   reminderLogs,
+
 }: Props) {
+
+const nearestReminder =
+  getNearestReminder(
+
+    vehicle.reminders ?? [],
+
+    reminderLogs ?? []
+
+  );
+
+  let reminderColor =
+  "bg-slate-50";
+
+if (
+  nearestReminder
+) {
+
+  if (
+    nearestReminder.daysRemaining <= 7
+  ) {
+
+    reminderColor =
+      "bg-red-300";
+
+  }
+
+  else if (
+
+    nearestReminder.daysRemaining <= 30
+
+  ) {
+
+    reminderColor =
+      "bg-orange-300";
+
+  }
+
+}
 
   return (
 
@@ -111,6 +158,7 @@ export function VehicleCard({
             "
 
         />
+        
 
         ) : (
 
@@ -142,16 +190,60 @@ export function VehicleCard({
         >
           {vehicle.nama_kendaraan}
         </div>
+        {/*  */}
+       {nearestReminder && (
 
+          <div
+
+            className={`
+              mt-3
+              rounded-lg
+              p-3
+              text-sm
+              ${reminderColor}
+            `}
+
+          >
+
+            <div
+              className="
+                font-medium
+              "
+            >
+
+              {nearestReminder.type ===
+              "service"
+
+                ? "🛠 Service"
+
+                : "🧾 Pajak"}
+
+            </div>
+
+            <div
+              className="
+                text-slate-600
+              "
+            >
+
+              {
+                nearestReminder.daysRemaining
+              }
+              {" "}
+              hari lagi
+
+            </div>
+
+          </div>
+
+        )}
       </div>
            <div>
             <button
 
             onClick={() =>
-                onDetail(
-                vehicle
-                )
-            }
+            onDetail(vehicle)
+              }
 
             className="
                 mt-3

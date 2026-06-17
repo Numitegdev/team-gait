@@ -13,6 +13,8 @@ interface Props {
     payload: any
   ) => void;
 
+  reminder?: any;
+
 }
 
 export function ReminderFormModal({
@@ -23,15 +25,22 @@ export function ReminderFormModal({
 
   onSubmit,
 
+  reminder,
+
 }: Props) {
 
-  const [
+ const [
 
-    reminderName,
+  reminderName,
 
-    setReminderName,
+  setReminderName,
 
-  ] = useState("");
+] = useState(
+
+  reminder?.reminder_name
+  ?? ""
+
+);
 
   const [
 
@@ -59,8 +68,35 @@ export function ReminderFormModal({
 
   ] = useState(1);
 
+const months = [
+
+  { value: 1, label: "Januari" },
+  { value: 2, label: "Februari" },
+  { value: 3, label: "Maret" },
+  { value: 4, label: "April" },
+  { value: 5, label: "Mei" },
+  { value: 6, label: "Juni" },
+  { value: 7, label: "Juli" },
+  { value: 8, label: "Agustus" },
+  { value: 9, label: "September" },
+  { value: 10, label: "Oktober" },
+  { value: 11, label: "November" },
+  { value: 12, label: "Desember" },
+
+];
+
+const daysInMonth =
+  new Date(
+    2024,
+    month,
+    0
+  ).getDate();
+
   if (!open)
     return null;
+
+
+
 
   return (
 
@@ -141,47 +177,105 @@ export function ReminderFormModal({
 
         </select>
 
-        <input
-          type="number"
-          min={1}
-          max={12}
-          value={month}
-          onChange={(e) =>
-            setMonth(
-              Number(
-                e.target.value
-              )
-            )
-          }
-          className="
-            mt-3
-            w-full
-            rounded-lg
-            border
-            p-2
-          "
-        />
+{/* bulan */}
+<select
 
-        <input
-          type="number"
-          min={1}
-          max={31}
-          value={day}
-          onChange={(e) =>
-            setDay(
-              Number(
-                e.target.value
-              )
-            )
-          }
-          className="
-            mt-3
-            w-full
-            rounded-lg
-            border
-            p-2
-          "
-        />
+  value={month}
+
+  onChange={(e) => {
+
+    setMonth(
+      Number(
+        e.target.value
+      )
+    );
+
+    setDay(1);
+
+  }}
+
+  className="
+    mt-3
+    w-full
+    rounded-lg
+    border
+    p-2
+  "
+
+>
+
+  {
+
+    months.map(
+      (item) => (
+
+        <option
+          key={item.value}
+          value={item.value}
+        >
+
+          {item.label}
+
+        </option>
+
+      )
+    )
+
+  }
+
+</select>
+{/* hari */}
+       <select
+
+  value={day}
+
+  onChange={(e) =>
+
+    setDay(
+      Number(
+        e.target.value
+      )
+    )
+
+  }
+
+  className="
+    mt-3
+    w-full
+    rounded-lg
+    border
+    p-2
+  "
+
+>
+
+  {
+
+    Array.from(
+
+      {
+        length:
+          daysInMonth
+      },
+
+      (_, index) => (
+
+        <option
+          key={index + 1}
+          value={index + 1}
+        >
+
+          {index + 1}
+
+        </option>
+
+      )
+
+    )
+
+  }
+
+</select>
 
         <div
           className="

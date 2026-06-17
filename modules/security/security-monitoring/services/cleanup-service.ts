@@ -10,7 +10,7 @@ export async function cleanupOldPhotos() {
     new Date();
 
   limitDate.setDate(
-    limitDate.getDate() - 7
+    limitDate.getDate() - 3
   );
 
 // limitDate.setMinutes(

@@ -20,6 +20,11 @@ import {
 }
 from "./components/vehicle-detail-modal";
 
+import {
+  ReminderFormModal,
+}
+from "./components/reminder-form-modal";
+
 export default function KendaraanListPage() {
 
  const {
@@ -44,12 +49,17 @@ detailVehicle,
   openDetail,
  setOpenDetail,
 setOpenReminderForm,
-
-
+handleCreateReminder,
+openReminderForm,
 reminders,
-
 handleDetail,
-
+handleDeleteReminder,
+handleCloseDetail,
+selectedReminder,
+  handleUpdateReminder,
+  handleEditReminder,
+  handleVerifyReminder,
+  reminderLogs,
 }
 =
 useKendaraanList();
@@ -157,6 +167,10 @@ useKendaraanList();
                     handleDetail
                 }
 
+              reminderLogs={
+                reminderLogs
+              }
+
                 />
 
             )
@@ -179,29 +193,25 @@ useKendaraanList();
     )
   }
 
-  onSubmit={(payload) => {
+onSubmit={(payload) => {
 
-    if (
-      selectedVehicle
-    ) {
+  if (
+    selectedReminder
+  ) {
 
-      handleUpdate(
+    handleUpdateReminder(
+      payload
+    );
 
-        selectedVehicle.id,
+  } else {
 
-        payload
+    handleCreateReminder(
+      payload
+    );
 
-      );
+  }
 
-    } else {
-
-      handleCreate(
-        payload
-      );
-
-    }
-
-  }}
+}}
 
 />
 
@@ -213,13 +223,61 @@ useKendaraanList();
 
   reminders={reminders}
 
-  onClose={() =>
-    setOpenDetail(false)
-  }
+  reminderLogs={reminderLogs}
+
+  onClose={handleCloseDetail}
 
   onAddReminder={() =>
-    setOpenReminderForm(true)
+    setOpenReminderForm(
+      true
+    )
   }
+
+  onDeleteReminder={
+    handleDeleteReminder
+  }
+
+  onEditReminder={
+    handleEditReminder
+  }
+
+  onVerifyReminder={
+    handleVerifyReminder
+  }
+
+/>
+
+<ReminderFormModal
+
+  open={openReminderForm}
+
+  onClose={() =>
+    setOpenReminderForm(false)
+  }
+
+  reminder={
+    selectedReminder
+  }
+
+  onSubmit={(payload) => {
+
+    if (
+      selectedReminder
+    ) {
+
+      handleUpdateReminder(
+        payload
+      );
+
+    } else {
+
+      handleCreateReminder(
+        payload
+      );
+
+    }
+
+  }}
 
 />
 

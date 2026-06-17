@@ -12,18 +12,35 @@ import {
   updateVehicle,
   deleteVehicle,
   uploadVehiclePhoto,
+  getVehicleReminders,
 }
 from "../services/kendaraan-list-service";
 
-import {
-  getVehicleReminders,
-}
-from "../services/kendaraan-reminder-service";
 
 import {
   createReminder,
 }
 from "../services/create-reminder-service";
+
+import {
+
+  deleteReminder,
+
+  updateReminder,
+
+}
+from "../services/reminder-service";
+
+import {
+  verifyReminder,
+   getReminderLogs,
+}
+from "../services/reminder-log-service";
+
+import {
+  getReminderYear,
+}
+from "../helpers/reminder-date-helper";
 
 export function useKendaraanList() {
 
@@ -94,6 +111,28 @@ const [
   false
 );
 
+
+const [
+
+  selectedReminder,
+
+  setSelectedReminder,
+
+] = useState<any>(
+  null
+);
+
+
+const [
+
+  reminderLogs,
+
+  setReminderLogs,
+
+] = useState<any[]>(
+  []
+);
+
   useEffect(() => {
 
     loadData();
@@ -106,10 +145,40 @@ const [
 
       setLoading(true);
 
-      const data =
-        await getVehicles();
+    const vehicles =
+  await getVehicles();
 
-      setVehicles(data);
+    const reminders =
+      await getVehicleReminders();
+
+    const mergedVehicles =
+      vehicles.map(
+        (vehicle) => ({
+
+          ...vehicle,
+
+          reminders:
+            reminders.filter(
+              (reminder) =>
+
+                reminder.vehicle_id ===
+                vehicle.id
+
+            ),
+
+        })
+      );
+
+      const logs =
+      await getReminderLogs();
+
+      setReminderLogs(
+        logs
+      );
+
+    setVehicles(
+      mergedVehicles
+    );
 
     } finally {
 
@@ -271,17 +340,24 @@ async function handleDetail(
   vehicle: any
 ) {
 
-  const data =
-    await getVehicleReminders(
-      vehicle.id
-    );
-
-  setReminders(
-    data
+  setDetailVehicle(
+    vehicle
   );
 
-  setSelectedVehicle(
-    vehicle
+  const reminderData =
+    await getVehicleReminders();
+
+  setReminders(
+
+    reminderData.filter(
+
+      (item) =>
+
+        item.vehicle_id ===
+        vehicle.id
+
+    )
+
   );
 
   setOpenDetail(
@@ -299,27 +375,199 @@ async function handleCreateReminder(
   )
     return;
 
-  await createReminder({
+  try {
 
-    vehicle_id:
-      detailVehicle.id,
+    await createReminder({
 
-    ...payload,
+      vehicle_id:
+        detailVehicle.id,
 
-  });
+      ...payload,
 
-  const reminders =
-    await getVehicleReminders(
-      detailVehicle.id
+    });
+
+    const reminderData =
+      await getVehicleReminders();
+
+    setReminders(
+
+      reminderData.filter(
+
+        (item) =>
+
+          item.vehicle_id ===
+          detailVehicle.id
+
+      )
+
     );
 
+   setSelectedReminder(
+  null
+);
+
+setOpenReminderForm(
+  false
+);
+
+  } catch (error) {
+
+    console.error(
+      error
+    );
+
+  }
+
+}
+
+async function handleDeleteReminder(
+  id: number
+) {
+
+  const confirmed =
+    window.confirm(
+      "Hapus reminder ini?"
+    );
+
+  if (!confirmed)
+    return;
+
+  try {
+
+    await deleteReminder(
+      id
+    );
+
+    const reminderData =
+      await getVehicleReminders();
+
+    setReminders(
+
+      reminderData.filter(
+
+        (item) =>
+
+          item.vehicle_id ===
+          detailVehicle.id
+
+      )
+
+    );
+
+  } catch (error) {
+
+    console.error(
+      error
+    );
+
+  }
+
+}
+
+async function handleCloseDetail() {
+
+  setOpenDetail(
+    false
+  );
+
+  await loadData();
+
+}
+
+async function handleUpdateReminder(
+  payload: any
+) {
+
+  if (
+    !selectedReminder
+  )
+    return;
+
+await updateReminder(
+  selectedReminder.id,
+  payload
+);
+
+  const reminderData =
+    await getVehicleReminders();
+
   setReminders(
-    reminders
+
+    reminderData.filter(
+
+      item =>
+
+        item.vehicle_id ===
+        detailVehicle.id
+
+    )
+
+  );
+
+  setSelectedReminder(
+    null
   );
 
   setOpenReminderForm(
     false
   );
+
+}
+
+function handleEditReminder(
+  reminder: any
+) {
+
+  setSelectedReminder(
+    reminder
+  );
+
+  setOpenReminderForm(
+    true
+  );
+
+}
+
+async function handleVerifyReminder(
+  reminder: any
+) {
+
+  const confirmed =
+    window.confirm(
+
+      "Verifikasi reminder ini?"
+
+    );
+
+  if (!confirmed)
+    return;
+
+  try {
+
+  await verifyReminder(
+
+  reminder.id,
+
+  getReminderYear(
+    reminder.month,
+    reminder.day
+  )
+
+);
+
+    alert(
+      "Reminder berhasil diverifikasi"
+    );
+
+    await loadData();
+
+  } catch (error) {
+
+    console.error(
+      error
+    );
+
+  }
 
 }
  return {
@@ -349,6 +597,15 @@ detailVehicle,
   setOpenReminderForm,
 
 handleDetail,
+ openReminderForm,
+handleDeleteReminder,
+handleCloseDetail,
+selectedReminder,
+setSelectedReminder,
+handleEditReminder,
+handleUpdateReminder,
+handleVerifyReminder,
+reminderLogs,
 
 };
 }

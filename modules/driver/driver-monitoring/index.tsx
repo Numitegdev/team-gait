@@ -336,21 +336,13 @@ return (
 />
 
 <MonitoringDetailModal
-
-  open={
-    !!selectedTask
-  }
-
-  data={
-    selectedTask
-  }
-
+  open={!!selectedTask}
+  data={selectedTask}
   onClose={() =>
-    setSelectedTask(
-      null
-    )
+    setSelectedTask(null)
   }
-
+  onVerify={handleVerify}
+  canVerify={canVerify}
 />
 
 <div

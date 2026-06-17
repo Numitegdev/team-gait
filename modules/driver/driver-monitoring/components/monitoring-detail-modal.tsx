@@ -13,6 +13,12 @@ data: any;
 
 onClose: () => void;
 
+  onVerify?: (
+    id: number
+  ) => void;
+
+  canVerify?: boolean;
+
 }
 
 function getStatusClass(
@@ -39,6 +45,7 @@ default:
 
 }
 
+
 export function MonitoringDetailModal({
 
 open,
@@ -46,6 +53,9 @@ open,
 data,
 
 onClose,
+
+  onVerify,
+  canVerify,
 
 }: Props) {
 
@@ -723,10 +733,38 @@ return (
         </div>
 
       </div>
+<div className="flex gap-2 justify-center ">
 
+  {data.status === "completed" &&
+    !data.is_verified &&
+    canVerify && (
+
+    <button
+      onClick={async () => {
+        await onVerify?.(data.id);
+        onClose();
+      }}
+      className="
+        rounded-lg
+        bg-green-600
+        px-4
+        py-2
+        text-white
+        
+      "
+    >
+      Verifikasi
+    </button>
+
+  )}
+  
+</div>
     </div>
 
   </div>
+{/* button verify */}
+
+
 
 </div>
 

@@ -447,36 +447,7 @@ return (
                     Detail
                   </button>
 
-                  {item.status ===
-                      "completed"
-
-                    &&
-
-                    !item.is_verified
-
-                    &&
-
-                    canVerify && (
-
-                    <button
-                    onClick={() =>
-                        onVerify?.(
-                          item.id
-                        )
-                      }
-                      className="
-                        rounded-lg
-                        bg-green-600
-                        px-3
-                        py-1
-                        text-white
-                      "
-                    >
-                      Verifikasi
-                    </button>
-
-                  )}
-
+                  
                 </div>
 
               </td>
