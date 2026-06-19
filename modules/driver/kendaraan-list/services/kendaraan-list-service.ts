@@ -161,4 +161,26 @@ export async function getVehicleReminders() {
   return data ?? [];
 
 }
+export async function getVehicleBookings() {
 
+  const supabase =
+    createClient();
+
+  const {
+    data,
+    error,
+  } =
+    await supabase
+
+      .from(
+        "vehicle_bookings"
+      )
+
+      .select("*");
+
+  if (error)
+    throw error;
+
+  return data ?? [];
+
+}

@@ -25,6 +25,11 @@ import {
 }
 from "./components/reminder-form-modal";
 
+import {
+  BookingFormModal,
+}
+from "./components/booking-form-modal";
+
 export default function KendaraanListPage() {
 
  const {
@@ -60,9 +65,36 @@ selectedReminder,
   handleEditReminder,
   handleVerifyReminder,
   reminderLogs,
+
+  bookings,
+
+openBookingForm,
+
+setOpenBookingForm,
+
+handleCreateBooking,
+
+selectedBooking,
+setSelectedBooking,
+handleUpdateBooking,
+  handleDeleteBooking,
 }
 =
 useKendaraanList();
+
+const handleEditBooking =
+  (booking: any) => {
+
+    setSelectedBooking(
+      booking
+    );
+
+    setOpenBookingForm(
+      true
+    );
+
+  };
+
   return (
 
     <div
@@ -183,69 +215,92 @@ useKendaraanList();
 
   open={openForm}
 
-  vehicle={
-    selectedVehicle
-  }
+  vehicle={selectedVehicle}
 
-  onClose={() =>
-    setOpenForm(
-      false
-    )
-  }
+  onClose={() => {
 
-onSubmit={(payload) => {
+    setOpenForm(false);
 
-  if (
-    selectedReminder
-  ) {
+    setSelectedVehicle(null);
 
-    handleUpdateReminder(
-      payload
-    );
+  }}
 
-  } else {
+  onSubmit={(payload) => {
 
-    handleCreateReminder(
-      payload
-    );
+    if (selectedVehicle) {
 
-  }
+      handleUpdate(
+        selectedVehicle.id,
+        payload
+      );
 
-}}
+    } else {
+
+      handleCreate(
+        payload
+      );
+
+    }
+
+  }}
 
 />
+
+<BookingFormModal
+
+  open={
+    openBookingForm
+  }
+
+  booking={
+    selectedBooking
+  }
+
+  onClose={() => {
+
+    setOpenBookingForm(
+      false
+    );
+
+    setSelectedBooking(
+      null
+    );
+
+  }}
+
+  onSubmit={
+
+    selectedBooking
+
+      ? handleUpdateBooking
+
+      : handleCreateBooking
+
+  }
+
+/>
+
 
 <VehicleDetailModal
-
   open={openDetail}
-
-  vehicle={detailVehicle}
-
+  vehicle={selectedVehicle}
   reminders={reminders}
-
   reminderLogs={reminderLogs}
-
+  bookings={bookings}
   onClose={handleCloseDetail}
-
   onAddReminder={() =>
-    setOpenReminderForm(
-      true
-    )
+    setOpenReminderForm(true)
   }
-
-  onDeleteReminder={
-    handleDeleteReminder
+  onAddBooking={() =>
+    setOpenBookingForm(true)
   }
-
-  onEditReminder={
-    handleEditReminder
-  }
-
-  onVerifyReminder={
-    handleVerifyReminder
-  }
-
+  onDeleteReminder={handleDeleteReminder}
+  onEditReminder={handleEditReminder}
+  onVerifyReminder={handleVerifyReminder}
+ onEditBooking={handleEditBooking}
+  onDeleteBooking={handleDeleteBooking}
 />
+
 
 <ReminderFormModal
 

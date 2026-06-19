@@ -24,6 +24,16 @@ import {
 }
 from "../helpers/reminder-helper";
 
+import {
+  getNearestBooking,
+}
+from "../helpers/booking-helper";
+
+import {
+  getBookingStatus,
+}
+from "../helpers/booking-status-helper";
+
 export function VehicleCard({
 
   vehicle,
@@ -46,6 +56,18 @@ const nearestReminder =
     reminderLogs ?? []
 
   );
+
+const nearestBooking =
+  getNearestBooking(
+    vehicle.bookings ?? []
+  );
+
+const bookingStatus =
+  nearestBooking
+    ? getBookingStatus(
+        nearestBooking
+      )
+    : null;
 
   let reminderColor =
   "bg-slate-50";
@@ -190,7 +212,7 @@ if (
         >
           {vehicle.nama_kendaraan}
         </div>
-        {/*  */}
+        {/* reminder */}
        {nearestReminder && (
 
           <div
@@ -237,6 +259,52 @@ if (
           </div>
 
         )}
+        {/* booking */}
+        {
+
+          nearestBooking && (
+
+            <div
+              className="
+                mt-3
+                rounded-lg
+                border
+                p-2
+                text-sm
+              ${bookingStatus?.color}
+              "
+              
+            >
+
+              <div
+                className="
+                  font-medium
+                  text-indigo-700
+                "
+              >
+                📅 {bookingStatus?.text}
+              </div>
+
+              <div>
+                {nearestBooking.booked_by}
+              </div>
+
+              <div
+                className="
+                  text-slate-500
+                "
+              >
+                {nearestBooking.daysRemaining}
+                {" "}
+                hari lagi
+              </div>
+
+            </div>
+
+          )
+
+        }
+
       </div>
            <div>
             <button

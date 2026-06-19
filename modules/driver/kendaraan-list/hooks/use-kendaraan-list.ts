@@ -7,12 +7,15 @@ import {
 from "react";
 
 import {
+
   getVehicles,
   createVehicle,
   updateVehicle,
   deleteVehicle,
   uploadVehiclePhoto,
   getVehicleReminders,
+  getVehicleBookings,
+
 }
 from "../services/kendaraan-list-service";
 
@@ -42,6 +45,13 @@ import {
 }
 from "../helpers/reminder-date-helper";
 
+import {
+  createBooking,
+  getBookings,
+  updateBooking,
+  deleteBooking,
+}
+from "../services/booking-service";
 export function useKendaraanList() {
 
   const [
@@ -133,6 +143,36 @@ const [
   []
 );
 
+const [
+
+  bookings,
+
+  setBookings,
+
+] = useState<any[]>(
+  []
+);
+
+const [
+
+  openBookingForm,
+
+  setOpenBookingForm,
+
+] = useState(
+  false
+);
+
+const [
+
+  selectedBooking,
+
+  setSelectedBooking,
+
+] = useState<any>(
+  null
+);
+
   useEffect(() => {
 
     loadData();
@@ -151,6 +191,9 @@ const [
     const reminders =
       await getVehicleReminders();
 
+    const bookingData =
+  await getVehicleBookings();
+
     const mergedVehicles =
       vehicles.map(
         (vehicle) => ({
@@ -160,10 +203,15 @@ const [
           reminders:
             reminders.filter(
               (reminder) =>
-
                 reminder.vehicle_id ===
                 vehicle.id
+            ),
 
+          bookings:
+            bookingData.filter(
+              (booking: any) =>
+                booking.vehicle_id ===
+                vehicle.id
             ),
 
         })
@@ -340,6 +388,10 @@ async function handleDetail(
   vehicle: any
 ) {
 
+  setSelectedVehicle(
+    vehicle
+  );
+
   setDetailVehicle(
     vehicle
   );
@@ -360,12 +412,27 @@ async function handleDetail(
 
   );
 
+  const bookingData =
+    await getBookings();
+
+  setBookings(
+
+    bookingData.filter(
+
+      (item) =>
+
+        item.vehicle_id ===
+        vehicle.id
+
+    )
+
+  );
+
   setOpenDetail(
     true
   );
 
 }
-
 async function handleCreateReminder(
   payload: any
 ) {
@@ -380,7 +447,7 @@ async function handleCreateReminder(
     await createReminder({
 
       vehicle_id:
-        detailVehicle.id,
+     detailVehicle?.id,
 
       ...payload,
 
@@ -396,7 +463,7 @@ async function handleCreateReminder(
         (item) =>
 
           item.vehicle_id ===
-          detailVehicle.id
+          detailVehicle?.id
 
       )
 
@@ -448,7 +515,7 @@ async function handleDeleteReminder(
         (item) =>
 
           item.vehicle_id ===
-          detailVehicle.id
+         detailVehicle?.id
 
       )
 
@@ -498,7 +565,7 @@ await updateReminder(
       item =>
 
         item.vehicle_id ===
-        detailVehicle.id
+        detailVehicle?.id
 
     )
 
@@ -570,6 +637,197 @@ async function handleVerifyReminder(
   }
 
 }
+
+async function handleCreateBooking(
+  payload: any
+) {
+
+  if (
+    !detailVehicle
+  )
+    return;
+
+    const bookingData =
+      await getBookings();
+
+    const isConflict =
+      bookingData.some(
+        (booking: any) => {
+
+          if (
+            booking.vehicle_id !==
+            selectedVehicle.id
+          ) {
+            return false;
+          }
+
+          const newStart =
+            new Date(
+              payload.booking_date
+            );
+
+          const newEnd =
+            new Date(
+              payload.end_date
+            );
+
+          const existingStart =
+            new Date(
+              booking.booking_date
+            );
+
+          const existingEnd =
+            new Date(
+              booking.end_date
+            );
+
+          return (
+
+            newStart <=
+              existingEnd &&
+
+            newEnd >=
+              existingStart
+
+          );
+
+        }
+      );
+
+    if (isConflict) {
+
+      alert(
+        "Tanggal booking bertabrakan dengan booking lain."
+      );
+
+      return;
+
+    }
+    
+  await createBooking({
+
+    vehicle_id:
+     detailVehicle?.id,
+
+    ...payload,
+
+  });
+
+  
+
+ const refreshedBookings =
+  await getBookings();
+
+setBookings(
+
+  refreshedBookings.filter(
+
+    (item) =>
+
+      item.vehicle_id ===
+      detailVehicle?.id
+
+  )
+
+);
+
+  setOpenBookingForm(
+    false
+  );
+
+}
+
+async function handleUpdateBooking(
+  payload: any
+) {
+
+  if (
+    !selectedBooking
+  )
+    return;
+
+  await updateBooking(
+
+    selectedBooking.id,
+
+    payload
+
+  );
+
+  const bookingData =
+    await getVehicleBookings();
+
+  setBookings(
+
+    bookingData.filter(
+
+      (item: any) =>
+
+        item.vehicle_id ===
+       detailVehicle?.id
+
+    )
+
+  );
+
+  setSelectedBooking(
+    null
+  );
+
+  setOpenBookingForm(
+    false
+  );
+
+}
+
+async function handleDeleteBooking(
+  id: number
+) {
+
+  const confirmDelete =
+    window.confirm(
+      "Hapus booking ini?"
+    );
+
+  if (!confirmDelete)
+    return;
+
+  await deleteBooking(
+    id
+  );
+
+  const bookingData =
+    await getVehicleBookings();
+
+  setBookings(
+
+    bookingData.filter(
+
+      (item: any) =>
+
+        item.vehicle_id ===
+        detailVehicle?.id
+
+    )
+
+  );
+
+}
+
+function handleEditBooking(
+  booking: any
+) {
+
+  setSelectedBooking(
+    booking
+  );
+
+  setOpenBookingForm(
+    true
+  );
+
+}
+
  return {
 
   vehicles,
@@ -606,6 +864,22 @@ handleEditReminder,
 handleUpdateReminder,
 handleVerifyReminder,
 reminderLogs,
+bookings,
+
+openBookingForm,
+
+setOpenBookingForm,
+
+handleCreateBooking,
+
+selectedBooking,
+setSelectedBooking,
+
+handleEditBooking,
+handleUpdateBooking,
+handleDeleteBooking,
+
+setDetailVehicle,
 
 };
 }

@@ -68,6 +68,11 @@ useEffect(() => {
 
 }, []);
 
+const [
+  verificationFilter,
+  setVerificationFilter,
+] = useState("all");
+
 async function initialize() {
 
   await cleanupOldPhotos();
@@ -218,6 +223,8 @@ async function handleVerify(
 
   closeModal,
 
+ 
+
 };
 async function handleExportPdf(
   id: number
@@ -235,6 +242,26 @@ async function handleExportPdf(
     await exportSecurityPdf(
       detail
     );
+
+    const filteredChecks =
+  checks.filter((item) => {
+
+    if (
+      verificationFilter ===
+      "verified"
+    ) {
+      return item.is_verified;
+    }
+
+    if (
+      verificationFilter ===
+      "pending"
+    ) {
+      return !item.is_verified;
+    }
+
+    return true;
+  });
 
   } finally {
 
