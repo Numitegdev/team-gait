@@ -58,6 +58,7 @@ useSecurityMonitoring();
 }, []);
 
 
+
 const [search, setSearch] =
   useState("");
 
@@ -324,54 +325,6 @@ const paginatedChecks =
     </option>
 
   </select>
-
-  <div
-  className="
-    flex
-    items-center
-    gap-2
-  "
->
-
-  <label>
-    Verifikasi
-  </label>
-
-  <select
-
-    value={
-      verificationFilter
-    }
-
-    onChange={(e) =>
-      setVerificationFilter(
-        e.target.value
-      )
-    }
-
-    className="
-      rounded-lg
-      border
-      px-3
-      py-2
-    "
-  >
-
-    <option value="all">
-      Semua
-    </option>
-
-    <option value="pending">
-      Pending
-    </option>
-
-    <option value="verified">
-      Verified
-    </option>
-
-  </select>
-
-</div>
 
   <input
 

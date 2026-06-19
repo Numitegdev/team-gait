@@ -44,7 +44,9 @@ nomor_resi:
 deskripsi:
   "",
 
+payment_type: "tempo",
 
+cash_amount: "",
 });
 
 const [
@@ -88,6 +90,11 @@ setForm({
 
   deskripsi:
     "",
+
+  
+  payment_type: "tempo",
+
+  cash_amount: "",
 
 });
 
@@ -357,6 +364,7 @@ return (
         Nomor Resi
 
       </label>
+      
 
       <input
 
@@ -393,6 +401,116 @@ return (
       />
 
     </div>
+
+    <div>
+
+      <label
+        className="
+          mb-2
+          block
+          text-sm
+          font-medium
+        "
+      >
+        Jenis Pembayaran
+      </label>
+
+      <select
+
+        value={form.payment_type}
+
+        onChange={(e) =>
+
+          setForm({
+
+            ...form,
+
+            payment_type:
+              e.target.value,
+
+            cash_amount:
+              e.target.value === "tempo"
+                ? ""
+                : form.cash_amount,
+
+          })
+
+        }
+
+        className="
+          w-full
+          rounded-lg
+          border
+          px-3
+          py-2
+        "
+
+      >
+
+        <option value="tempo">
+          Tempo
+        </option>
+
+        <option value="cash">
+          Cash
+        </option>
+
+      </select>
+
+    </div>
+{/* nominal cash */}
+    <div>
+
+    <label
+      className="
+        mb-2
+        block
+        text-sm
+        font-medium
+      "
+    >
+      Nominal Cash
+    </label>
+
+    <input
+
+      type="number"
+
+      value={form.cash_amount}
+
+      disabled={
+        form.payment_type !==
+        "cash"
+      }
+
+      onChange={(e) =>
+
+        setForm({
+
+          ...form,
+
+          cash_amount:
+            e.target.value,
+
+        })
+
+      }
+
+      placeholder="Masukkan nominal cash"
+
+      className="
+        w-full
+        rounded-lg
+        border
+        px-3
+        py-2
+        disabled:bg-slate-100
+        disabled:text-slate-400
+      "
+
+    />
+
+  </div>
 
     <div
       className="
