@@ -202,52 +202,30 @@ return (
                 </div>
 
 
-            <div className="flex
-                items-start
-                justify-between
-                p-4">
+            <div className="
+                mt-4
+                flex
+                gap-2
+              "
+               
+             
+                >
 
                   <button
                     onClick={() => onView(item)}
                     className="
-                      rounded-lg
-                      border
-                      px-3
-                      py-1
-                    "
+                  flex-1
+                  rounded-lg
+                  bg-blue-600
+                  px-3
+                  py-2
+                  text-white
+                "
                   >
                     Detail
                   </button>
 
-                  {item.status ===
-                      "completed"
-
-                    &&
-
-                    !item.is_verified
-
-                    &&
-
-                    canVerify && (
-
-                    <button
-                    onClick={() =>
-                        onVerify?.(
-                          item.id
-                        )
-                      }
-                      className="
-                        rounded-lg
-                        bg-green-600
-                        px-3
-                        py-1
-                        text-white
-                      "
-                    >
-                      Verifikasi
-                    </button>
-
-                  )}
+                
 
                 </div>
 

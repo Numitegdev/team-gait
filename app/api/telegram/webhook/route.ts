@@ -9,6 +9,9 @@ import {
 export async function POST(
   req: Request
 ) {
+  console.log(
+  "WEBHOOK VERSION 22 JUNI 2026"
+);
 
   const body =
     await req.json();
@@ -28,6 +31,24 @@ export async function POST(
     message.caption ||
     message.text ||
     "";
+
+console.log("================================");
+console.log("TEXT MASUK:", message.text);
+console.log("CAPTION MASUK:", message.caption);
+console.log("FULL MESSAGE:", JSON.stringify(message));
+console.log("================================");
+
+  console.log("CAPTION:");
+console.log(caption);
+
+const command =
+  caption
+    .split("\n")[0]
+    .trim();
+
+  
+console.log("COMMAND:");
+console.log(command);
 
   let telegramPhotoUrl:
     string | null =
@@ -130,13 +151,163 @@ if (message.photo) {
   }
 
 }
-  
+  // payment
 
-  if (
-    caption.startsWith(
-      "/pengiriman"
+    if (
+  command ===
+  "/payment"
+) {
+
+  const content =
+    caption
+      .replace(
+        "/payment",
+        ""
+      )
+      .trim();
+
+  const parts =
+    content.split("_");
+
+  const pengirim =
+    parts[0];
+
+  const deskripsi =
+    parts[1];
+
+  const paymentType =
+    parts[2] || "none";
+
+  const cashAmount =
+
+    paymentType === "cash"
+
+      ? Number(
+          parts[3] || 0
+        )
+
+      : null;
+
+  const nomorTask =
+    `DRV-${Date.now()}`;
+
+  await supabaseAdmin
+
+    .from(
+      "driver_tasks"
     )
-  ) {
+
+    .insert({
+
+      nomor_task:
+        nomorTask,
+
+      jenis:
+        "pengiriman",
+
+      pengirim,
+
+      penerima:
+        "-",
+
+      nomor_resi:
+        null,
+
+      deskripsi,
+
+      payment_type:
+        paymentType,
+
+      cash_amount:
+        cashAmount,
+
+      status:
+        "pending",
+
+      task_photo_url:
+        telegramPhotoUrl,
+
+    });
+
+}
+
+  //  resi
+
+else   if (
+  command ===
+  "/resi"
+) {
+
+  const content =
+    caption
+      .replace(
+        "/resi",
+        ""
+      )
+      .trim();
+
+      console.log("CONTENT:", content);
+console.log("PARTS:", content.split("_"));
+
+  const [
+
+    penerima,
+
+    nomorResi,
+
+    deskripsi,
+
+  ] =
+    content.split("_");
+
+  const nomorTask =
+    `DRV-${Date.now()}`;
+
+  await supabaseAdmin
+
+    .from(
+      "driver_tasks"
+    )
+
+    .insert({
+
+      nomor_task:
+        nomorTask,
+
+      jenis:
+        "penerimaan",
+
+      pengirim:
+        "-",
+
+      penerima,
+
+      nomor_resi:
+        nomorResi,
+
+      deskripsi,
+
+      payment_type:
+        "none",
+
+      cash_amount:
+        null,
+
+      status:
+        "pending",
+
+      task_photo_url:
+        telegramPhotoUrl,
+
+    });
+
+}
+
+// penerimaan umum
+else if (
+  command ===
+  "/pengiriman"
+) {
 
     const content =
       caption
@@ -150,8 +321,6 @@ if (message.photo) {
 
       pengirim,
 
-      nomorResi,
-
       deskripsi,
 
     ] =
@@ -162,45 +331,48 @@ if (message.photo) {
     const nomorTask =
       `DRV-${Date.now()}`;
 
-    await supabaseAdmin
+   await supabaseAdmin
+  .from("driver_tasks")
+  .insert({
 
-      .from(
-        "driver_tasks"
-      )
+    nomor_task:
+      nomorTask,
 
-      .insert({
+    jenis:
+      "pengiriman",
 
-        nomor_task:
-          nomorTask,
+    pengirim,
 
-        jenis:
-          "pengiriman",
+    penerima:
+      "-",
 
-        pengirim,
+    nomor_resi:
+      null,
 
-        penerima:
-          "-",
+    deskripsi,
 
-        nomor_resi:
-          nomorResi,
+    payment_type:
+      "none",
 
-        deskripsi,
+    cash_amount:
+      null,
 
-        status:
-          "pending",
+    status:
+      "pending",
 
-        task_photo_url:
-          telegramPhotoUrl,
+    task_photo_url:
+      telegramPhotoUrl,
 
-      });
+  });
 
   }
 
-  if (
-    caption.startsWith(
-      "/pengambilan"
-    )
-  ) {
+  // pengambilan umum
+
+else if (
+  command ===
+  "/pengambilan"
+) {
 
     const content =
       caption
@@ -213,8 +385,6 @@ if (message.photo) {
     const [
 
       penerima,
-
-      nomorResi,
 
       deskripsi,
 
@@ -245,8 +415,11 @@ if (message.photo) {
 
         penerima,
 
-        nomor_resi:
-          nomorResi,
+       payment_type:
+        "none",
+
+      cash_amount:
+        null,
 
         deskripsi,
 

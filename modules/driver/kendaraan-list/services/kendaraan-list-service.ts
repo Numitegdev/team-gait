@@ -6,19 +6,21 @@ export async function getVehicles() {
   const supabase =
     createClient();
 
-  const { data, error } =
-    await supabase
+  const {
+    data,
+    error,
+  } = await supabase
 
-      .from("vehicles")
+    .from(
+      "vehicles"
+    )
 
- .select("*")
+    .select("*")
 
-      .order(
-        "id",
-        {
-          ascending: false
-        }
-      );
+    .eq(
+      "active",
+      true
+    );
 
   if (error)
     throw error;
@@ -83,17 +85,20 @@ export async function deleteVehicle(
   const supabase =
     createClient();
 
-  const { error } =
-    await supabase
+  await supabase
 
-      .from("vehicles")
+    .from("vehicles")
 
-      .delete()
+    .update({
 
-      .eq("id", id);
+      active: false,
 
-  if (error)
-    throw error;
+    })
+
+    .eq(
+      "id",
+      id
+    );
 
 }
 
@@ -154,6 +159,8 @@ export async function getVehicleReminders() {
       )
 
       .select("*");
+
+      
 
   if (error)
     throw error;

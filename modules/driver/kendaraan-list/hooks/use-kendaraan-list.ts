@@ -370,17 +370,22 @@ async function handleDelete(
 
     await loadData();
 
-  } catch (error) {
+  } catch (error: any) {
 
-    console.error(
+  console.error(
+    "DELETE VEHICLE ERROR:",
+    error
+  );
+
+  alert(
+
+    JSON.stringify(
       error
-    );
+    )
 
-    alert(
-      "Gagal hapus kendaraan"
-    );
+  );
 
-  }
+}
 
 }
 

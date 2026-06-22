@@ -402,6 +402,41 @@ return (
 
           </div>
 
+          {/* payment */}
+          <div>
+
+              <div
+                className="
+                  text-sm
+                  text-slate-500
+                "
+              >
+                Payment
+              </div>
+
+              <div>
+
+                {data.payment_type === "none" && (
+                  <span>Tidak Ada Payment</span>
+                )}
+
+                {data.payment_type === "tempo" && (
+                  <span>Tempo</span>
+                )}
+
+                {data.payment_type === "cash" && (
+                  <span>
+                    Cash - Rp{" "}
+                    {Number(
+                      data.cash_amount || 0
+                    ).toLocaleString("id-ID")}
+                  </span>
+                )}
+
+              </div>
+
+            </div>
+
         </div>
 
       </div>
@@ -745,11 +780,12 @@ return (
         onClose();
       }}
       className="
-        rounded-lg
-        bg-green-600
-        px-4
-        py-2
-        text-white
+                mt-6
+                w-full
+                rounded-lg
+                bg-green-600
+                py-3
+                text-white
         
       "
     >

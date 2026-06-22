@@ -52,7 +52,7 @@ export function getNearestBooking(
 
       .filter(
         item =>
-          item.daysRemaining >= 0
+          item.daysRemaining >= -0
       )
 
       .sort(

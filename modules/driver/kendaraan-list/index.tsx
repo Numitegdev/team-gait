@@ -1,6 +1,10 @@
 "use client";
 
 import {
+  useState,
+} from "react";
+
+import {
   useKendaraanList,
 }
 from "./hooks/use-kendaraan-list";
@@ -95,6 +99,9 @@ const handleEditBooking =
 
   };
 
+  const [search, setSearch] =
+  useState("");
+
   return (
 
     <div
@@ -112,13 +119,132 @@ const handleEditBooking =
       >
         Kendaraan
       </h1>
-           <div
+
+      <div
+  className="
+    mt-4
+    grid
+    gap-4
+    md:grid-cols-2
+  "
+>
+
+  <div
+    className="
+      rounded-xl
+      border
+      bg-white
+      p-4
+      shadow-sm
+    "
+  >
+
+    <div
+      className="
+        text-sm
+        text-slate-500
+      "
+    >
+      Total Kendaraan
+    </div>
+
+    <div
+      className="
+        mt-1
+        text-3xl
+        font-bold
+      "
+    >
+      {vehicles.length}
+    </div>
+
+  </div>
+
+  <div
+    className="
+      rounded-xl
+      border
+      bg-white
+      p-4
+      shadow-sm
+    "
+  >
+
+    <div
+      className="
+        text-sm
+        text-slate-500
+      "
+    >
+      Booking Aktif
+    </div>
+
+    <div
+      className="
+        mt-1
+        text-3xl
+        font-bold
+        text-indigo-600
+      "
+    >
+      {
+        vehicles.reduce(
+
+          (total, vehicle) =>
+
+            total +
+
+            (
+              vehicle.bookings
+              ?.length || 0
+            ),
+
+          0
+
+        )
+      }
+    </div>
+
+  </div>
+
+</div>
+           
+<div
   className="
     mt-4
     flex
-    justify-end
+    flex-col
+    gap-3
+    md:flex-row
+    md:items-center
+    md:justify-between
   "
 >
+
+  <input
+
+    value={search}
+
+    onChange={(e) =>
+      setSearch(
+        e.target.value
+      )
+    }
+
+    placeholder="
+      Cari plat / nama kendaraan
+    "
+
+    className="
+      w-full
+      rounded-lg
+      border
+      px-4
+      py-2
+      md:max-w-sm
+    "
+
+  />
 
   <button
 
@@ -149,6 +275,7 @@ const handleEditBooking =
   </button>
 
 </div>
+
       <div
         className="
           mt-6
@@ -164,7 +291,27 @@ const handleEditBooking =
 
         {
 
-          vehicles.map(
+          vehicles
+
+          .filter(
+            (vehicle) =>
+
+              vehicle.plat_nomor
+                ?.toLowerCase()
+                .includes(
+                  search.toLowerCase()
+                )
+
+              ||
+
+              vehicle.nama_kendaraan
+                ?.toLowerCase()
+                .includes(
+                  search.toLowerCase()
+                )
+          )
+
+          .map(
             (vehicle) => (
 
              <VehicleCard

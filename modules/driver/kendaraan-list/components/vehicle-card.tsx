@@ -34,6 +34,8 @@ import {
 }
 from "../helpers/booking-status-helper";
 
+import { Pencil, Trash2 } from 'lucide-react';
+
 export function VehicleCard({
 
   vehicle,
@@ -134,7 +136,7 @@ if (
                 "
             >
 
-                Edit
+              <Pencil size={16} color="blue" />
 
             </button>
 
@@ -154,8 +156,8 @@ if (
                 text-white
                 "
             >
-
-                Delete
+             
+              <Trash2 size={16} color="white" />
 
             </button>
 </div>
@@ -263,18 +265,16 @@ if (
         {
 
           nearestBooking && (
-
-            <div
-              className="
-                mt-3
-                rounded-lg
-                border
-                p-2
-                text-sm
+          <div
+            className={`
+              mt-3
+              rounded-lg
+              border
+              p-2
+              text-sm
               ${bookingStatus?.color}
-              "
-              
-            >
+            `}
+          >
 
               <div
                 className="

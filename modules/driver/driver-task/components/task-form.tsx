@@ -20,14 +20,11 @@ onSubmit,
 
 const [
 
-
 form,
 
 setForm,
 
-
 ] = useState({
-
 
 jenis:
   "pengiriman",
@@ -44,9 +41,12 @@ nomor_resi:
 deskripsi:
   "",
 
-payment_type: "tempo",
+payment_type:
+  "none",
 
-cash_amount: "",
+cash_amount:
+  "null",
+
 });
 
 const [
@@ -91,10 +91,11 @@ setForm({
   deskripsi:
     "",
 
-  
-  payment_type: "tempo",
+  payment_type:
+    "none",
 
-  cash_amount: "",
+  cash_amount:
+    "null",
 
 });
 
@@ -177,7 +178,7 @@ return (
         </option>
 
         <option value="penerimaan">
-          Penerimaan
+          Pengambilan
         </option>
 
       </select>
@@ -255,7 +256,7 @@ return (
         "
       >
 
-        Pengirim
+        Di kirim Ke
 
       </label>
 
@@ -280,7 +281,7 @@ return (
         }
 
         placeholder="
-          Nama pengirim
+          Contoh : TOKO A
         "
 
         className="
@@ -306,7 +307,7 @@ return (
         "
       >
 
-        Penerima
+        Mengambil Dari
 
       </label>
 
@@ -331,7 +332,7 @@ return (
         }
 
         placeholder="
-          Nama penerima
+        Contoh : TOKO A
         "
 
         className="
@@ -419,25 +420,27 @@ return (
 
         value={form.payment_type}
 
-        onChange={(e) =>
+       onChange={(e) =>
 
-          setForm({
+        setForm({
 
-            ...form,
+          ...form,
 
-            payment_type:
-              e.target.value,
+          payment_type:
+            e.target.value,
 
-            cash_amount:
-              e.target.value === "tempo"
-                ? ""
-                : form.cash_amount,
+          cash_amount:
 
-          })
+            e.target.value === "cash"
 
-        }
+              ? form.cash_amount
 
-        className="
+              : "",
+
+        })
+
+      }
+         className="
           w-full
           rounded-lg
           border
@@ -446,15 +449,17 @@ return (
         "
 
       >
+      <option value="none">
+        Tidak Ada
+      </option>
 
-        <option value="tempo">
-          Tempo
-        </option>
+      <option value="tempo">
+        Tempo
+      </option>
 
-        <option value="cash">
-          Cash
-        </option>
-
+      <option value="cash">
+        Cash
+      </option>
       </select>
 
     </div>
@@ -570,6 +575,9 @@ return (
     </div>
 
   </div>
+
+
+
 
   <div
     className="

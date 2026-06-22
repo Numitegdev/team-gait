@@ -329,18 +329,35 @@ return (
         />
 
         <InfoItem
-          label="Pengirim"
+          label="Kirim Ke"
           value={data.pengirim}
         />
 
         <InfoItem
-          label="Penerima"
+          label="Ambil Dari"
           value={data.penerima}
         />
 
         <InfoItem
           label="Nomor Resi"
           value={data.nomor_resi}
+        />
+
+        <InfoItem
+          label="Payment"
+          value={
+            data.payment_type === "cash"
+
+              ? `Cash Rp ${Number(
+                  data.cash_amount || 0
+                ).toLocaleString("id-ID")}`
+
+              : data.payment_type === "tempo"
+
+              ? "Tempo"
+
+              : "-"
+          }
         />
 
         <InfoItem

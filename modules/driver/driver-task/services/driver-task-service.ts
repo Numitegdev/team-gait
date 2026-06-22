@@ -44,6 +44,7 @@ payload: any
 ) {
 
 
+
 const nomorTask =
 `DRV-${Date.now()}`;
 
@@ -68,7 +69,23 @@ await supabase
 
   .single();
 
+  console.log("INSERT RESULT", data);
+console.log("INSERT ERROR", error);
 
+const paymentInfo =
+
+  data?.payment_type === "cash"
+
+    ? `Cash Rp ${Number(
+        data.cash_amount || 0
+      ).toLocaleString("id-ID")}`
+
+    : data?.payment_type === "tempo"
+
+    ? "Tempo"
+
+    : "Tidak Ada";
+    
 if (error)
 throw error;
 
@@ -88,15 +105,20 @@ ${data.nomor_task}
 Jenis:
 ${data.jenis}
 
-Pengirim:
+Kirim Ke :
 ${data.pengirim}
 
-Penerima:
+Ambil dari:
 ${data.penerima}
+
+Deskripsi:
+${data.deskripsi || "-"}
+
+Payment:
+${paymentInfo}
 
 Status:
 Pending`
-
   );
 
 } else {
@@ -111,11 +133,17 @@ ${data.nomor_task}
 Jenis:
 ${data.jenis}
 
-Pengirim:
+Kirim ke :
 ${data.pengirim}
 
-Penerima:
+Ambil dari
 ${data.penerima}
+
+Deskripsi:
+${data.deskripsi || "-"}
+
+Payment:
+${paymentInfo}
 
 Status:
 Pending`
@@ -226,11 +254,14 @@ await sendTelegramMessage(
 No Task:
 ${task.nomor_task}
 
-Pengirim:
+Kirim ke:
 ${task.pengirim}
 
-Penerima:
+Ambil dari:
 ${task.penerima}
+
+Deskripsi:
+${task.deskripsi || "-"}
 
 Status:
 On Progress`
@@ -318,14 +349,14 @@ if (
 No Task:
 ${task.nomor_task}
 
-Pengirim:
+Kirim ke:
 ${task.pengirim}
 
-Penerima:
+Ambil dari:
 ${task.penerima}
 
-Catatan:
-${catatan || "-"}`
+Catatan Driver:
+${task.completion_note || "-"}`
 
   );
 
@@ -339,14 +370,14 @@ else {
 No Task:
 ${task.nomor_task}
 
-Pengirim:
+Kirim ke:
 ${task.pengirim}
 
-Penerima:
+Ambil dari:
 ${task.penerima}
 
-Catatan:
-${catatan || "-"}`
+Catatan Driver:
+${task.completion_note || "-"}`
 
   );
 

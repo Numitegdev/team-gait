@@ -143,14 +143,24 @@ async function handleCreate(
 
   }
 
-  await createTask({
+ await createTask({
 
-    ...taskData,
+  ...taskData,
 
-    task_photo_url:
-      photoUrl,
+  cash_amount:
 
-  });
+    taskData.payment_type === "cash"
+
+      ? Number(
+          taskData.cash_amount || 0
+        )
+
+      : null,
+
+  task_photo_url:
+    photoUrl,
+
+});
 
   await loadTasks();
 

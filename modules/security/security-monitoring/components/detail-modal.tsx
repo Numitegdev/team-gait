@@ -380,11 +380,12 @@ export function DetailModal({
                 onVerify(data.id)
               }
 
-              className="
+             className="
+                mt-6
+                w-full
                 rounded-lg
-                bg-purple-600
-                px-4
-                py-2
+                bg-green-600
+                py-3
                 text-white
               "
             >
