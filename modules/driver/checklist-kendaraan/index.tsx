@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import {
   useChecklistKendaraan,
@@ -150,24 +151,18 @@ export default function ChecklistKendaraanPage() {
                     vehicle.foto_url
                     ? (
 
-                        <img
-
-                        src={
-                            vehicle.foto_url
-                        }
-
-                        alt={
-                            vehicle.nama_kendaraan
-                        }
-
-                        className="
-                            aspect-video
-                            w-full
-                            rounded-lg
-                            object-cover
-                        "
-
-                        />
+                       <Image
+  src={vehicle.foto_url}
+  alt={vehicle.nama_kendaraan}
+  width={640}
+  height={360}
+  className="
+    aspect-video
+    w-full
+    rounded-lg
+    object-cover
+  "
+/>
 
                     )
 
