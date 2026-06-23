@@ -392,10 +392,7 @@ export const sidebarMenu: Record<
           title: "Security Check",
           url: "/dashboard/security/security-check",
         },
-         {
-          title: "Security Monitoring",
-          url: "/dashboard/security/security-monitoring",
-        },
+   
          {
           title: "Driver Task (Security)",
           url: "/dashboard/driver/driver-task",
@@ -420,10 +417,7 @@ export const sidebarMenu: Record<
           title: "Security Check (OB)",
           url: "/dashboard/security/security-check",
         },
-         {
-          title: "Security Monitoring (OB)",
-          url: "/dashboard/security/security-monitoring",
-        },
+
          {
           title: "Driver Task (OB)",
           url: "/dashboard/driver/driver-task",
