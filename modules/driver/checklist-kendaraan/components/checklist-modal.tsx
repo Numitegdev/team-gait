@@ -78,7 +78,7 @@ return (
       flex
       items-center
       justify-center
-      bg-black/60
+      bg-black/50
       p-3
       md:p-6
     "
@@ -88,11 +88,11 @@ return (
       className="
         w-full
         max-w-4xl
+        max-h-[90vh]
+        overflow-y-auto
         rounded-3xl
         bg-white
         shadow-2xl
-        max-h-[95vh]
-        overflow-hidden
       "
     >
 
@@ -100,7 +100,11 @@ return (
 
       <div
         className="
+          sticky
+          top-0
+          z-10
           border-b
+          bg-white
           px-5
           py-4
           md:px-6
@@ -139,9 +143,7 @@ return (
           </div>
 
           <button
-
             onClick={onClose}
-
             className="
               rounded-xl
               border
@@ -150,26 +152,20 @@ return (
               text-sm
               hover:bg-slate-50
             "
-
           >
-
             Tutup
-
           </button>
 
         </div>
 
       </div>
 
-      {/* Content */}
+      {/* Body */}
 
       <div
         className="
-          max-h-[75vh]
-          overflow-y-auto
-          px-5
-          py-5
-          md:px-6
+          p-5
+          md:p-6
         "
       >
 
@@ -193,71 +189,30 @@ return (
           >
 
             <div>
-
-              <div
-                className="
-                  text-xs
-                  text-slate-500
-                "
-              >
+              <div className="text-xs text-slate-500">
                 Plat Nomor
               </div>
-
-              <div
-                className="
-                  font-semibold
-                "
-              >
+              <div className="font-semibold">
                 {vehicle?.plat_nomor}
               </div>
-
             </div>
 
             <div>
-
-              <div
-                className="
-                  text-xs
-                  text-slate-500
-                "
-              >
+              <div className="text-xs text-slate-500">
                 Kendaraan
               </div>
-
-              <div
-                className="
-                  font-semibold
-                "
-              >
+              <div className="font-semibold">
                 {vehicle?.nama_kendaraan}
               </div>
-
             </div>
 
             <div>
-
-              <div
-                className="
-                  text-xs
-                  text-slate-500
-                "
-              >
+              <div className="text-xs text-slate-500">
                 Tanggal
               </div>
-
-              <div
-                className="
-                  font-semibold
-                "
-              >
-                {
-                  new Date()
-                  .toLocaleDateString(
-                    "id-ID"
-                  )
-                }
+              <div className="font-semibold">
+                {new Date().toLocaleDateString("id-ID")}
               </div>
-
             </div>
 
           </div>
@@ -273,356 +228,264 @@ return (
           "
         >
 
-          {
+          {checklistItems.map((item: any) => (
 
-            checklistItems.map(
-              (item: any) => (
+            <div
+              key={item.id}
+              className="
+                rounded-2xl
+                border
+                bg-white
+                p-5
+                shadow-sm
+              "
+            >
+
+              <div
+                className="
+                  font-semibold
+                  text-slate-800
+                "
+              >
+                {item.name}
+              </div>
+
+              <div
+                className="
+                  mt-4
+                  flex
+                  flex-col
+                  gap-3
+                  md:flex-row
+                "
+              >
+
+                <label
+                  className={`
+                    flex
+                    cursor-pointer
+                    items-center
+                    gap-2
+                    rounded-xl
+                    border
+                    px-4
+                    py-3
+                    transition
+                    ${
+                      answers[item.id] === "aman"
+                        ? "border-green-500 bg-green-50"
+                        : ""
+                    }
+                  `}
+                >
+
+                  <input
+                    type="radio"
+                    name={`item-${item.id}`}
+                    checked={
+                      answers[item.id] === "aman"
+                    }
+                    onChange={() =>
+                      setAnswers({
+                        ...answers,
+                        [item.id]: "aman",
+                      })
+                    }
+                  />
+
+                  <span>
+                    ✅ Aman
+                  </span>
+
+                </label>
+
+                <label
+                  className={`
+                    flex
+                    cursor-pointer
+                    items-center
+                    gap-2
+                    rounded-xl
+                    border
+                    px-4
+                    py-3
+                    transition
+                    ${
+                      answers[item.id] === "tidak_aman"
+                        ? "border-red-500 bg-red-50"
+                        : ""
+                    }
+                  `}
+                >
+
+                  <input
+                    type="radio"
+                    name={`item-${item.id}`}
+                    checked={
+                      answers[item.id] === "tidak_aman"
+                    }
+                    onChange={() =>
+                      setAnswers({
+                        ...answers,
+                        [item.id]: "tidak_aman",
+                      })
+                    }
+                  />
+
+                  <span>
+                    ❌ Tidak Aman
+                  </span>
+
+                </label>
+
+              </div>
+
+              {answers[item.id] === "tidak_aman" && (
 
                 <div
-
-                  key={item.id}
-
                   className="
-                    rounded-2xl
+                    mt-4
+                    rounded-xl
                     border
-                    bg-white
-                    p-5
-                    shadow-sm
+                    border-red-200
+                    bg-red-50
+                    p-4
                   "
-
                 >
 
                   <div
                     className="
-                      font-semibold
-                      text-slate-800
+                      mb-2
+                      text-sm
+                      font-medium
+                      text-red-700
                     "
                   >
-
-                    {item.name}
-
+                    Detail Kerusakan
                   </div>
 
-                  <div
+                  <input
+                    type="file"
                     className="
-                      mt-4
-                      flex
-                      flex-col
-                      gap-3
-                      md:flex-row
+                      w-full
+                      rounded-xl
+                      border
+                      bg-white
+                      p-2
                     "
-                  >
+                    onChange={(e) =>
+                      setPhotos({
+                        ...photos,
+                        [item.id]:
+                          e.target.files?.[0],
+                      })
+                    }
+                  />
 
-                    <label
-                      className={`
-                        flex
-                        cursor-pointer
-                        items-center
-                        gap-2
-                        rounded-xl
-                        border
-                        px-4
-                        py-3
-                        transition
-                        ${
-                          answers[item.id] === "aman"
-                            ? "border-green-500 bg-green-50"
-                            : ""
-                        }
-                      `}
+                  {photos[item.id] && (
+
+                    <div
+                      className="
+                        mt-2
+                        text-sm
+                        text-green-600
+                      "
                     >
-
-                      <input
-
-                        type="radio"
-
-                        name={`item-${item.id}`}
-
-                        checked={
-                          answers[item.id]
-                          === "aman"
-                        }
-
-                        onChange={() =>
-
-                          setAnswers({
-
-                            ...answers,
-
-                            [item.id]:
-                              "aman",
-
-                          })
-
-                        }
-
-                      />
-
-                      <span>
-                        ✅ Aman
-                      </span>
-
-                    </label>
-
-                    <label
-                      className={`
-                        flex
-                        cursor-pointer
-                        items-center
-                        gap-2
-                        rounded-xl
-                        border
-                        px-4
-                        py-3
-                        transition
-                        ${
-                          answers[item.id] === "tidak_aman"
-                            ? "border-red-500 bg-red-50"
-                            : ""
-                        }
-                      `}
-                    >
-
-                      <input
-
-                        type="radio"
-
-                        name={`item-${item.id}`}
-
-                        checked={
-                          answers[item.id]
-                          === "tidak_aman"
-                        }
-
-                        onChange={() =>
-
-                          setAnswers({
-
-                            ...answers,
-
-                            [item.id]:
-                              "tidak_aman",
-
-                          })
-
-                        }
-
-                      />
-
-                      <span>
-                        ❌ Tidak Aman
-                      </span>
-
-                    </label>
-
-                  </div>
-
-                  {
-
-                    answers[item.id] ===
-                    "tidak_aman"
-
-                    &&
-
-                    (
-
-                      <div
-                        className="
-                          mt-4
-                          rounded-xl
-                          border
-                          border-red-200
-                          bg-red-50
-                          p-4
-                        "
-                      >
-
-                        <div
-                          className="
-                            mb-2
-                            text-sm
-                            font-medium
-                            text-red-700
-                          "
-                        >
-
-                          Detail Kerusakan
-
-                        </div>
-
-                        <input
-
-                          type="file"
-
-                          className="
-                            w-full
-                            rounded-xl
-                            border
-                            bg-white
-                            p-2
-                          "
-
-                          onChange={(e) =>
-
-                            setPhotos({
-
-                              ...photos,
-
-                              [item.id]:
-                                e.target.files?.[0],
-
-                            })
-
-                          }
-
-                        />
-
-                        {
-
-                          photos[item.id]
-
-                          &&
-
-                          (
-
-                            <div
-                              className="
-                                mt-2
-                                text-sm
-                                text-green-600
-                              "
-                            >
-
-                              ✓ {
-                                photos[item.id]
-                                .name
-                              }
-
-                            </div>
-
-                          )
-
-                        }
-
-                        <textarea
-
-                          value={
-                            notes[item.id]
-                            ?? ""
-                          }
-
-                          onChange={(e) =>
-
-                            setNotes({
-
-                              ...notes,
-
-                              [item.id]:
-                                e.target.value,
-
-                            })
-
-                          }
-
-                          placeholder="
-                            Jelaskan kerusakan atau kondisi kendaraan...
-                          "
-
-                          className="
-                            mt-3
-                            w-full
-                            rounded-xl
-                            border
-                            bg-white
-                            p-3
-                          "
-
-                          rows={3}
-
-                        />
-
-                      </div>
-
-                    )
-
-                  }
+                      ✓ {photos[item.id].name}
+                    </div>
+
+                  )}
+
+                  <textarea
+                    value={notes[item.id] ?? ""}
+                    onChange={(e) =>
+                      setNotes({
+                        ...notes,
+                        [item.id]:
+                          e.target.value,
+                      })
+                    }
+                    className="
+                      mt-3
+                      w-full
+                      rounded-xl
+                      border
+                      bg-white
+                      p-3
+                    "
+                    rows={3}
+                    placeholder="Jelaskan kerusakan..."
+                  />
 
                 </div>
 
-              )
+              )}
 
-            )
+            </div>
 
-          }
+          ))}
 
         </div>
 
-      </div>
+        {/* Submit */}
 
-      {/* Footer */}
-
-      <div
-        className="
-          border-t
-          bg-white
-          p-5
-        "
-      >
-
-        <button
-
-          onClick={() => {
-
-            const totalItems =
-              checklistItems.length;
-
-            const answeredItems =
-              Object.keys(
-                answers
-              ).length;
-
-            if (
-              answeredItems <
-              totalItems
-            ) {
-
-              alert(
-                "Semua checklist harus diisi."
-              );
-
-              return;
-
-            }
-
-            onSubmit({
-
-              answers,
-
-              photos,
-
-              notes,
-
-            });
-
-          }}
-
+        <div
           className="
-            w-full
-            rounded-2xl
-            bg-blue-600
-            py-4
-            text-lg
-            font-semibold
-            text-white
-            transition
-            hover:bg-blue-700
+            mt-6
+            border-t
+            pt-6
           "
-
         >
 
-          Submit Checklist
+          <button
 
-        </button>
+            onClick={() => {
+
+              const totalItems =
+                checklistItems.length;
+
+              const answeredItems =
+                Object.keys(
+                  answers
+                ).length;
+
+              if (
+                answeredItems <
+                totalItems
+              ) {
+
+                alert(
+                  "Semua checklist harus diisi."
+                );
+
+                return;
+
+              }
+
+              onSubmit({
+                answers,
+                photos,
+                notes,
+              });
+
+            }}
+
+            className="
+              w-full
+              rounded-2xl
+              bg-blue-600
+              py-4
+              text-lg
+              font-semibold
+              text-white
+              transition
+              hover:bg-blue-700
+            "
+          >
+            Submit Checklist
+          </button>
+
+        </div>
 
       </div>
 
@@ -631,5 +494,4 @@ return (
   </div>
 
 );
-
 }
