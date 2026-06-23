@@ -7,15 +7,21 @@ from "date-fns";
 
 interface Props {
 
-data: any[];
+  data: any[];
 
-onView: (
-id: number
-) => void;
+  userRole: string;
 
-onStart: (
-id: number
-) => void;
+  onView: (
+    id: number
+  ) => void;
+
+  onStart: (
+    id: number
+  ) => void;
+
+  onCancel: (
+    id: number
+  ) => void;
 
 }
 
@@ -45,11 +51,15 @@ default:
 
 export function TaskTable({
 
-data,
+  data,
 
-onView,
+  userRole,
 
-onStart,
+  onView,
+
+  onStart,
+
+  onCancel,
 
 }: Props) {
 
@@ -187,36 +197,52 @@ return (
               </button>
 
               {
+                  item.status === "pending" &&
+                  (
+                    <>
+                      {
+                        userRole === "staff_driver" && (
+                          <button
+                            onClick={() =>
+                              onStart(item.id)
+                            }
+                            className="
+                              rounded-lg
+                              bg-green-600
+                              px-3
+                              py-2
+                              text-white
+                            "
+                          >
+                            Kerjakan
+                          </button>
+                        )
+                      }
 
-                item.status ===
-                  "pending" && (
-
-                  <button
-
-                    onClick={() =>
-                      onStart(
-                        item.id
-                      )
-                    }
-
-                    className="
-                      flex-1
-                      rounded-lg
-                      bg-green-600
-                      px-3
-                      py-2
-                      text-white
-                    "
-
-                  >
-
-                    Kerjakan
-
-                  </button>
-
-                )
-
-              }
+                      {
+                        (
+                          userRole === "staff_admin" ||
+                          userRole === "staff_gudang"
+                        ) && (
+                          <button
+                            onClick={() =>
+                              onCancel(item.id)
+                            }
+                            className="
+                              rounded-lg
+                              bg-red-600
+                              px-3
+                              py-2
+                              text-white
+                            "
+                          >
+                            Cancel
+                          </button>
+                        )
+                      }
+                    </>
+                  )
+                }
 
             </div>
 
@@ -396,34 +422,62 @@ return (
 
                     {
 
-                      item.status ===
-                        "pending" && (
+                                      item.status === "pending" &&
+                        (
+                          <>
+                            {
+                              (
+                                userRole === "staff_driver" ||
+                                userRole === "staff_security" ||
+                                userRole === "it_staff" ||
+                                userRole === "ga_admin" ||
+                                userRole === "it_admin" ||
+                                userRole === "staff_officeboy" ||
+                                userRole === "staff_chef" 
+                                                                 
+                              ) && (
+                                <button
+                                  onClick={() =>
+                                    onStart(item.id)
+                                  }
+                                  className="
+                                    rounded-lg
+                                    bg-green-600
+                                    px-3
+                                    py-2
+                                    text-white
+                                  "
+                                >
+                                  Kerjakan
+                                </button>
+                              )
+                            }
 
-                        <button
+                            {
+                              (
+                                userRole === "staff_admin" ||
+                                userRole === "staff_gudang"                                 
+                              ) && (
+                                <button
+                                  onClick={() =>
+                                    onCancel(item.id)
+                                  }
+                                  className="
+                                    rounded-lg
+                                    bg-red-600
+                                    px-3
+                                    py-2
+                                    text-white
+                                  "
+                                >
+                                  Cancel
+                                </button>
+                              )
+                            }
+                          </>
+                        )
+                      }
 
-                          onClick={() =>
-                            onStart(
-                              item.id
-                            )
-                          }
-
-                          className="
-                            rounded-lg
-                            bg-green-600
-                            px-3
-                            py-2
-                            text-white
-                          "
-
-                        >
-
-                          Kerjakan
-
-                        </button>
-
-                      )
-
-                    }
 
                   </div>
 

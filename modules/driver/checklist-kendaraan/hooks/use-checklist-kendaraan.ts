@@ -18,11 +18,11 @@ import {
 }
 from "../../kendaraan-list/services/kendaraan-list-service";
 
-
 import {
   getChecklistItems,
 }
-from "../services/checklist-item-service";
+from "../services/checklist-items-service";
+
 
 import {
 

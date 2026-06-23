@@ -18,12 +18,9 @@ import {
 from "./components/checklist-table";
 
 export default function MonitoringChecklistPage() {
-
 const {
 
   role,
-
-  checklistHeaders,
 
   pendingCount,
 
@@ -35,31 +32,47 @@ const {
 
   selectedChecklist,
 
-    checklistDetails,
+  checklistDetails,
 
-    openDetail,
+  openDetail,
 
-    setOpenDetail,
+  setOpenDetail,
 
-    handleVerify,
+  handleVerify,
 
-    statusFilter,
+  search,
 
-    setStatusFilter,
+  setSearch,
 
-    filteredChecklistHeaders,
+  statusFilter,
 
-    search,
+  setStatusFilter,
 
-setSearch,
+  startDate,
 
-paginatedChecklistHeaders,
+  setStartDate,
 
-currentPage,
+  endDate,
 
-setCurrentPage,
+  setEndDate,
 
-totalPages,
+  driverFilter,
+
+  setDriverFilter,
+
+  vehicleFilter,
+
+  setVehicleFilter,
+
+  paginatedChecklistHeaders,
+
+  currentPage,
+
+  setCurrentPage,
+
+  totalPages,
+
+  filteredChecklistHeaders,
 
 }
 =
@@ -194,95 +207,197 @@ useMonitoringChecklist();
 
       </div>
 
-     <div
+      <div
   className="
     mt-6
-    flex
-    flex-col
-    gap-3
-    md:flex-row
-    md:justify-between
+    rounded-2xl
+    border
+    bg-white
+    p-4
   "
 >
 
-  <input
-
-    type="text"
-
-    value={
-      search
-    }
-
-    onChange={(e) =>
-
-      setSearch(
-        e.target.value
-      )
-
-    }
-
-    placeholder="
-      Cari plat, kendaraan, driver...
-    "
-
+  <div
     className="
-      rounded-lg
-      border
-      px-3
-      py-2
-      md:w-80
+      grid
+      gap-3
+      md:grid-cols-3
+      lg:grid-cols-6
     "
-
-  />
-
-  <select
-
-    value={
-      statusFilter
-    }
-
-    onChange={(e) =>
-
-      setStatusFilter(
-        e.target.value
-      )
-
-    }
-
-    className="
-      rounded-lg
-      border
-      px-3
-      py-2
-    "
-
   >
 
-    <option value="all">
-      Semua
-    </option>
+    <input
 
-    <option value="pending">
-      Pending
-    </option>
+      value={search}
 
-    <option value="verified">
-      Verified
-    </option>
+      onChange={(e) =>
+        setSearch(
+          e.target.value
+        )
+      }
 
-  </select>
+      placeholder="
+        Cari kendaraan / driver
+      "
+
+      className="
+        rounded-xl
+        border
+        p-3
+      "
+
+    />
+
+    <select
+
+      value={statusFilter}
+
+      onChange={(e) =>
+        setStatusFilter(
+          e.target.value
+        )
+      }
+
+      className="
+        rounded-xl
+        border
+        p-3
+      "
+
+    >
+
+      <option value="all">
+        Semua Status
+      </option>
+
+      <option value="pending">
+        Pending
+      </option>
+
+      <option value="verified">
+        Verified
+      </option>
+
+    </select>
+
+    <input
+
+      type="date"
+
+      value={startDate}
+
+      onChange={(e) =>
+        setStartDate(
+          e.target.value
+        )
+      }
+
+      className="
+        rounded-xl
+        border
+        p-3
+      "
+
+    />
+
+    <input
+
+      type="date"
+
+      value={endDate}
+
+      onChange={(e) =>
+        setEndDate(
+          e.target.value
+        )
+      }
+
+      className="
+        rounded-xl
+        border
+        p-3
+      "
+
+    />
+
+    <input
+
+      value={driverFilter}
+
+      onChange={(e) =>
+        setDriverFilter(
+          e.target.value
+        )
+      }
+
+      placeholder="
+        Nama Driver
+      "
+
+      className="
+        rounded-xl
+        border
+        p-3
+      "
+
+    />
+
+    <input
+
+      value={vehicleFilter}
+
+      onChange={(e) =>
+        setVehicleFilter(
+          e.target.value
+        )
+      }
+
+      placeholder="
+        Plat Nomor
+      "
+
+      className="
+        rounded-xl
+        border
+        p-3
+      "
+
+    />
+
+  </div>
 
 </div>
+
+ 
 
       <div
           className="
             mt-6
           "
         >
+          <div
+  className="
+    mt-4
+    text-sm
+    text-slate-500
+  "
+>
+
+  Menampilkan
+
+  {" "}
+
+  {filteredChecklistHeaders.length}
+
+  {" "}
+
+  checklist
+
+</div>
 
           <ChecklistTable
 
-            data={
+           data={
               paginatedChecklistHeaders
             }
 
@@ -295,91 +410,88 @@ useMonitoringChecklist();
         </div>
 
         <div
-            className="
-              mt-4
-              flex
-              items-center
-              justify-center
-              gap-2
-            "
-          >
+  className="
+    mt-6
+    flex
+    items-center
+    justify-center
+    gap-2
+  "
+>
 
-            <button
+  <button
 
-              disabled={
-                currentPage === 1
-              }
+    disabled={
+      currentPage === 1
+    }
 
-              onClick={() =>
+    onClick={() =>
 
-                setCurrentPage(
+      setCurrentPage(
+        currentPage - 1
+      )
 
-                  currentPage - 1
+    }
 
-                )
+    className="
+      rounded-lg
+      border
+      px-4
+      py-2
+      disabled:opacity-50
+    "
 
-              }
+  >
 
-              className="
-                rounded-lg
-                border
-                px-3
-                py-2
-                disabled:opacity-50
-              "
+    Prev
 
-            >
+  </button>
 
-              Prev
+  <span
+    className="
+      px-4
+      font-medium
+    "
+  >
 
-            </button>
+    {currentPage}
 
-            <span>
+    {" / "}
 
-              Halaman
+    {totalPages}
 
-              {" "}
+  </span>
 
-              {currentPage}
+  <button
 
-              {" / "}
+    disabled={
+      currentPage ===
+      totalPages
+    }
 
-              {totalPages || 1}
+    onClick={() =>
 
-            </span>
+      setCurrentPage(
+        currentPage + 1
+      )
 
-            <button
+    }
 
-              disabled={
-                currentPage ===
-                totalPages
-              }
+    className="
+      rounded-lg
+      border
+      px-4
+      py-2
+      disabled:opacity-50
+    "
 
-              onClick={() =>
+  >
 
-                setCurrentPage(
+    Next
 
-                  currentPage + 1
+  </button>
 
-                )
-
-              }
-
-              className="
-                rounded-lg
-                border
-                px-3
-                py-2
-                disabled:opacity-50
-              "
-
-            >
-
-              Next
-
-            </button>
-
-          </div>
+</div>
 
         <ChecklistDetailModal
 

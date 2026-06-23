@@ -77,49 +77,90 @@ export function VehicleFormModal({
   if (!open)
     return null;
 
-  return (
+ return (
+
+  <div
+    className="
+      fixed
+      inset-0
+      z-[999]
+      flex
+      items-center
+      justify-center
+      bg-black/50
+      p-4
+    "
+  >
 
     <div
       className="
-        fixed
-        inset-0
-        z-50
-        flex
-        items-center
-        justify-center
-        bg-black/40
+        w-full
+        max-w-lg
+        rounded-2xl
+        bg-white
+        shadow-xl
+        max-h-[90vh]
+        overflow-y-auto
       "
     >
 
       <div
         className="
-          w-full
-          max-w-md
-          rounded-xl
-          bg-white
-          p-6
+          border-b
+          p-5
         "
       >
 
         <h2
           className="
-            mb-4
             text-xl
             font-bold
           "
         >
 
           {
-
             vehicle
               ? "Edit Kendaraan"
               : "Tambah Kendaraan"
-
           }
 
         </h2>
 
-        <div className="space-y-4">
+        <p
+          className="
+            mt-1
+            text-sm
+            text-slate-500
+          "
+        >
+
+          Lengkapi informasi kendaraan.
+
+        </p>
+
+      </div>
+
+      <div
+        className="
+          space-y-4
+          p-5
+        "
+      >
+
+        <div>
+
+          <label
+            className="
+              mb-1
+              block
+              text-sm
+              font-medium
+            "
+          >
+
+            Plat Nomor
+
+          </label>
 
           <input
 
@@ -131,23 +172,40 @@ export function VehicleFormModal({
               )
             }
 
-            placeholder="Plat Nomor"
+            placeholder="
+              Contoh: AB 1234 CD
+            "
 
             className="
               w-full
-              rounded-lg
+              rounded-xl
               border
-              px-3
-              py-2
+              bg-slate-50
+              p-3
             "
 
           />
 
+        </div>
+
+        <div>
+
+          <label
+            className="
+              mb-1
+              block
+              text-sm
+              font-medium
+            "
+          >
+
+            Nama Kendaraan
+
+          </label>
+
           <input
 
-            value={
-              namaKendaraan
-            }
+            value={namaKendaraan}
 
             onChange={(e) =>
               setNamaKendaraan(
@@ -156,22 +214,37 @@ export function VehicleFormModal({
             }
 
             placeholder="
-              Nama Kendaraan
+              Contoh: Toyota Avanza
             "
 
             className="
               w-full
-              rounded-lg
+              rounded-xl
               border
-              px-3
-              py-2
+              bg-slate-50
+              p-3
             "
 
           />
 
         </div>
 
-        <input
+        <div>
+
+          <label
+            className="
+              mb-1
+              block
+              text-sm
+              font-medium
+            "
+          >
+
+            Foto Kendaraan
+
+          </label>
+
+          <input
 
             type="file"
 
@@ -179,87 +252,113 @@ export function VehicleFormModal({
 
             onChange={(e) =>
 
-                setPhoto(
+              setPhoto(
                 e.target.files?.[0]
                 || null
-                )
+              )
 
             }
 
             className="
-                w-full
-                rounded-lg
-                border
-                px-3
-                py-2
-            "
-
-            />
-
-        <div
-          className="
-            mt-6
-            flex
-            justify-end
-            gap-2
-          "
-        >
-
-          <button
-
-            onClick={onClose}
-
-            className="
-              rounded-lg
+              w-full
+              rounded-xl
               border
-              px-4
-              py-2
+              bg-slate-50
+              p-3
             "
 
-          >
+          />
 
-            Batal
+          {
 
-          </button>
+            photo && (
 
-          <button
+              <div
+                className="
+                  mt-2
+                  text-sm
+                  text-green-600
+                "
+              >
 
-            onClick={() =>
+                ✓ {photo.name}
 
-              onSubmit({
+              </div>
 
-                plat_nomor:
-                  platNomor,
+            )
 
-                nama_kendaraan:
-                  namaKendaraan,
-
-                photo,
-
-              })
-
-            }
-
-            className="
-              rounded-lg
-              bg-blue-600
-              px-4
-              py-2
-              text-white
-            "
-
-          >
-
-            Simpan
-
-          </button>
+          }
 
         </div>
 
       </div>
 
+      <div
+        className="
+          flex
+          flex-col-reverse
+          gap-2
+          border-t
+          p-5
+          md:flex-row
+          md:justify-end
+        "
+      >
+
+        <button
+
+          onClick={onClose}
+
+          className="
+            rounded-xl
+            border
+            px-5
+            py-3
+          "
+
+        >
+
+          Batal
+
+        </button>
+
+        <button
+
+          onClick={() =>
+
+            onSubmit({
+
+              plat_nomor:
+                platNomor,
+
+              nama_kendaraan:
+                namaKendaraan,
+
+              photo,
+
+            })
+
+          }
+
+          className="
+            rounded-xl
+            bg-blue-600
+            px-5
+            py-3
+            text-white
+          "
+
+        >
+
+          Simpan Kendaraan
+
+        </button>
+
+      </div>
+
     </div>
 
-  );
+  </div>
 
+);
 }

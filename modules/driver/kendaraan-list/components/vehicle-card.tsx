@@ -133,6 +133,7 @@ if (
                 border
                 px-3
                 py-1
+                mb-3
                 "
             >
 
@@ -153,6 +154,7 @@ if (
                 bg-red-600
                 px-3
                 py-1
+                mb-3
                 text-white
                 "
             >

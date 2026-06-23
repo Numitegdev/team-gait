@@ -167,7 +167,8 @@ try {
 
 
 }
-
+console.log("DETAIL DATA:");
+console.log(data);
 if (
 !open ||
 !data

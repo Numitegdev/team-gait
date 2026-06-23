@@ -29,6 +29,11 @@ import {
   createClient,
 }
 from "@/lib/supabase/client";
+
+import {
+  cancelTask,
+} from "@/modules/driver/driver-task/services/driver-task-service";
+
 export function useDriverTask() {
 const [role, setRole] = useState("");
 
@@ -219,6 +224,25 @@ setSelectedTask(
 
 
 }
+
+async function handleCancel(
+  id: number
+) {
+
+  if (
+    !confirm(
+      "Batalkan task ini?"
+    )
+  ) {
+    return;
+  }
+
+  await cancelTask(id);
+
+  await loadTasks();
+
+}
+
 async function handleCompleteTask(
 
   id: number,
@@ -254,6 +278,8 @@ async function handleCompleteTask(
   await loadTasks();
 
 }
+
+
 
 useEffect(() => {
 
@@ -358,13 +384,14 @@ return {
   handleStartTask,
 
   handleCompleteTask,
-  
+
+  handleCancel,
+
   closeModal,
 
   refresh:
     loadTasks,
 
-  
   role,
 
 };

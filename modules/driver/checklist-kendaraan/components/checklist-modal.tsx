@@ -68,30 +68,42 @@ export function ChecklistModal({
   if (!open)
     return null;
 
-  return (
+return (
+
+  <div
+    className="
+      fixed
+      inset-0
+      z-[999]
+      flex
+      items-center
+      justify-center
+      bg-black/60
+      p-3
+      md:p-6
+    "
+  >
 
     <div
       className="
-        fixed
-        inset-0
-        z-[999]
-        flex
-        items-center
-        justify-center
-        bg-black/50
-        p-4
+        w-full
+        max-w-4xl
+        rounded-3xl
+        bg-white
+        shadow-2xl
+        max-h-[95vh]
+        overflow-hidden
       "
     >
 
+      {/* Header */}
+
       <div
         className="
-          w-full
-          max-w-3xl
-          rounded-xl
-          bg-white
-          p-6
-          max-h-[90vh]
-          overflow-y-auto
+          border-b
+          px-5
+          py-4
+          md:px-6
         "
       >
 
@@ -103,26 +115,40 @@ export function ChecklistModal({
           "
         >
 
-          <h2
-            className="
-              text-xl
-              font-bold
-            "
-          >
+          <div>
 
-            Checklist Kendaraan
+            <h2
+              className="
+                text-xl
+                md:text-2xl
+                font-bold
+              "
+            >
+              Checklist Kendaraan
+            </h2>
 
-          </h2>
+            <p
+              className="
+                text-sm
+                text-slate-500
+              "
+            >
+              Pastikan seluruh item diperiksa sebelum kendaraan digunakan.
+            </p>
+
+          </div>
 
           <button
 
             onClick={onClose}
 
             className="
-              rounded-lg
+              rounded-xl
               border
-              px-3
-              py-1
+              px-4
+              py-2
+              text-sm
+              hover:bg-slate-50
             "
 
           >
@@ -133,52 +159,112 @@ export function ChecklistModal({
 
         </div>
 
+      </div>
+
+      {/* Content */}
+
+      <div
+        className="
+          max-h-[75vh]
+          overflow-y-auto
+          px-5
+          py-5
+          md:px-6
+        "
+      >
+
+        {/* Info Kendaraan */}
+
         <div
           className="
-            mt-4
-            rounded-lg
-            bg-slate-50
+            rounded-2xl
+            border
+            bg-blue-50
             p-4
-            text-sm
           "
         >
 
-          <div>
+          <div
+            className="
+              grid
+              gap-4
+              md:grid-cols-3
+            "
+          >
 
-            Kendaraan :
+            <div>
 
-            {" "}
+              <div
+                className="
+                  text-xs
+                  text-slate-500
+                "
+              >
+                Plat Nomor
+              </div>
 
-            {vehicle?.plat_nomor}
+              <div
+                className="
+                  font-semibold
+                "
+              >
+                {vehicle?.plat_nomor}
+              </div>
 
-          </div>
+            </div>
 
-          <div>
+            <div>
 
-            Nama :
+              <div
+                className="
+                  text-xs
+                  text-slate-500
+                "
+              >
+                Kendaraan
+              </div>
 
-            {" "}
+              <div
+                className="
+                  font-semibold
+                "
+              >
+                {vehicle?.nama_kendaraan}
+              </div>
 
-            {vehicle?.nama_kendaraan}
+            </div>
 
-          </div>
+            <div>
 
-          <div>
+              <div
+                className="
+                  text-xs
+                  text-slate-500
+                "
+              >
+                Tanggal
+              </div>
 
-            Tanggal :
+              <div
+                className="
+                  font-semibold
+                "
+              >
+                {
+                  new Date()
+                  .toLocaleDateString(
+                    "id-ID"
+                  )
+                }
+              </div>
 
-            {" "}
-
-            {
-              new Date()
-              .toLocaleDateString(
-                "id-ID"
-              )
-            }
+            </div>
 
           </div>
 
         </div>
+
+        {/* Checklist */}
 
         <div
           className="
@@ -197,16 +283,19 @@ export function ChecklistModal({
                   key={item.id}
 
                   className="
-                    rounded-lg
+                    rounded-2xl
                     border
-                    p-4
+                    bg-white
+                    p-5
+                    shadow-sm
                   "
 
                 >
 
                   <div
                     className="
-                      font-medium
+                      font-semibold
+                      text-slate-800
                     "
                   >
 
@@ -216,84 +305,119 @@ export function ChecklistModal({
 
                   <div
                     className="
-                      mt-3
+                      mt-4
                       flex
-                      gap-4
+                      flex-col
+                      gap-3
+                      md:flex-row
                     "
                   >
 
-                    <label>
+                    <label
+                      className={`
+                        flex
+                        cursor-pointer
+                        items-center
+                        gap-2
+                        rounded-xl
+                        border
+                        px-4
+                        py-3
+                        transition
+                        ${
+                          answers[item.id] === "aman"
+                            ? "border-green-500 bg-green-50"
+                            : ""
+                        }
+                      `}
+                    >
 
-                     <input
-
-                            type="radio"
-
-                            name={`item-${item.id}`}
-
-                            checked={
-                                answers[item.id]
-                                === "aman"
-                            }
-
-                            onChange={() =>
-
-                                setAnswers({
-
-                                ...answers,
-
-                                [item.id]:
-                                    "aman",
-
-                                })
-
-                            }
-
-                            />
-
-                      {" "}
-
-                      Aman
-
-                    </label>
-
-                    <label>
-
-                        <input
+                      <input
 
                         type="radio"
 
                         name={`item-${item.id}`}
 
                         checked={
-                            answers[item.id]
-                            === "tidak_aman"
+                          answers[item.id]
+                          === "aman"
                         }
 
                         onChange={() =>
 
-                            setAnswers({
+                          setAnswers({
 
                             ...answers,
 
                             [item.id]:
-                                "tidak_aman",
+                              "aman",
 
-                            })
+                          })
 
                         }
 
-                        />
+                      />
 
+                      <span>
+                        ✅ Aman
+                      </span>
 
-                      {" "}
+                    </label>
 
-                      Tidak Aman
+                    <label
+                      className={`
+                        flex
+                        cursor-pointer
+                        items-center
+                        gap-2
+                        rounded-xl
+                        border
+                        px-4
+                        py-3
+                        transition
+                        ${
+                          answers[item.id] === "tidak_aman"
+                            ? "border-red-500 bg-red-50"
+                            : ""
+                        }
+                      `}
+                    >
+
+                      <input
+
+                        type="radio"
+
+                        name={`item-${item.id}`}
+
+                        checked={
+                          answers[item.id]
+                          === "tidak_aman"
+                        }
+
+                        onChange={() =>
+
+                          setAnswers({
+
+                            ...answers,
+
+                            [item.id]:
+                              "tidak_aman",
+
+                          })
+
+                        }
+
+                      />
+
+                      <span>
+                        ❌ Tidak Aman
+                      </span>
 
                     </label>
 
                   </div>
 
-               {
+                  {
 
                     answers[item.id] ===
                     "tidak_aman"
@@ -302,17 +426,39 @@ export function ChecklistModal({
 
                     (
 
-                        <>
+                      <div
+                        className="
+                          mt-4
+                          rounded-xl
+                          border
+                          border-red-200
+                          bg-red-50
+                          p-4
+                        "
+                      >
+
+                        <div
+                          className="
+                            mb-2
+                            text-sm
+                            font-medium
+                            text-red-700
+                          "
+                        >
+
+                          Detail Kerusakan
+
+                        </div>
 
                         <input
 
                           type="file"
 
                           className="
-                            mt-3
                             w-full
-                            rounded-lg
+                            rounded-xl
                             border
+                            bg-white
                             p-2
                           "
 
@@ -329,117 +475,161 @@ export function ChecklistModal({
 
                           }
 
-                      />
+                        />
+
+                        {
+
+                          photos[item.id]
+
+                          &&
+
+                          (
+
+                            <div
+                              className="
+                                mt-2
+                                text-sm
+                                text-green-600
+                              "
+                            >
+
+                              ✓ {
+                                photos[item.id]
+                                .name
+                              }
+
+                            </div>
+
+                          )
+
+                        }
+
                         <textarea
 
-                            value={
+                          value={
                             notes[item.id]
                             ?? ""
-                            }
+                          }
 
-                            onChange={(e) =>
+                          onChange={(e) =>
 
                             setNotes({
 
-                                ...notes,
+                              ...notes,
 
-                                [item.id]:
+                              [item.id]:
                                 e.target.value,
 
                             })
 
-                            }
+                          }
 
-                            placeholder="
-                            Jelaskan kerusakan...
-                            "
+                          placeholder="
+                            Jelaskan kerusakan atau kondisi kendaraan...
+                          "
 
-                            className="
+                          className="
                             mt-3
                             w-full
-                            rounded-lg
+                            rounded-xl
                             border
-                            p-2
-                            "
+                            bg-white
+                            p-3
+                          "
 
-                            rows={3}
+                          rows={3}
 
                         />
 
-                        </>
+                      </div>
 
                     )
 
-                    }
+                  }
+
                 </div>
 
               )
+
             )
 
           }
 
         </div>
 
-       <button
+      </div>
 
-            onClick={() => {
+      {/* Footer */}
+
+      <div
+        className="
+          border-t
+          bg-white
+          p-5
+        "
+      >
+
+        <button
+
+          onClick={() => {
 
             const totalItems =
-                checklistItems.length;
+              checklistItems.length;
 
             const answeredItems =
-                Object.keys(
+              Object.keys(
                 answers
-                ).length;
+              ).length;
 
             if (
-                answeredItems <
-                totalItems
+              answeredItems <
+              totalItems
             ) {
 
-                alert(
+              alert(
                 "Semua checklist harus diisi."
-                );
+              );
 
-                return;
+              return;
 
             }
 
-            console.log(
-              "PHOTOS STATE:",
-              photos
-            );
-            
             onSubmit({
 
-                answers,
+              answers,
 
-                photos,
+              photos,
 
-                notes,
+              notes,
 
             });
 
-            }}
-            className="
-                mt-6
-                w-full
-                rounded-lg
-                bg-blue-600
-                py-3
-                text-white
-            "
+          }}
 
-            >
+          className="
+            w-full
+            rounded-2xl
+            bg-blue-600
+            py-4
+            text-lg
+            font-semibold
+            text-white
+            transition
+            hover:bg-blue-700
+          "
 
-            Submit Checklist
+        >
 
-            </button>
+          Submit Checklist
+
+        </button>
 
       </div>
 
     </div>
 
-  );
+  </div>
+
+);
 
 }

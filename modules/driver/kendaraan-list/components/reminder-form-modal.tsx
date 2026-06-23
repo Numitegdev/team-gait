@@ -98,244 +98,359 @@ const daysInMonth =
 
 
 
-  return (
+return (
+
+  <div
+    className="
+      fixed
+      inset-0
+      z-[999]
+      flex
+      items-center
+      justify-center
+      bg-black/50
+      p-4
+    "
+  >
 
     <div
       className="
-        fixed
-        inset-0
-        z-60
-        flex
-        items-center
-        justify-center
-        bg-black/50
+        w-full
+        max-w-lg
+        rounded-2xl
+        bg-white
+        shadow-xl
+        max-h-[90vh]
+        overflow-y-auto
       "
     >
 
       <div
         className="
-          w-full
-          max-w-md
-          rounded-xl
-          bg-white
-          p-6
+          border-b
+          p-5
         "
       >
 
         <h2
           className="
-            text-lg
-            font-semibold
+            text-xl
+            font-bold
           "
         >
-          Tambah Reminder
+
+          Tambah Reminder Kendaraan
+
         </h2>
 
-        <input
-          placeholder="Nama Reminder"
-          value={reminderName}
-          onChange={(e) =>
-            setReminderName(
-              e.target.value
-            )
-          }
+        <p
           className="
-            mt-4
-            w-full
-            rounded-lg
-            border
-            p-2
-          "
-        />
-
-        <select
-
-          value={type}
-
-          onChange={(e) =>
-            setType(
-              e.target.value
-            )
-          }
-
-          className="
-            mt-3
-            w-full
-            rounded-lg
-            border
-            p-2
+            mt-1
+            text-sm
+            text-slate-500
           "
         >
 
-          <option value="service">
-            Service
-          </option>
+          Reminder service atau pajak kendaraan.
 
-          <option value="pajak">
-            Pajak
-          </option>
+        </p>
 
-        </select>
+      </div>
 
-{/* bulan */}
-<select
+      <div
+        className="
+          space-y-4
+          p-5
+        "
+      >
 
-  value={month}
+        <div>
 
-  onChange={(e) => {
-
-    setMonth(
-      Number(
-        e.target.value
-      )
-    );
-
-    setDay(1);
-
-  }}
-
-  className="
-    mt-3
-    w-full
-    rounded-lg
-    border
-    p-2
-  "
-
->
-
-  {
-
-    months.map(
-      (item) => (
-
-        <option
-          key={item.value}
-          value={item.value}
-        >
-
-          {item.label}
-
-        </option>
-
-      )
-    )
-
-  }
-
-</select>
-{/* hari */}
-       <select
-
-  value={day}
-
-  onChange={(e) =>
-
-    setDay(
-      Number(
-        e.target.value
-      )
-    )
-
-  }
-
-  className="
-    mt-3
-    w-full
-    rounded-lg
-    border
-    p-2
-  "
-
->
-
-  {
-
-    Array.from(
-
-      {
-        length:
-          daysInMonth
-      },
-
-      (_, index) => (
-
-        <option
-          key={index + 1}
-          value={index + 1}
-        >
-
-          {index + 1}
-
-        </option>
-
-      )
-
-    )
-
-  }
-
-</select>
-
-        <div
-          className="
-            mt-4
-            flex
-            justify-end
-            gap-2
-          "
-        >
-
-          <button
-            onClick={onClose}
+          <label
             className="
-              rounded-lg
-              border
-              px-4
-              py-2
+              mb-1
+              block
+              text-sm
+              font-medium
             "
           >
-            Batal
-          </button>
 
-          <button
+            Nama Reminder
 
-            onClick={() =>
+          </label>
 
-              onSubmit({
+          <input
 
-                reminder_name:
-                  reminderName,
+            value={reminderName}
 
-                type,
+            onChange={(e) =>
+              setReminderName(
+                e.target.value
+              )
+            }
 
-                month,
+            placeholder="
+              Contoh:
+              Ganti Oli Mesin
+            "
 
-                day,
+            className="
+              w-full
+              rounded-xl
+              border
+              bg-slate-50
+              p-3
+            "
 
-              })
+          />
 
+        </div>
+
+        <div>
+
+          <label
+            className="
+              mb-1
+              block
+              text-sm
+              font-medium
+            "
+          >
+
+            Jenis Reminder
+
+          </label>
+
+          <select
+
+            value={type}
+
+            onChange={(e) =>
+              setType(
+                e.target.value
+              )
             }
 
             className="
-              rounded-lg
-              bg-blue-600
-              px-4
-              py-2
-              text-white
+              w-full
+              rounded-xl
+              border
+              bg-slate-50
+              p-3
             "
+
           >
 
-            Simpan
+            <option value="service">
+              Service
+            </option>
 
-          </button>
+            <option value="pajak">
+              Pajak
+            </option>
+
+          </select>
+
+        </div>
+
+        <div
+          className="
+            grid
+            grid-cols-1
+            gap-4
+            md:grid-cols-2
+          "
+        >
+
+          <div>
+
+            <label
+              className="
+                mb-1
+                block
+                text-sm
+                font-medium
+              "
+            >
+
+              Bulan
+
+            </label>
+
+            <select
+              value={month}
+              onChange={(e) => {
+
+                setMonth(
+                  Number(
+                    e.target.value
+                  )
+                );
+
+                setDay(1);
+
+              }}
+              className="
+                w-full
+                rounded-xl
+                border
+                bg-slate-50
+                p-3
+              "
+            >
+
+              {months.map(
+                (item) => (
+
+                  <option
+                    key={item.value}
+                    value={item.value}
+                  >
+
+                    {item.label}
+
+                  </option>
+
+                )
+              )}
+
+            </select>
+
+          </div>
+
+          <div>
+
+            <label
+              className="
+                mb-1
+                block
+                text-sm
+                font-medium
+              "
+            >
+
+              Tanggal
+
+            </label>
+
+            <select
+              value={day}
+              onChange={(e) =>
+
+                setDay(
+                  Number(
+                    e.target.value
+                  )
+                )
+
+              }
+              className="
+                w-full
+                rounded-xl
+                border
+                bg-slate-50
+                p-3
+              "
+            >
+
+              {Array.from(
+
+                {
+                  length:
+                    daysInMonth
+                },
+
+                (_, index) => (
+
+                  <option
+                    key={index + 1}
+                    value={index + 1}
+                  >
+
+                    {index + 1}
+
+                  </option>
+
+                )
+
+              )}
+
+            </select>
+
+          </div>
 
         </div>
 
       </div>
 
+      <div
+        className="
+          flex
+          flex-col-reverse
+          gap-2
+          border-t
+          p-5
+          md:flex-row
+          md:justify-end
+        "
+      >
+
+        <button
+
+          onClick={onClose}
+
+          className="
+            rounded-xl
+            border
+            px-5
+            py-3
+          "
+
+        >
+
+          Batal
+
+        </button>
+
+        <button
+
+          onClick={() =>
+
+            onSubmit({
+
+              reminder_name:
+                reminderName,
+
+              type,
+
+              month,
+
+              day,
+
+            })
+
+          }
+
+          className="
+            rounded-xl
+            bg-blue-600
+            px-5
+            py-3
+            text-white
+          "
+
+        >
+
+          Simpan Reminder
+
+        </button>
+
+      </div>
+
     </div>
 
-  );
+  </div>
+
+);
 
 }

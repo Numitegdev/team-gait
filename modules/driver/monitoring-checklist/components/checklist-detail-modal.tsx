@@ -249,22 +249,86 @@ onVerify,
 
                     item.photo_url && (
 
-                      <img
-
-                        src={
-                          item.photo_url
-                        }
-
-                        alt="foto"
-
+                      <div
                         className="
                           mt-3
-                          h-40
-                          rounded-lg
-                          border
                         "
+                      >
 
-                      />
+                        <img
+
+                          src={
+                            item.photo_url
+                          }
+
+                          alt="foto"
+
+                          className="
+                            h-40
+                            rounded-lg
+                            border
+                            object-cover
+                          "
+
+                        />
+
+                        <div
+                          className="
+                            mt-2
+                            flex
+                            gap-2
+                          "
+                        >
+
+                          <a
+
+                            href={
+                              item.photo_url
+                            }
+
+                            target="_blank"
+
+                            className="
+                              rounded-lg
+                              bg-blue-600
+                              px-3
+                              py-2
+                              text-sm
+                              text-white
+                            "
+
+                          >
+
+                            Lihat Foto
+
+                          </a>
+
+                          <a
+
+                            href={
+                              item.photo_url
+                            }
+
+                            download
+
+                            className="
+                              rounded-lg
+                              bg-green-600
+                              px-3
+                              py-2
+                              text-sm
+                              text-white
+                            "
+
+                          >
+
+                            Download
+
+                          </a>
+
+                        </div>
+
+                      </div>
 
                     )
 

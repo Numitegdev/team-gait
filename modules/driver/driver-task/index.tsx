@@ -24,26 +24,29 @@ export default function DriverTaskPage() {
 
   const {
 
-    tasks,
+  tasks,
 
-    loading,
+  loading,
 
-    handleCreate,
+  handleCreate,
 
-    handleView,
+  handleView,
 
-    handleStartTask,
+  handleStartTask,
 
-    handleCompleteTask,
+  handleCompleteTask,
 
-    openModal,
+  handleCancel,
 
-    selectedTask,
+  openModal,
 
-    closeModal,
-      role,
+  selectedTask,
 
-  } = useDriverTask();
+  closeModal,
+
+  role,
+
+} = useDriverTask();
 
   return (
 
@@ -182,20 +185,13 @@ export default function DriverTaskPage() {
           "
         >
 
-          <TaskTable
-
-            data={tasks}
-
-            onView={
-              handleView
-            }
-
-            onStart={
-              handleStartTask
-            }
-
-          />
-
+       <TaskTable
+  data={tasks}
+  userRole={role}
+  onView={handleView}
+  onStart={handleStartTask}
+  onCancel={handleCancel}
+/>
         </div>
 
       </div>

@@ -35,6 +35,35 @@ export async function getChecklistItems() {
 
 }
 
+export async function getAllChecklistItems() {
+
+  // untuk MASTER DATA
+
+  const supabase =
+    createClient();
+
+  const {
+    data,
+    error,
+  } = await supabase
+
+    .from(
+      "checklist_items"
+    )
+
+    .select("*")
+
+    .order(
+      "id"
+    );
+
+  if (error)
+    throw error;
+
+  return data ?? [];
+
+}
+
 export async function createChecklistItem(
   payload: any
 ) {
@@ -106,8 +135,7 @@ export async function deactivateChecklistItem(
 
     .update({
 
-      active:
-        false,
+      active: false,
 
     })
 

@@ -384,3 +384,86 @@ ${task.completion_note || "-"}`
 }
 
 }
+
+export async function cancelTask(
+  id: number
+) {
+
+  const task =
+    await getTaskDetail(id);
+
+  if (
+    task.status !==
+    "pending"
+  ) {
+
+    throw new Error(
+      "Task sudah dikerjakan dan tidak bisa dibatalkan"
+    );
+
+  }
+
+  // hapus foto dari storage
+  if (
+    task.task_photo_url
+  ) {
+
+    const fileName =
+      task.task_photo_url
+        .split("/")
+        .pop();
+
+    if (fileName) {
+
+      await supabase.storage
+
+        .from(
+          "driver_photos"
+        )
+
+        .remove([
+          fileName
+        ]);
+
+    }
+
+  }
+
+  // hapus task
+  const { error } =
+    await supabase
+
+      .from(
+        "driver_tasks"
+      )
+
+      .delete()
+
+      .eq(
+        "id",
+        id
+      );
+
+  if (error)
+    throw error;
+
+  // telegram notif
+  await sendTelegramMessage(
+
+`🟥 TASK DIBATALKAN
+
+No Task:
+${task.nomor_task}
+
+Pengirim:
+${task.pengirim}
+
+Penerima:
+${task.penerima}
+
+Status:
+Cancelled`
+
+  );
+
+}

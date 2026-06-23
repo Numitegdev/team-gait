@@ -92,6 +92,38 @@ const [
   false
 );
 
+const [
+
+  startDate,
+
+  setStartDate,
+
+] = useState("");
+
+const [
+
+  endDate,
+
+  setEndDate,
+
+] = useState("");
+
+const [
+
+  driverFilter,
+
+  setDriverFilter,
+
+] = useState("");
+
+const [
+
+  vehicleFilter,
+
+  setVehicleFilter,
+
+] = useState("");
+
 useEffect(() => {
 
   loadData();
@@ -241,13 +273,11 @@ const [
 
       const matchStatus =
 
-        statusFilter ===
-        "all"
+        statusFilter === "all"
 
         ||
 
-        item.status ===
-        statusFilter;
+        item.status === statusFilter;
 
       const keyword =
         search.toLowerCase();
@@ -256,34 +286,60 @@ const [
 
         item.vehicles
           ?.plat_nomor
-
           ?.toLowerCase()
-
-          .includes(
-            keyword
-          )
+          .includes(keyword)
 
         ||
 
         item.vehicles
           ?.nama_kendaraan
-
           ?.toLowerCase()
-
-          .includes(
-            keyword
-          )
+          .includes(keyword)
 
         ||
 
         item.profiles
           ?.full_name
-
           ?.toLowerCase()
+          .includes(keyword);
 
-          .includes(
-            keyword
-          );
+      const matchDriver =
+
+        !driverFilter
+
+        ||
+
+        item.profiles
+          ?.full_name ===
+          driverFilter;
+
+      const matchVehicle =
+
+        !vehicleFilter
+
+        ||
+
+        item.vehicles
+          ?.plat_nomor ===
+          vehicleFilter;
+
+      const matchStartDate =
+
+        !startDate
+
+        ||
+
+        item.checklist_date >=
+        startDate;
+
+      const matchEndDate =
+
+        !endDate
+
+        ||
+
+        item.checklist_date <=
+        endDate;
 
       return (
 
@@ -292,6 +348,22 @@ const [
         &&
 
         matchSearch
+
+        &&
+
+        matchDriver
+
+        &&
+
+        matchVehicle
+
+        &&
+
+        matchStartDate
+
+        &&
+
+        matchEndDate
 
       );
 
@@ -398,8 +470,15 @@ useEffect(() => {
 
   statusFilter,
 
-]);
-  return {
+  startDate,
+
+  endDate,
+
+  driverFilter,
+
+  vehicleFilter,
+
+]);  return {
 
     checklistHeaders,
 
@@ -444,6 +523,17 @@ useEffect(() => {
     setCurrentPage,
 
     totalPages,
+    startDate,
+  setStartDate,
+
+  endDate,
+  setEndDate,
+
+  driverFilter,
+  setDriverFilter,
+
+  vehicleFilter,
+  setVehicleFilter,
 
   };
 

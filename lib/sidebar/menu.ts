@@ -123,12 +123,43 @@ export const sidebarMenu: Record<
       icon: Car,
       children: [
         {
-          title: "Driver Task",
-          url: "/dashboard/driver/driver-task",
+          title: "Orderan Task",
+          url: "",
+
+              children: [
+                {
+              title: "Driver Task",
+              url: "/dashboard/driver/driver-task",
+            },
+            {
+              title: "Driver Monitoring",
+              url: "/dashboard/driver/driver-monitoring",
+            },
+          ]
+        },
+          {
+          title: "Cheklist",
+          url: "",
+
+              children: [
+                {
+          title: "List Kendaraan",
+          url: "/dashboard/driver/kendaraan-list",
         },
          {
-          title: "Driver Monitoring",
-          url: "/dashboard/driver/driver-monitoring",
+          title: "Monitoring Checklist",
+          url: "/dashboard/driver/monitoring-checklist",
+        },
+         {
+          title: "Checklist Kendaraan",
+          url: "/dashboard/driver/checklist-kendaraan",
+        },
+         {
+          title: "Setting Checklist",
+          url: "/dashboard/driver/checklist-items",
+        },
+             
+          ]
         },
      
       ],
@@ -284,15 +315,47 @@ export const sidebarMenu: Record<
       title: "Driver",
       url: "/dashboard/driver",
       icon: Car,
-      children: [
+    children: [
         {
-          title: "Driver Task",
-          url: "/dashboard/driver/driver-task",
+          title: "Orderan Task",
+          url: "",
+
+              children: [
+                {
+              title: "Driver Task",
+              url: "/dashboard/driver/driver-task",
+            },
+            {
+              title: "Driver Monitoring",
+              url: "/dashboard/driver/driver-monitoring",
+            },
+          ]
         },
-         {
-          title: "Driver Monitoring",
-          url: "/dashboard/driver/driver-monitoring",
+          {
+          title: "Cheklist",
+          url: "",
+
+              children: [
+                {
+          title: "List Kendaraan",
+          url: "/dashboard/driver/kendaraan-list",
         },
+        //  {
+        //   title: "Monitoring Checklist",
+        //   url: "/dashboard/driver/monitoring-checklist",
+        // },
+        //  {
+        //   title: "Checklist Kendaraan",
+        //   url: "/dashboard/driver/checklist-kendaraan",
+        // },
+        //  {
+        //   title: "Setting Checklist",
+        //   url: "/dashboard/driver/checklist-items",
+        // },
+             
+          ]
+        },
+     
       ],
       
     },
@@ -344,15 +407,47 @@ export const sidebarMenu: Record<
       title: "Driver",
       url: "/dashboard/driver",
       icon: Car,
-      children: [
-       {
-          title: "Driver Task",
-          url: "/dashboard/driver/driver-task",
+       children: [
+        {
+          title: "Orderan Task",
+          url: "",
+
+              children: [
+                {
+              title: "Driver Task",
+              url: "/dashboard/driver/driver-task",
+            },
+            {
+              title: "Driver Monitoring",
+              url: "/dashboard/driver/driver-monitoring",
+            },
+          ]
         },
-         {
-          title: "Driver Monitoring",
-          url: "/dashboard/driver/driver-monitoring",
+          {
+          title: "Cheklist",
+          url: "",
+
+              children: [
+                {
+          title: "List Kendaraan",
+          url: "/dashboard/driver/kendaraan-list",
         },
+        //  {
+        //   title: "Monitoring Checklist",
+        //   url: "/dashboard/driver/monitoring-checklist",
+        // },
+        //  {
+        //   title: "Checklist Kendaraan",
+        //   url: "/dashboard/driver/checklist-kendaraan",
+        // },
+        //  {
+        //   title: "Setting Checklist",
+        //   url: "/dashboard/driver/checklist-items",
+        // },
+             
+          ]
+        },
+     
       ],
     },
   ],
@@ -441,6 +536,11 @@ staff_gudang: [
           title: "Driver Task (Gudang)",
           url: "/dashboard/driver/driver-task",
         },
+        {
+              title: "Driver Monitoring",
+              url: "/dashboard/driver/driver-monitoring",
+            },
+        
       ],
     },
   ],
@@ -460,6 +560,10 @@ staff_gudang: [
           title: "Driver Task (Admin)",
           url: "/dashboard/driver/driver-task",
         },
+        {
+              title: "Driver Monitoring",
+              url: "/dashboard/driver/driver-monitoring",
+            },
       ],
     },
   ],
