@@ -11,14 +11,14 @@ export async function cleanupChecklistPhotos() {
   const limitDate =
     new Date();
 
-//   limitDate.setDate(
-//     limitDate.getDate() - 1
-//   );
+  limitDate.setDate(
+    limitDate.getDate() - 7
+  );
 
 
-limitDate.setMinutes(
-  limitDate.getMinutes() - 1
-);
+// limitDate.setMinutes(
+//   limitDate.getMinutes() - 1
+// );
 
   const {
 
