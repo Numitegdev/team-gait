@@ -61,7 +61,8 @@ export async function getChecklistDetails(
     .select(`
       *,
       checklist_items(
-        name
+        name,
+          input_type
       )
     `)
 

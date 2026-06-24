@@ -41,23 +41,40 @@ export function ChecklistItemModal({
     ""
   );
 
+  const [
+
+  inputType,
+
+  setInputType,
+
+] = useState(
+  "option"
+);
+
   useEffect(() => {
 
-    if (item) {
+  if (item) {
 
-      setName(
-        item.name
-      );
+    setName(
+      item.name
+    );
 
-    } else {
+    setInputType(
+      item.input_type
+      ?? "option"
+    );
 
-      setName(
-        ""
-      );
+  } else {
 
-    }
+    setName("");
 
-  }, [item]);
+    setInputType(
+      "option"
+    );
+
+  }
+
+}, [item]);
 
   if (!open)
     return null;
@@ -113,44 +130,95 @@ export function ChecklistItemModal({
         >
 
           <label
-            className="
-              text-sm
-              font-medium
-            "
-          >
+  className="
+    text-sm
+    font-medium
+  "
+>
 
-            Nama Item
+  Nama Item
 
-          </label>
+</label>
 
-          <input
+<input
 
-            value={
-              name
-            }
+  value={
+    name
+  }
 
-            onChange={(e) =>
+  onChange={(e) =>
 
-              setName(
-                e.target.value
-              )
+    setName(
+      e.target.value
+    )
 
-            }
+  }
 
-            className="
-              mt-2
-              w-full
-              rounded-lg
-              border
-              p-3
-            "
+  className="
+    mt-2
+    w-full
+    rounded-lg
+    border
+    p-3
+  "
 
-            placeholder="
-              Contoh:
-              Oli Mesin
-            "
+  placeholder="
+    Contoh:
+    Oli Mesin
+  "
 
-          />
+/>
+
+<label
+  className="
+    mt-4
+    block
+    text-sm
+    font-medium
+  "
+>
+
+  Tipe Input
+
+</label>
+
+<select
+
+  value={inputType}
+
+  onChange={(e) =>
+
+    setInputType(
+      e.target.value
+    )
+
+  }
+
+  className="
+    mt-2
+    w-full
+    rounded-lg
+    border
+    p-3
+  "
+
+>
+
+  <option value="option">
+    Option (Aman / Tidak Aman)
+  </option>
+
+  <option value="number">
+    Number
+  </option>
+
+  <option value="text">
+    Text
+  </option>
+
+</select>
+
+         
 
         </div>
 
@@ -202,8 +270,10 @@ export function ChecklistItemModal({
 
                 name,
 
-                active:
-                  true,
+                input_type:
+                  inputType,
+
+            
 
               });
 

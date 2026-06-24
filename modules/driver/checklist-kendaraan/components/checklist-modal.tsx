@@ -34,15 +34,15 @@ export function ChecklistModal({
 
 }: Props) {
 
-    const [
+  const [
 
-        answers,
+  values,
 
-        setAnswers,
+  setValues,
 
-        ] = useState<any>(
-        {}
-        );
+] = useState<any>(
+  {}
+);
 
         const [
 
@@ -250,9 +250,12 @@ return (
                 {item.name}
               </div>
 
+         <div className="mt-4">
+
+            {item.input_type === "option" && (
+
               <div
                 className="
-                  mt-4
                   flex
                   flex-col
                   gap-3
@@ -270,9 +273,8 @@ return (
                     border
                     px-4
                     py-3
-                    transition
                     ${
-                      answers[item.id] === "aman"
+                      values[item.id] === "aman"
                         ? "border-green-500 bg-green-50"
                         : ""
                     }
@@ -283,13 +285,19 @@ return (
                     type="radio"
                     name={`item-${item.id}`}
                     checked={
-                      answers[item.id] === "aman"
+                      values[item.id] === "aman"
                     }
                     onChange={() =>
-                      setAnswers({
-                        ...answers,
-                        [item.id]: "aman",
+
+                      setValues({
+
+                        ...values,
+
+                        [item.id]:
+                          "aman",
+
                       })
+
                     }
                   />
 
@@ -309,9 +317,8 @@ return (
                     border
                     px-4
                     py-3
-                    transition
                     ${
-                      answers[item.id] === "tidak_aman"
+                      values[item.id] === "tidak_aman"
                         ? "border-red-500 bg-red-50"
                         : ""
                     }
@@ -322,13 +329,19 @@ return (
                     type="radio"
                     name={`item-${item.id}`}
                     checked={
-                      answers[item.id] === "tidak_aman"
+                      values[item.id] === "tidak_aman"
                     }
                     onChange={() =>
-                      setAnswers({
-                        ...answers,
-                        [item.id]: "tidak_aman",
+
+                      setValues({
+
+                        ...values,
+
+                        [item.id]:
+                          "tidak_aman",
+
                       })
+
                     }
                   />
 
@@ -340,7 +353,85 @@ return (
 
               </div>
 
-              {answers[item.id] === "tidak_aman" && (
+            )}
+
+            {item.input_type === "number" && (
+
+              <input
+
+                type="number"
+
+                value={
+                  values[item.id]
+                  ?? ""
+                }
+
+                onChange={(e) =>
+
+                  setValues({
+
+                    ...values,
+
+                    [item.id]:
+                      e.target.value,
+
+                  })
+
+                }
+
+                placeholder="Masukkan angka"
+
+                className="
+                  w-full
+                  rounded-xl
+                  border
+                  p-3
+                "
+
+              />
+
+            )}
+
+            {item.input_type === "text" && (
+
+              <input
+
+                type="text"
+
+                value={
+                  values[item.id]
+                  ?? ""
+                }
+
+                onChange={(e) =>
+
+                  setValues({
+
+                    ...values,
+
+                    [item.id]:
+                      e.target.value,
+
+                  })
+
+                }
+
+                placeholder="Masukkan keterangan"
+
+                className="
+                  w-full
+                  rounded-xl
+                  border
+                  p-3
+                "
+
+              />
+
+            )}
+
+          </div>
+
+              {values[item.id] === "tidak_aman" && (
 
                 <div
                   className="
@@ -446,7 +537,7 @@ return (
 
               const answeredItems =
                 Object.keys(
-                  answers
+                  values
                 ).length;
 
               if (
@@ -461,12 +552,15 @@ return (
                 return;
 
               }
+          onSubmit({
 
-              onSubmit({
-                answers,
-                photos,
-                notes,
-              });
+            values,
+
+            photos,
+
+            notes,
+
+          });
 
             }}
 

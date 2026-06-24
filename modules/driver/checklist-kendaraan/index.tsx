@@ -29,7 +29,7 @@ export default function ChecklistKendaraanPage() {
 
   const {
 
-    vehicles,
+    
    
     checklistItems,
 
@@ -42,6 +42,11 @@ export default function ChecklistKendaraanPage() {
     setSelectedVehicle,
 
     handleSubmitChecklist,
+
+    search,
+    setSearch,
+
+    filteredVehicles,
   }
 
   = useChecklistKendaraan();
@@ -64,6 +69,65 @@ export default function ChecklistKendaraanPage() {
         Checklist Kendaraan
       </h1>
 
+<div
+  className="
+    mt-4
+    mb-6
+  "
+>
+
+  <div
+    className="
+      flex
+      items-center
+      rounded-2xl
+      border
+      border-slate-300
+      bg-white
+      px-4
+      shadow-sm
+    "
+  >
+
+    <span
+      className="
+        mr-3
+        text-slate-400
+      "
+    >
+      🔍
+    </span>
+
+    <input
+
+      value={search}
+
+      onChange={(e) =>
+        setSearch(
+          e.target.value
+        )
+      }
+
+      placeholder="
+        Cari plat nomor atau kendaraan...
+      "
+
+      className="
+        h-12
+        w-full
+        bg-transparent
+        outline-none
+      "
+
+    />
+
+  </div>
+
+</div>
+
+
+
+
       <div
         className="
           mt-6
@@ -77,7 +141,7 @@ export default function ChecklistKendaraanPage() {
 
         {
 
-         vehicles.map(
+         filteredVehicles.map(
             (vehicle: any) => {
 
                 const nearestReminder =

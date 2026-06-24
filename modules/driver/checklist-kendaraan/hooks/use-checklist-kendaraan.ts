@@ -45,6 +45,15 @@ export function useChecklistKendaraan() {
   const supabase =
   createClient();
 
+const [
+
+  search,
+
+  setSearch,
+
+] = useState("");
+
+
   const [
 
     vehicles,
@@ -166,7 +175,7 @@ const [
 
     const {
 
-      answers,
+      values,
 
       photos,
 
@@ -238,7 +247,7 @@ const [
   const itemId of
 
   Object.keys(
-    answers
+    values
   )
 
 ) {
@@ -262,7 +271,18 @@ if (
     );
 
 }
-  await createChecklistDetail({
+
+const checklistItem =
+
+  checklistItems.find(
+
+    (item: any) =>
+
+      item.id ===
+      Number(itemId)
+
+  );
+await createChecklistDetail({
 
   checklist_id:
     header.id,
@@ -271,7 +291,26 @@ if (
     Number(itemId),
 
   condition:
-    answers[itemId],
+
+    checklistItem
+      ?.input_type ===
+      "option"
+
+      ? values[itemId]
+
+      : null,
+
+  value_text:
+
+    checklistItem
+      ?.input_type !==
+      "option"
+
+      ? String(
+          values[itemId]
+        )
+
+      : null,
 
   photo_url:
     photoUrl,
@@ -305,6 +344,33 @@ if (
 }
 
 }
+
+const filteredVehicles =
+
+  vehicles.filter(
+    (item) => {
+
+      const keyword =
+        search.toLowerCase();
+
+      return (
+
+        item.plat_nomor
+          ?.toLowerCase()
+          .includes(keyword)
+
+        ||
+
+        item.nama_kendaraan
+          ?.toLowerCase()
+          .includes(keyword)
+
+      );
+
+    }
+  );
+
+
   return {
 
     vehicles,
@@ -324,6 +390,12 @@ if (
     setSelectedVehicle,
 
     handleSubmitChecklist,
+
+    search,
+
+  setSearch,
+
+  filteredVehicles
 
   };
 

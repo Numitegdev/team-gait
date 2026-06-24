@@ -337,22 +337,22 @@ export const sidebarMenu: Record<
 
               children: [
                 {
-          title: "List Kendaraan",
-          url: "/dashboard/driver/kendaraan-list",
-        },
-        //  {
-        //   title: "Monitoring Checklist",
-        //   url: "/dashboard/driver/monitoring-checklist",
-        // },
-        //  {
-        //   title: "Checklist Kendaraan",
-        //   url: "/dashboard/driver/checklist-kendaraan",
-        // },
-        //  {
-        //   title: "Setting Checklist",
-        //   url: "/dashboard/driver/checklist-items",
-        // },
-             
+                  title: "Checklist Kendaraan",
+                  url: "/dashboard/driver/checklist-kendaraan",
+                },
+                        {
+                  title: "List Kendaraan",
+                  url: "/dashboard/driver/kendaraan-list",
+                },
+                {
+                  title: "Monitoring Checklist",
+                  url: "/dashboard/driver/monitoring-checklist",
+                },
+                {
+                  title: "Setting Checklist",
+                  url: "/dashboard/driver/checklist-items",
+                },
+                    
           ]
         },
      
@@ -428,18 +428,18 @@ export const sidebarMenu: Record<
           url: "",
 
               children: [
-                {
-          title: "List Kendaraan",
-          url: "/dashboard/driver/kendaraan-list",
+        //         {
+        //   title: "List Kendaraan",
+        //   url: "/dashboard/driver/kendaraan-list",
+        // },
+         {
+          title: "Monitoring Checklist",
+          url: "/dashboard/driver/monitoring-checklist",
         },
-        //  {
-        //   title: "Monitoring Checklist",
-        //   url: "/dashboard/driver/monitoring-checklist",
-        // },
-        //  {
-        //   title: "Checklist Kendaraan",
-        //   url: "/dashboard/driver/checklist-kendaraan",
-        // },
+         {
+          title: "Checklist Kendaraan",
+          url: "/dashboard/driver/checklist-kendaraan",
+        },
         //  {
         //   title: "Setting Checklist",
         //   url: "/dashboard/driver/checklist-items",

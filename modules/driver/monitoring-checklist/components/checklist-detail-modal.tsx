@@ -202,23 +202,48 @@ onVerify,
                   </div>
 
                   <div
-                    className="
-                      mt-2
-                    "
-                  >
+  className="
+    mt-2
+  "
+>
 
-                    {
+  {
 
-                      item.condition ===
-                      "aman"
+    item.checklist_items
+      ?.input_type ===
+      "option"
 
-                        ? "✅ Aman"
+      ? (
 
-                        : "❌ Tidak Aman"
+          item.condition ===
+          "aman"
 
-                    }
+            ? "✅ Aman"
 
-                  </div>
+            : "❌ Tidak Aman"
+
+        )
+
+      : (
+
+          <span
+            className="
+              font-medium
+              text-blue-600
+            "
+          >
+
+            {
+              item.value_text
+            }
+
+          </span>
+
+        )
+
+  }
+
+</div>
 
                   {
 

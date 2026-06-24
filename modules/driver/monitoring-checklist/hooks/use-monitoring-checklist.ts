@@ -21,6 +21,13 @@ import {
 }
 from "../services/monitoring-checklist-service";
 
+import {
+
+  cleanupChecklistPhotos,
+
+}
+from "../services/cleanup-service";
+
 export function useMonitoringChecklist() {
 
   const supabase =
@@ -126,9 +133,7 @@ const [
 
 useEffect(() => {
 
-  loadData();
-
-  loadRole();
+  initialize();
 
 }, []);
 
@@ -142,7 +147,15 @@ const [
   "all"
 );
 
+async function initialize() {
 
+  await cleanupChecklistPhotos();
+
+  await loadData();
+
+  await loadRole();
+
+}
   async function loadData() {
 
     try {
