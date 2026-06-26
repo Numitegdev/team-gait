@@ -164,11 +164,11 @@ export const sidebarMenu: Record<
      
       ],
     },
-    {
-      title: "Chef",
-      url: "/dashboard/chef",
-      icon: ChefHat,
-    },
+    // {
+    //   title: "Chef",
+    //   url: "/dashboard/chef",
+    //   icon: ChefHat,
+    // },
     {
       title: "Security",
       url: "/dashboard/security",
@@ -188,11 +188,11 @@ export const sidebarMenu: Record<
         },
       ],
     },
-    {
-      title: "Office Boy",
-      url: "/dashboard/officeboy",
-      icon: Briefcase,
-    },
+    // {
+    //   title: "Office Boy",
+    //   url: "/dashboard/officeboy",
+    //   icon: Briefcase,
+    // },
     // {
     //   title: "System Config",
     //   url: "/dashboard/system-config",
@@ -359,11 +359,11 @@ export const sidebarMenu: Record<
       ],
       
     },
-    {
-      title: "Chef",
-      url: "/dashboard/chef",
-      icon: ChefHat,
-    },
+    // {
+    //   title: "Chef",
+    //   url: "/dashboard/chef",
+    //   icon: ChefHat,
+    // },
     {
       title: "Security",
       url: "/dashboard/security",
@@ -385,11 +385,11 @@ export const sidebarMenu: Record<
       ],
       
     },
-    {
-      title: "Office Boy",
-      url: "/dashboard/officeboy",
-      icon: Briefcase,
-    },
+    // {
+    //   title: "Office Boy",
+    //   url: "/dashboard/officeboy",
+    //   icon: Briefcase,
+    // },
        {
     title: "Users",
     url: "/dashboard/system-config/users",

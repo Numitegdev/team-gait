@@ -113,7 +113,7 @@ const [openSubMenu, setOpenSubMenu] =
                     <Icon size={18} />
                   )}
 
-                  <Link href={menu.url}>
+                  <Link href={menu.url} prefetch={false}>
                     {menu.title}
                   </Link>
                 </div>
@@ -200,6 +200,7 @@ const [openSubMenu, setOpenSubMenu] =
                       <Link
                         key={subChild.url}
                         href={subChild.url}
+                        prefetch={false}
                       >
                         <div
                           className={`
@@ -233,6 +234,7 @@ const [openSubMenu, setOpenSubMenu] =
 
           <Link
             href={child.url}
+            prefetch={false}
           >
             <div
               className={`
