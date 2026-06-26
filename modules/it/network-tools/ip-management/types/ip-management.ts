@@ -14,4 +14,9 @@ export interface Device {
   whitelist: string;
 
   ip_terkini: string;
+
+  isp_utama: string;
+
+  isp_backup: string;
 }
+

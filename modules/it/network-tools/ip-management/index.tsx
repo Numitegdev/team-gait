@@ -58,6 +58,16 @@ export default function IPManagementPage() {
   removeDevice,
   loadDevices,
 
+   selectedISPUtama,
+  setSelectedISPUtama,
+
+  selectedISPBackup,
+  setSelectedISPBackup,
+
+  ispUtamaOptions,
+  ispBackupOptions,
+
+
 } = useIPManagement();
 
   const [showModal, setShowModal] =
@@ -239,20 +249,25 @@ export default function IPManagementPage() {
 
         )} */}
         
-      <IPManagementFilters
-        search={search}
-        setSearch={setSearch}
-        selectedRoom={selectedRoom}
-        setSelectedRoom={
-          setSelectedRoom
-        }
-        selectedNetwork={
-          selectedNetwork
-        }
-        setSelectedNetwork={
-          setSelectedNetwork
-        }
-      />
+    <IPManagementFilters
+  search={search}
+  setSearch={setSearch}
+
+  selectedRoom={selectedRoom}
+  setSelectedRoom={setSelectedRoom}
+
+  selectedNetwork={selectedNetwork}
+  setSelectedNetwork={setSelectedNetwork}
+
+  selectedISPUtama={selectedISPUtama}
+  setSelectedISPUtama={setSelectedISPUtama}
+
+  selectedISPBackup={selectedISPBackup}
+  setSelectedISPBackup={setSelectedISPBackup}
+
+  ispUtamaOptions={ispUtamaOptions}
+  ispBackupOptions={ispBackupOptions}
+/>
 
       <IPManagementTable
   devices={devices}

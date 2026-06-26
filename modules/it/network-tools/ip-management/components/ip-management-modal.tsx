@@ -45,22 +45,24 @@ const [
   setAvailableIPs,
 ] = useState<string[]>([]);
 
-  const [form, setForm] =
-    useState({
-      ruangan: "",
-      jenis_network:
-        "Network Office",
+  const [form, setForm] = useState({
+  ruangan: "",
+  jenis_network: "Network Office",
 
-      device: "",
+  device: "",
 
-      ip_terkini: "",
+  ip_terkini: "",
 
-      fungsional: "Office",
+  fungsional: "Office",
 
-      whitelist: "-",
+  whitelist: "-",
 
-      keterangan: "",
-    });
+  keterangan: "",
+
+  isp_utama: "",
+
+  isp_backup: "",
+});
 
   useEffect(() => {
     if (!editingDevice) {
@@ -78,33 +80,28 @@ const [
         whitelist: "-",
 
         keterangan: "",
+
+        isp_utama: "",
+
+        isp_backup: "",
       });
 
       return;
     }
 
     setForm({
-      ruangan:
-        editingDevice.ruangan,
+  ruangan: editingDevice.ruangan,
+  jenis_network: editingDevice.jenis_network,
+  device: editingDevice.device,
+  ip_terkini: editingDevice.ip_terkini,
+  fungsional: editingDevice.fungsional,
+  whitelist: editingDevice.whitelist,
+  keterangan: editingDevice.keterangan,
 
-      jenis_network:
-        editingDevice.jenis_network,
+  isp_utama: editingDevice.isp_utama ?? "",
 
-      device:
-        editingDevice.device,
-
-      ip_terkini:
-        editingDevice.ip_terkini,
-
-      fungsional:
-        editingDevice.fungsional,
-
-      whitelist:
-        editingDevice.whitelist,
-
-      keterangan:
-        editingDevice.keterangan,
-    });
+  isp_backup: editingDevice.isp_backup ?? "",
+});
   }, [editingDevice]);
 
  useEffect(() => {
@@ -366,6 +363,57 @@ const [
               DB_Mirror
             </option>
           </select>
+
+<div>
+  <label className="mb-1 block text-sm font-medium">
+    ISP Utama
+  </label>
+
+  <input
+    type="text"
+    value={form.isp_utama}
+    onChange={(e) =>
+      setForm({
+        ...form,
+        isp_utama: e.target.value,
+      })
+    }
+    className="
+      w-full
+      rounded-lg
+      border
+      p-2
+    "
+    placeholder="Contoh : Telkom"
+  />
+</div>
+
+<div>
+  <label className="mb-1 block text-sm font-medium">
+    ISP Backup
+  </label>
+
+  <input
+    type="text"
+    value={form.isp_backup}
+    onChange={(e) =>
+      setForm({
+        ...form,
+        isp_backup: e.target.value,
+      })
+    }
+    className="
+      w-full
+      rounded-lg
+      border
+      p-2
+    "
+    placeholder="Contoh : Biznet"
+  />
+</div>
+
+
+
         </div>
 
         {ipError && (

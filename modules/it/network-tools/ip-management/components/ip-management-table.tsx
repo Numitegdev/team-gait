@@ -87,6 +87,14 @@ export function IPManagementTable({
               Fungsional
             </th>
 
+             <th className="p-3 text-left hidden md:table-cell">
+              ISP Utama
+            </th>
+
+               <th className="p-3 text-left hidden md:table-cell">
+              ISP Backup
+            </th>
+
             <th className="p-3 text-left hidden md:table-cell">
               Action
             </th>
@@ -126,6 +134,10 @@ export function IPManagementTable({
               <td className="p-3 hidden md:table-cell">
                 {item.fungsional}
               </td>
+
+              <td>{item.isp_utama || "-"}</td>
+
+              <td>{item.isp_backup || "-"}</td>
 
               <td className="p-3 hidden md:table-cell">
 

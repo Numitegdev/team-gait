@@ -25,6 +25,12 @@ export function useIPManagement() {
   const [selectedRoom, setSelectedRoom] =
     useState("");
 
+const [selectedISPUtama, setSelectedISPUtama] =
+  useState("");
+
+const [selectedISPBackup, setSelectedISPBackup] =
+  useState("");
+
   const [
     selectedNetwork,
     setSelectedNetwork,
@@ -33,17 +39,22 @@ export function useIPManagement() {
   const [page, setPage] =
     useState(1);
 
+
   const pageSize = 15;
 
-    useEffect(() => {
+  
 
-    setPage(1);
+ useEffect(() => {
 
-    }, [
-    search,
-    selectedRoom,
-    selectedNetwork,
-    ]);
+  setPage(1);
+
+}, [
+  search,
+  selectedRoom,
+  selectedNetwork,
+  selectedISPUtama,
+  selectedISPBackup,
+]);
 
   async function loadDevices() {
 
@@ -114,75 +125,128 @@ export function useIPManagement() {
   }, []);
 
   const filteredDevices =
-    devices.filter((item) => {
+  devices.filter((item) => {
 
-      const deviceName =
-        item.device ?? "";
+    const deviceName =
+      item.device ?? "";
 
-      const ipAddress =
-        item.ip_terkini ?? "";
+    const ipAddress =
+      item.ip_terkini ?? "";
 
-       const diskripsi =
-        item.keterangan ?? "";  
+    const diskripsi =
+      item.keterangan ?? "";
 
-      const matchSearch =
+    const ispUtama =
+      item.isp_utama ?? "";
 
-        deviceName
-          .toLowerCase()
-          .includes(
-            search.toLowerCase()
-          )
+    const ispBackup =
+      item.isp_backup ?? "";
 
-        ||
+    const keyword =
+      search.toLowerCase();
 
-        ipAddress
-          .toLowerCase()
-          .includes(
-            search.toLowerCase()
-          )
+    const matchSearch =
 
-        ||
+      deviceName
+        .toLowerCase()
+        .includes(keyword)
 
-        diskripsi
-          .toLowerCase()
-          .includes(
-            search.toLowerCase()
-          );
+      ||
+
+      ipAddress
+        .toLowerCase()
+        .includes(keyword)
+
+      ||
+
+      diskripsi
+        .toLowerCase()
+        .includes(keyword)
+
+      ||
+
+      ispUtama
+        .toLowerCase()
+        .includes(keyword)
+
+      ||
+
+      ispBackup
+        .toLowerCase()
+        .includes(keyword);
+
+    const matchRoom =
+
+      !selectedRoom
+
+      ||
+
+      item.ruangan ===
+      selectedRoom;
+
+    const matchNetwork =
+
+      !selectedNetwork
+
+      ||
+
+      item.jenis_network ===
+      selectedNetwork;
+
+      const matchISPUtama =
+
+  !selectedISPUtama
+
+  ||
+
+  item.isp_utama === selectedISPUtama;
+
+const matchISPBackup =
+
+  !selectedISPBackup
+
+  ||
+
+  item.isp_backup === selectedISPBackup;
+
+    return (
+matchSearch
+
+  &&
+
+  matchRoom
+
+  &&
+
+  matchNetwork
+
+  &&
+
+  matchISPUtama
+
+  &&
+
+  matchISPBackup
 
 
-      const matchRoom =
+    );
 
-        !selectedRoom
+  });
+const ispUtamaOptions = [
+  ...new Set(
+    devices
+      .map((item) => item.isp_utama)
+      .filter(Boolean)
+  ),
+].sort();
 
-        ||
-
-        item.ruangan ===
-        selectedRoom;
-
-      const matchNetwork =
-
-        !selectedNetwork
-
-        ||
-
-        item.jenis_network ===
-        selectedNetwork;
-
-      return (
-
-        matchSearch
-
-        &&
-
-        matchRoom
-
-        &&
-
-        matchNetwork
-
-      );
-
-    });
+const ispBackupOptions = [
+  ...new Set(
+    devices
+      .map((item) => item.isp_backup)
+      .filter(Boolean)
+  ),
+].sort();
 
   const totalPages =
     Math.max(
@@ -227,5 +291,14 @@ export function useIPManagement() {
   addDevice,
   editDevice,
   removeDevice,
+
+  selectedISPUtama,
+setSelectedISPUtama,
+
+selectedISPBackup,
+setSelectedISPBackup,
+
+ispUtamaOptions,
+ispBackupOptions,
 };
 }
