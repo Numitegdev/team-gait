@@ -67,19 +67,20 @@ window.location.href = "/dashboard";
 
   return (
 
-    <div
-      className="
-        min-h-screen
-        bg-gradient-to-br
-        from-slate-200
-        via-slate-200
-        to-slate-300
-        flex
-        items-center
-        justify-center
-        p-4
-      "
-    >
+   <div
+  className="
+    min-h-screen
+    bg-gradient-to-br
+    from-slate-200
+    via-slate-200
+    to-slate-300
+    flex
+    flex-col
+    items-center
+    justify-center
+    p-4
+  "
+>
 
       <div
         className="
@@ -291,6 +292,22 @@ window.location.href = "/dashboard";
         </div>
 
       </div>
+    {/* footer saw */}
+
+      <div
+        className="
+          mt-6
+          text-center
+          text-xs
+          tracking-wide
+          text-slate-500
+        "
+      >
+        Team Operational Umum dan Teknis
+        {" • "} {new Date().getFullYear()} 
+         {"  "} © Saw
+      </div>
+
 
     </div>
 

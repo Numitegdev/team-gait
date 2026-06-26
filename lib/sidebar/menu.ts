@@ -27,7 +27,7 @@ export const sidebarMenu: Record<
     // },
     {
   title: "IT",
-  url: "/dashboard/it",
+  url: "*",
   icon: Monitor,
 
   children: [
@@ -119,7 +119,7 @@ export const sidebarMenu: Record<
 },
     {
       title: "Driver",
-      url: "/dashboard/driver",
+      url: "*",
       icon: Car,
       children: [
         {
@@ -171,7 +171,7 @@ export const sidebarMenu: Record<
     // },
     {
       title: "Security",
-      url: "/dashboard/security",
+      url: "*",
       icon: Shield,
        children: [
         {
@@ -199,7 +199,7 @@ export const sidebarMenu: Record<
     //   icon: Settings,
     // },
     {
-    title: "Users",
+    title: "Tambah Users",
     url: "/dashboard/system-config/users",
     icon: Settings,
     },
@@ -213,7 +213,7 @@ export const sidebarMenu: Record<
     // },
   {
  title: "IT",
-  url: "/dashboard/it",
+  url: "*",
   icon: Monitor,
 
   children: [
@@ -313,7 +313,7 @@ export const sidebarMenu: Record<
     // },
     {
       title: "Driver",
-      url: "/dashboard/driver",
+      url: "*",
       icon: Car,
     children: [
         {
@@ -366,7 +366,7 @@ export const sidebarMenu: Record<
     // },
     {
       title: "Security",
-      url: "/dashboard/security",
+      url: "*",
       icon: Shield,
        children: [
         {
@@ -391,7 +391,7 @@ export const sidebarMenu: Record<
     //   icon: Briefcase,
     // },
        {
-    title: "Users",
+    title: "Tambah Users",
     url: "/dashboard/system-config/users",
     icon: Settings,
     },
@@ -405,7 +405,7 @@ export const sidebarMenu: Record<
     // },
     {
       title: "Driver",
-      url: "/dashboard/driver",
+      url: "*",
       icon: Car,
        children: [
         {
@@ -460,7 +460,7 @@ export const sidebarMenu: Record<
     // },
     {
       title: "Chef",
-      url: "/dashboard/chef",
+      url: "*",
       icon: ChefHat,
        children: [
   
@@ -480,7 +480,7 @@ export const sidebarMenu: Record<
     // },
     {
       title: "Security",
-      url: "/dashboard/security",
+      url: "*",
       icon: Shield,
        children: [
         {
@@ -505,7 +505,7 @@ export const sidebarMenu: Record<
     // },
     {
       title: "Office Boy",
-      url: "/dashboard/officeboy",
+      url: "*",
       icon: Briefcase,
        children: [
        {
@@ -529,7 +529,7 @@ staff_gudang: [
     // },
     {
       title: "Gudang",
-      url: "/dashboard/officeboy",
+      url: "*",
       icon: Briefcase,
        children: [
          {
@@ -553,7 +553,7 @@ staff_gudang: [
     // },
     {
       title: "Admin",
-      url: "/dashboard/officeboy",
+      url: "*",
       icon: Briefcase,
        children: [
          {
