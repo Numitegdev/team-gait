@@ -119,7 +119,7 @@ export const sidebarMenu: Record<
 },
     {
       title: "Driver",
-      url: "*",
+      url: "",
       icon: Car,
       children: [
         {
@@ -171,7 +171,7 @@ export const sidebarMenu: Record<
     // },
     {
       title: "Security",
-      url: "*",
+      url: "",
       icon: Shield,
        children: [
         {
@@ -213,7 +213,7 @@ export const sidebarMenu: Record<
     // },
   {
  title: "IT",
-  url: "*",
+  url: "",
   icon: Monitor,
 
   children: [
@@ -313,7 +313,7 @@ export const sidebarMenu: Record<
     // },
     {
       title: "Driver",
-      url: "*",
+      url: "",
       icon: Car,
     children: [
         {
@@ -366,7 +366,7 @@ export const sidebarMenu: Record<
     // },
     {
       title: "Security",
-      url: "*",
+      url: "",
       icon: Shield,
        children: [
         {
@@ -405,7 +405,7 @@ export const sidebarMenu: Record<
     // },
     {
       title: "Driver",
-      url: "*",
+      url: "",
       icon: Car,
        children: [
         {
@@ -460,7 +460,7 @@ export const sidebarMenu: Record<
     // },
     {
       title: "Chef",
-      url: "*",
+      url: "",
       icon: ChefHat,
        children: [
   
@@ -480,7 +480,7 @@ export const sidebarMenu: Record<
     // },
     {
       title: "Security",
-      url: "*",
+      url: "",
       icon: Shield,
        children: [
         {
@@ -505,7 +505,7 @@ export const sidebarMenu: Record<
     // },
     {
       title: "Office Boy",
-      url: "*",
+      url: "",
       icon: Briefcase,
        children: [
        {
@@ -529,7 +529,7 @@ staff_gudang: [
     // },
     {
       title: "Gudang",
-      url: "*",
+      url: "",
       icon: Briefcase,
        children: [
          {
@@ -553,7 +553,7 @@ staff_gudang: [
     // },
     {
       title: "Admin",
-      url: "*",
+      url: "",
       icon: Briefcase,
        children: [
          {
