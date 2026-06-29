@@ -27,7 +27,7 @@ export const sidebarMenu: Record<
     // },
     {
   title: "IT",
-  url: "*",
+  url: "",
   icon: Monitor,
 
   children: [
