@@ -58,8 +58,11 @@ console.log(data);
     const data = await getAddons();
 
     setAddons(data ?? []);
+
+    console.log(data);
   }, []);
 
+  
   // ===========================
   // PERIPHERAL
   // ===========================
@@ -163,6 +166,8 @@ async (
         throw error;
 
     await loadPeripherals();
+
+    console.log(peripherals);
 
 };
   // ===========================

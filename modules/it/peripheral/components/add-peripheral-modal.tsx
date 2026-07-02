@@ -1,5 +1,9 @@
 "use client";
-
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { AvailableDevice } from "../types/peripheral.types";
 
 interface Props {
@@ -9,7 +13,7 @@ interface Props {
   onSave: (id: number) => Promise<void>;
 }
 
-import { useState } from "react";
+
 
 export default function AddPeripheralModal({
   open,
@@ -18,9 +22,105 @@ export default function AddPeripheralModal({
   onSave,
 }: Props) {
   const [selectedId, setSelectedId] = useState<number>();
+const [search, setSearch] =
+  useState("");
 
-  if (!open) return null;
+const [selectedRoom, setSelectedRoom] =
+  useState("");
 
+const [selectedNetwork, setSelectedNetwork] =
+  useState("");
+  
+const rooms = useMemo(() => {
+
+    return Array.from(
+
+        new Set(
+
+            devices.map(
+                d => d.ruangan
+            )
+
+        )
+
+    ).sort();
+
+}, [devices]);
+
+const networks = useMemo(() => {
+
+    return Array.from(
+
+        new Set(
+
+            devices.map(
+                d => d.jenis_network
+            )
+
+        )
+
+    ).sort();
+
+}, [devices]);
+
+const filteredDevices =
+useMemo(() => {
+
+    return devices.filter(device => {
+
+        const keyword =
+            search.toLowerCase();
+
+        const matchSearch =
+
+            device.device
+                .toLowerCase()
+                .includes(keyword)
+
+            ||
+
+            device.ip_terkini
+                .toLowerCase()
+                .includes(keyword);
+
+        const matchRoom =
+
+            selectedRoom === ""
+
+            ||
+
+            device.ruangan ===
+            selectedRoom;
+
+        const matchNetwork =
+
+            selectedNetwork === ""
+
+            ||
+
+            device.jenis_network ===
+            selectedNetwork;
+
+        return (
+
+            matchSearch &&
+
+            matchRoom &&
+
+            matchNetwork
+
+        );
+
+    });
+
+}, [
+    devices,
+    search,
+    selectedRoom,
+    selectedNetwork
+]);
+
+if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
 
@@ -29,6 +129,75 @@ export default function AddPeripheralModal({
         <h2 className="text-xl font-semibold mb-4">
           Tambah PC Peripheral
         </h2>
+      <div className="space-y-3 mb-5">
+
+  <input
+    autoFocus
+    value={search}
+    onChange={(e) =>
+      setSearch(e.target.value)
+    }
+    placeholder="Cari Device atau IP..."
+    className="w-full rounded-lg border px-3 py-2"
+  />
+
+  <div className="grid grid-cols-2 gap-3">
+
+    <select
+      value={selectedRoom}
+      onChange={(e) =>
+        setSelectedRoom(
+          e.target.value
+        )
+      }
+      className="rounded-lg border px-3 py-2"
+    >
+      <option value="">
+        Semua Ruangan
+      </option>
+
+      {rooms.map(room => (
+
+        <option
+          key={room}
+          value={room}
+        >
+          {room}
+        </option>
+
+      ))}
+
+    </select>
+
+    <select
+      value={selectedNetwork}
+      onChange={(e) =>
+        setSelectedNetwork(
+          e.target.value
+        )
+      }
+      className="rounded-lg border px-3 py-2"
+    >
+      <option value="">
+        Semua Network
+      </option>
+
+      {networks.map(network => (
+
+        <option
+          key={network}
+          value={network}
+        >
+          {network}
+        </option>
+
+      ))}
+
+    </select>
+
+  </div>
+
+</div>
 
         <div className="max-h-[400px] overflow-y-auto border rounded-lg">
 
@@ -62,7 +231,7 @@ export default function AddPeripheralModal({
 
             <tbody>
 
-              {devices.map((device) => (
+              {filteredDevices.map((device) => (
 
                 <tr
                   key={device.id}

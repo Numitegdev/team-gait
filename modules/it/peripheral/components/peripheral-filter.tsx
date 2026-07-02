@@ -1,5 +1,5 @@
 "use client";
-
+import { useEffect, useState } from "react";
 import { Addon } from "../types/peripheral.types";
 
 interface Props {
@@ -18,6 +18,8 @@ interface Props {
 
   networks: string[];
 
+  selectedSoftware: string;
+
   onSearchChange: (
     value: string
   ) => void;
@@ -35,6 +37,10 @@ interface Props {
   ) => void;
 
   onReset: () => void;
+
+
+
+   onSoftwareChange:(value:string)=>void;
 }
 export default function PeripheralFilter({
 
@@ -62,7 +68,27 @@ onNetworkChange,
 
 onReset,
 
+selectedSoftware,
+
+onSoftwareChange,
+
 }: Props) {
+
+
+ const softwareOptions = [
+
+  "Accurate 5",
+  "Accurate 4",
+  "SQL Server",
+  "Otomax Server",
+  "AnyDesk",
+  "UltraViewer",
+
+];
+
+const [software, setSoftware] =
+  useState("all");
+
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
 
@@ -110,17 +136,25 @@ onReset,
 
   </select>
 
-  {/* ROOM */}
-
-  {/* <select
-    value={selectedRoom}
-    onChange={(e)=>
-      onRoomChange(
-        e.target.value
-      )
+<select
+    value={selectedSoftware}
+    onChange={(e) =>
+        onSoftwareChange(e.target.value)
     }
-    className="rounded-lg border px-3 py-2"
-  > */}
+>
+    <option value="all">
+        Semua Software
+    </option>
+
+    {softwareOptions.map((item) => (
+        <option
+            key={item}
+            value={item}
+        >
+            {item}
+        </option>
+    ))}
+</select>
 
   <select
   value={selectedRoom}
@@ -148,18 +182,6 @@ onReset,
     ))}
 
   </select>
-
-  {/* NETWORK */}
-
-{/* //   <select
-//     value={selectedNetwork}
-//     onChange={(e)=>
-//       onNetworkChange(
-//         e.target.value
-//       )
-//     }
-//     className="rounded-lg border px-3 py-2"
-//   > */}
 
 <select
   value={selectedNetwork}

@@ -87,6 +87,10 @@ export const sidebarMenu: Record<
           title: "IP Management",
           url: "/dashboard/it/network-tools/ip-management",
         },
+        {
+          title: "Kelola PC Aktif",
+          url: "/dashboard/it/peripheral",
+        },
       ]
     },
     {
@@ -273,6 +277,11 @@ export const sidebarMenu: Record<
           title: "IP Management",
           url: "/dashboard/it/network-tools/ip-management",
         },
+
+        {
+          title: "Kelola PC Aktif",
+          url: "/dashboard/it/peripheral",
+        },
       ]
     },
     {
@@ -285,15 +294,15 @@ export const sidebarMenu: Record<
               url: "/dashboard/it/maintenance-tools/maintenance-schedule",
             },
 
-            {
-              title: "Maintenance Form",
-              url: "/dashboard/it/maintenance-tools/maintenance-form",
-            },
+            // {
+            //   title: "Maintenance Form",
+            //   url: "/dashboard/it/maintenance-tools/maintenance-form",
+            // },
 
-            {
-              title: "Maintenance History",
-              url: "/dashboard/it/maintenance-tools/maintenance-history",
-            },
+            // {
+            //   title: "Maintenance History",
+            //   url: "/dashboard/it/maintenance-tools/maintenance-history",
+            // },
 
             {
               title: "Maintenance Tool",

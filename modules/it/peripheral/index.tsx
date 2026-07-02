@@ -1,8 +1,13 @@
 "use client";
 
 import { useState } from "react";
-
-import AddAddonModal from "./components/add-addon-modal";
+import {
+  Addon,
+  AvailableDevice,
+  Peripheral,
+} from "./types/peripheral.types";
+import HardwareDetailModal
+from "./components/Hardware-Detail-Modal";
 import AddPeripheralModal from "./components/add-peripheral-modal";
 
 import { usePeripheral } from "./hooks/use-peripheral";
@@ -10,8 +15,9 @@ import { usePeripheral } from "./hooks/use-peripheral";
 import AssignAddonModal from "./components/assign-addon-modal";
 
 import PeripheralCard from "./components/peripheral-card";
-
+import UploadScannerModal from "./components/upload-scanner-modal";
 import PeripheralFilter from "./components/peripheral-filter";
+import AddonManagerModal from "./components/addon-manager-modal";
 
 import { useMemo } from "react";
 export default function PeripheralPage() {
@@ -34,6 +40,8 @@ export default function PeripheralPage() {
     removeAddonFromPeripheral,
 
     removePeripheral,
+
+    loadPeripherals
   } = usePeripheral();
   
 
@@ -45,7 +53,9 @@ export default function PeripheralPage() {
 
     const [showAssignModal, setShowAssignModal] =
   useState(false);
-
+const [showUploadModal, setShowUploadModal] =
+  useState(false);
+  
 const [selectedPeripheral, setSelectedPeripheral] =
   useState<number | null>(null);
 
@@ -93,6 +103,9 @@ const networks = useMemo(() => {
   ).sort();
 
 }, [peripherals]);
+
+  const [selectedSoftware, setSelectedSoftware] =
+  useState("all");
 
 const filteredPeripherals =
   useMemo(() => {
@@ -152,8 +165,24 @@ const matchNetwork =
   selectedNetwork === "" ||
   item.ip_management.jenis_network.trim().toLowerCase() ===
     selectedNetwork.trim().toLowerCase();
+ 
+    const matchSoftware =
 
-      return (
+  selectedSoftware === "all"
+
+  ||
+
+  item.software?.some(
+
+    (software) =>
+
+      software.name === selectedSoftware &&
+
+      software.installed
+
+  );
+      
+  return (
 
         matchSearch &&
 
@@ -161,46 +190,140 @@ const matchNetwork =
 
         matchRoom &&
 
-        matchNetwork
+       matchNetwork &&
+
+    matchSoftware
+
 
       );
+
+    
 
       }
     );
 
   }, [
-    peripherals,
-    search,
-    selectedAddon,
-    selectedRoom,
-selectedNetwork,
-  ]);
+  peripherals,
+  search,
+  selectedAddon,
+  selectedRoom,
+  selectedNetwork,
+  selectedSoftware,
+]);
+  
+const [showDetailModal, setShowDetailModal] =
+  useState(false);
+
+const [selectedDetail, setSelectedDetail] =
+  useState<Peripheral | null>(null);
   
   return (
     <div className="p-6 space-y-8">
 
       {/* HEADER */}
 
-      <div className="flex items-center justify-between">
+<div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
 
-        <h1 className="text-2xl font-semibold">
-          Peripheral
-        </h1>
+  <div>
 
-        <button
-          onClick={() =>
-            setShowPeripheralModal(true)
-          }
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg"
-        >
-          Tambah PC
-        </button>
+    <h1 className="text-3xl font-bold tracking-tight">
+      PC Add on List
+    </h1>
 
-      </div>
+    <p className="mt-1 text-sm text-gray-500">
+      Kelola perangkat komputer, addon, dan hasil scanner hardware.
+    </p>
 
+  </div>
+
+  <div className="flex gap-3">
+
+    <button
+      onClick={() =>
+        setShowAddonModal(true)
+      }
+      className="rounded-lg border px-4 py-2 hover:bg-gray-50"
+    >
+      Kelola Addon
+    </button>
+
+    <button
+      onClick={() =>
+        setShowPeripheralModal(true)
+      }
+      className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+    >
+      + Tambah PC
+    </button>
+
+  </div>
+
+</div>
+
+          {/* filter */}
+<div className="rounded-xl border bg-white p-5 shadow-sm">
+        <PeripheralFilter
+
+                search={search}
+
+                selectedAddon={selectedAddon}
+
+                selectedRoom={selectedRoom}
+
+                selectedNetwork={selectedNetwork}
+
+                addons={addons}
+
+                rooms={rooms}
+
+                networks={networks}
+
+                onSearchChange={setSearch}
+
+                onAddonChange={setSelectedAddon}
+
+                onRoomChange={setSelectedRoom}
+
+                onNetworkChange={setSelectedNetwork}
+
+                onReset={() => {
+
+                  setSearch("");
+
+                  setSelectedAddon("");
+
+                  setSelectedRoom("");
+
+                  setSelectedNetwork("");
+
+                }}
+
+                 selectedSoftware={selectedSoftware}
+                  onSoftwareChange={setSelectedSoftware}
+
+                />
+</div>
+                {/* jumlah data  */}
+              <div className="flex items-center justify-between">
+
+                  <div className="text-sm text-gray-500">
+
+                      Menampilkan
+
+                      <span className="mx-1 font-semibold text-black">
+
+                          {filteredPeripherals.length}
+
+                      </span>
+
+                      Peripheral
+
+                  </div>
+
+              </div>
       {/* card view */}
 
-      <div className="border rounded-lg overflow-hidden">
+      <div >
 
       {loading ? (
 
@@ -220,24 +343,33 @@ selectedNetwork,
 
 ) : (
 
-  <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+  <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
 
     {filteredPeripherals.map((item) => (
 
-      <PeripheralCard
+     <PeripheralCard
         key={item.id}
         peripheral={item}
         addons={addons}
         onAssignAddon={(id) => {
-
-          setSelectedPeripheral(id);
-
-          setShowAssignModal(true);
-
+            setSelectedPeripheral(id);
+            setShowAssignModal(true);
         }}
         onRemovePeripheral={removePeripheral}
         onRemoveAddon={removeAddonFromPeripheral}
-      />
+        onUploadScanner={(id) => {
+            setSelectedPeripheral(id);
+            setShowUploadModal(true);
+        }}
+
+        onDetail={(peripheral) => {
+
+            setSelectedDetail(peripheral);
+
+            setShowDetailModal(true);
+
+        }}
+    />
 
     ))}
 
@@ -247,103 +379,13 @@ selectedNetwork,
 
       </div>
 
-      {/* MASTER ADDON */}
-
-      <div>
-
-        <div className="flex items-center justify-between mb-4">
-
-          <h2 className="text-lg font-semibold">
-            Master Addon
-          </h2>
-
-          <button
-            onClick={() =>
-              setShowAddonModal(true)
-            }
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg"
-          >
-            Tambah Addon
-          </button>
-
-        </div>
-
-        <div className="border rounded-lg">
-
-          {addons.length === 0 ? (
-
-            <div className="p-4 text-gray-500">
-              Belum ada addon.
-            </div>
-
-          ) : (
-
-            addons.map((addon) => (
-
-              <div
-                key={addon.id}
-                className="flex items-center justify-between border-b p-4"
-              >
-
-                <span>
-                  {addon.addon_name}
-                </span>
-
-                <button
-                  onClick={() =>
-                    removeAddon(addon.id)
-                  }
-                  className="text-red-600"
-                >
-                  Hapus
-                </button>
-
-              </div>
-
-            ))
-
-          )}
-
-        </div>
-
-      </div>
-
-      <PeripheralFilter
-
-search={search}
-
-selectedAddon={selectedAddon}
-
-selectedRoom={selectedRoom}
-
-selectedNetwork={selectedNetwork}
-
-addons={addons}
-
-rooms={rooms}
-
-networks={networks}
-
-onSearchChange={setSearch}
-
-onAddonChange={setSelectedAddon}
-
-onRoomChange={setSelectedRoom}
-
-onNetworkChange={setSelectedNetwork}
-
-onReset={() => {
-
-  setSearch("");
-
-  setSelectedAddon("");
-
-  setSelectedRoom("");
-
-  setSelectedNetwork("");
-
-}}
-
+     <HardwareDetailModal
+  open={showDetailModal}
+  peripheral={selectedDetail}
+  onClose={() => {
+    setShowDetailModal(false);
+    setSelectedDetail(null);
+  }}
 />
 
 
@@ -356,43 +398,61 @@ onReset={() => {
         onSave={addPeripheral}
       />
 
-      <AddAddonModal
-        open={showAddonModal}
-        onClose={() =>
-          setShowAddonModal(false)
-        }
-        onSave={addAddon}
-      />
+    <AddonManagerModal
+      open={showAddonModal}
+      addons={addons}
+      onClose={() =>
+        setShowAddonModal(false)
+      }
+      onAdd={addAddon}
+      onDelete={removeAddon}
+    />
 
       <AssignAddonModal
-  open={showAssignModal}
-  addons={addons}
-  onClose={() => {
+          open={showAssignModal}
+          addons={addons}
+          onClose={() => {
 
-    setShowAssignModal(false);
+            setShowAssignModal(false);
 
-    setSelectedPeripheral(null);
+            setSelectedPeripheral(null);
 
-  }}
-  onSave={async (addonIds) => {
+          }}
+          onSave={async (addonIds) => {
 
-    if (!selectedPeripheral) return;
+            if (!selectedPeripheral) return;
 
-    for (const addonId of addonIds) {
+            for (const addonId of addonIds) {
 
-      await addAddonToPeripheral(
-        selectedPeripheral,
-        addonId
-      );
+              await addAddonToPeripheral(
+                selectedPeripheral,
+                addonId
+              );
 
-    }
+            }
 
-    setShowAssignModal(false);
+            setShowAssignModal(false);
 
-    setSelectedPeripheral(null);
+            setSelectedPeripheral(null);
 
-  }}
-/>
+          }}
+        />
+
+        <UploadScannerModal
+
+        open={showUploadModal}
+
+        peripheralId={selectedPeripheral}
+
+        onClose={() =>
+          setShowUploadModal(false)
+        }
+
+        onSuccess={() =>
+          loadPeripherals()
+        }
+
+      />
 
 
     </div>

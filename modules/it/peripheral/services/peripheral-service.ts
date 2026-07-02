@@ -7,7 +7,25 @@ export async function getPeripherals(): Promise<Peripheral[]> {
     .from("peripherals")
     .select(`
       id,
+
       ip_management_id,
+
+      score,
+
+      score_detail,
+
+      status,
+
+      scanner_version,
+
+      last_scan_at,
+
+      last_scan_by,
+
+      hardware,
+
+      software,
+
       ip_management(
         id,
         device,
@@ -15,6 +33,7 @@ export async function getPeripherals(): Promise<Peripheral[]> {
         ruangan,
         jenis_network
       ),
+
       peripheral_device_addons(
         id,
         addon:peripheral_addons(
@@ -28,6 +47,7 @@ export async function getPeripherals(): Promise<Peripheral[]> {
   if (error) throw error;
 
  return (data ?? []).map((item: any) => ({
+  
   ...item,
 
   ip_management: Array.isArray(item.ip_management)
