@@ -17,8 +17,8 @@ dan inventarisasi aset IT kantor.
     * Accurate
     * AnyDesk
     * UltraViewer
-    * SQL Server (Instance, Edisi, Status Running)
-    * Otomax Server (Status Running)
+    * SQL Server 
+    * Otomax Server (otw)
 * **Output JSON Terstruktur:** Seluruh data digabungkan ke dalam file format `.json` dengan kedalaman object hingga 10 level (`-Depth 10`).
 
 ---

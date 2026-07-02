@@ -237,6 +237,14 @@ const [selectedDetail, setSelectedDetail] =
   </div>
 
   <div className="flex gap-3">
+    <button
+      onClick={() => {
+        window.open("/scanner/Scanner-v1.0.0.zip", "_blank");
+      }}
+      className="rounded-lg bg-green-600 px-4 py-2 text-white"
+    >
+      Download Scanner
+    </button>
 
     <button
       onClick={() =>
