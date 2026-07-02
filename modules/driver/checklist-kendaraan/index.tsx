@@ -303,7 +303,7 @@ export default function ChecklistKendaraanPage() {
                         <div>
 
                             {
-                            nearestReminder.name
+                            nearestReminder.reminder_name
                             }
 
                         </div>
