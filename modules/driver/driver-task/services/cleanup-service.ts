@@ -69,7 +69,7 @@ const expiredTasks =
 
       if (
         task.status !==
-        "complete"
+        "completed"
       ) {
         return false;
       }
