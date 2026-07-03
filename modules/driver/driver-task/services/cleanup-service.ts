@@ -21,48 +21,77 @@ export async function cleanupDriverPhotos() {
 //   limitDate.getMinutes() - 1
 // );
 
-  const { data, error } =
-    await supabase
+ const { data, error } =
+  await supabase
 
-      .from(
-        "driver_tasks"
-      )
+    .from("driver_tasks")
 
-      .select(`
-        id,
-        completed_at,
-         task_photo_url,
-        completion_photo_url
-      `)
+    .select(`
+      id,
+      status,
+      completed_at,
+      task_photo_url,
+      completion_photo_url
+    `)
 
-      .not(
-        "completion_photo_url",
-        "is",
-        null
-      );
+      // .not(
+      //   "completion_photo_url",
+      //   "is",
+      //   null
+      // )
+      ;
 
   if (error)
     throw error;
 
-  const expiredTasks =
+  // const expiredTasks =
 
-    data?.filter(
-      (task) => {
+  //   data?.filter(
+  //     (task) => {
 
-        const completedDate =
-          new Date(
-            task.completed_at
-          );
+  //       const completedDate =
+  //         new Date(
+  //           task.completed_at
+  //         );
 
-        return (
-          completedDate <
-          limitDate
+  //       return (
+  //         completedDate <
+  //         limitDate
+  //       );
+
+  //     }
+  //   ) || [];
+
+const expiredTasks =
+
+  data?.filter(
+    (task) => {
+
+      if (
+        task.status !==
+        "complete"
+      ) {
+        return false;
+      }
+
+      if (
+        !task.completed_at
+      ) {
+        return false;
+      }
+
+      const completedDate =
+        new Date(
+          task.completed_at
         );
 
-      }
-    ) || [];
+      return (
+        completedDate <
+        limitDate
+      );
 
-
+    }
+  ) || [];
 
 for (
   const task
