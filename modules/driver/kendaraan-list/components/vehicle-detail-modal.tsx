@@ -277,7 +277,7 @@ onDeleteBooking,
                     );
 
                   const canVerify =
-                    daysRemaining <= 60;
+                    daysRemaining <= 30;
 
                   return (
 
