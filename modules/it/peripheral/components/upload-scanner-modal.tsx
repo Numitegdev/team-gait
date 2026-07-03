@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useScanner } from "../hooks/use-scanner";
 
@@ -35,6 +35,28 @@ export default function UploadScannerModal({
     useScanner();
 const [dragging, setDragging] =
   useState(false);
+
+const fileInputRef =
+  useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+
+  if (open) {
+
+    setFile(null);
+
+    setDragging(false);
+
+    if (fileInputRef.current) {
+
+      fileInputRef.current.value = "";
+
+    }
+
+  }
+
+}, [open]);
+  
   if (!open) return null;
 
   return (
@@ -74,17 +96,18 @@ const [dragging, setDragging] =
     }`}
 >
 
-  <input
-    type="file"
-    accept=".json"
-    className="hidden"
-    id="scanner-upload"
-    onChange={(e) =>
-      setFile(
-        e.target.files?.[0] ?? null
-      )
-    }
-  />
+<input
+  ref={fileInputRef}
+  type="file"
+  accept=".json"
+  className="hidden"
+  id="scanner-upload"
+  onChange={(e) =>
+    setFile(
+      e.target.files?.[0] ?? null
+    )
+  }
+/>
 
   <label
     htmlFor="scanner-upload"
@@ -134,6 +157,15 @@ const [dragging, setDragging] =
                 peripheralId,
                 file
               );
+
+              
+              setFile(null);
+
+                if (fileInputRef.current) {
+
+                    fileInputRef.current.value = "";
+
+                }
 
               onSuccess();
 
