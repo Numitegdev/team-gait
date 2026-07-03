@@ -68,8 +68,8 @@ const windows =
 
 const detail =
   peripheral.score_detail;
-console.log("DETAIL", detail);
-console.log("PERIPHERAL", peripheral);
+// console.log("DETAIL", detail);
+// console.log("PERIPHERAL", peripheral);
 function scoreBar(
   value: number,
   max: number

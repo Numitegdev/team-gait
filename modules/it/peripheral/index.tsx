@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState , useEffect} from "react";
 import {
   Addon,
   AvailableDevice,
@@ -18,7 +18,7 @@ import PeripheralCard from "./components/peripheral-card";
 import UploadScannerModal from "./components/upload-scanner-modal";
 import PeripheralFilter from "./components/peripheral-filter";
 import AddonManagerModal from "./components/addon-manager-modal";
-
+import { parseCPU } from "./services/cpu-parser";
 import { useMemo } from "react";
 export default function PeripheralPage() {
   const {
@@ -42,6 +42,7 @@ export default function PeripheralPage() {
     removePeripheral,
 
     loadPeripherals
+
   } = usePeripheral();
   
 
@@ -70,6 +71,24 @@ const [selectedRoom, setSelectedRoom] =
 
 const [selectedNetwork, setSelectedNetwork] =
   useState("");
+
+  const [selectedCPU, setSelectedCPU] =
+  useState("");
+
+  const [sortBy, setSortBy] =
+  useState("default");
+
+  const [selectedRAM, setSelectedRAM] =
+  useState("");
+
+const [selectedDDR, setSelectedDDR] =
+  useState("");
+
+  const [selectedWindows, setSelectedWindows] =
+  useState("");
+
+const [selectedScan, setSelectedScan] =
+  useState("all");
 
   const rooms = useMemo(() => {
 
@@ -107,116 +126,327 @@ const networks = useMemo(() => {
   const [selectedSoftware, setSelectedSoftware] =
   useState("all");
 
-const filteredPeripherals =
-  useMemo(() => {
+  const PAGE_SIZE = 12;
 
-    return peripherals.filter(
-      (item) => {
+const [page, setPage] =
+  useState(1);
 
-        const keyword =
-          search.toLowerCase();
+const filteredPeripherals = useMemo(() => {
 
-        const matchSearch =
+  const result = peripherals.filter((item) => {
+// console.log("MASUK FILTER");
+// console.log(peripherals);
+    const keyword = search.toLowerCase();
 
-          item.ip_management.device
-            .toLowerCase()
-            .includes(keyword)
+    // console.log(
+//   item.ip_management,
+//   item.hardware,
+//   item.software
+// );
 
-          ||
+const matchSearch =
+(item.ip_management?.device ?? "")
+  .toLowerCase()
+  .includes(keyword)
+||
+(item.ip_management?.ip_terkini ?? "")
+  .toLowerCase()
+  .includes(keyword)
+||
+(item.ip_management?.ruangan ?? "")
+  .toLowerCase()
+  .includes(keyword)
+||
+(item.ip_management?.jenis_network ?? "")
+  .toLowerCase()
+  .includes(keyword);
 
-          item.ip_management.ip_terkini
-            .toLowerCase()
-            .includes(keyword)
+    const matchAddon =
 
-          ||
+      selectedAddon === ""
 
-          item.ip_management.ruangan
-            .toLowerCase()
-            .includes(keyword)
+      ||
 
-          ||
+      item.peripheral_device_addons.some(
 
-          item.ip_management.jenis_network
-            .toLowerCase()
-            .includes(keyword);
+        (addon) =>
 
-        const matchAddon =
-
-          selectedAddon === ""
-
-          ||
-
-          item.peripheral_device_addons.some(
-
-            (addon) =>
-
-              addon.addon.id ===
-              Number(selectedAddon)
-          
-
-          );
-
-         const matchRoom =
-  selectedRoom === "" ||
-  item.ip_management.ruangan.trim().toLowerCase() ===
-    selectedRoom.trim().toLowerCase();
-
-const matchNetwork =
-  selectedNetwork === "" ||
-  item.ip_management.jenis_network.trim().toLowerCase() ===
-    selectedNetwork.trim().toLowerCase();
- 
-    const matchSoftware =
-
-  selectedSoftware === "all"
-
-  ||
-
-  item.software?.some(
-
-    (software) =>
-
-      software.name === selectedSoftware &&
-
-      software.installed
-
-  );
-      
-  return (
-
-        matchSearch &&
-
-        matchAddon &&
-
-        matchRoom &&
-
-       matchNetwork &&
-
-    matchSoftware
-
+          addon.addon.id ===
+          Number(selectedAddon)
 
       );
 
-    
+    const matchRoom =
 
-      }
-    );
+      selectedRoom === ""
 
-  }, [
+      ||
+
+      item.ip_management.ruangan
+        .trim()
+        .toLowerCase() ===
+
+      selectedRoom
+        .trim()
+        .toLowerCase();
+
+    const matchNetwork =
+
+      selectedNetwork === ""
+
+      ||
+
+      item.ip_management.jenis_network
+        .trim()
+        .toLowerCase() ===
+
+      selectedNetwork
+        .trim()
+        .toLowerCase();
+
+    const matchSoftware =
+
+      selectedSoftware === "all"
+
+      ||
+
+      item.software?.some(
+
+        (software) =>
+
+          software.name === selectedSoftware &&
+
+          software.installed
+
+      );
+
+    const parsedCPU =
+      parseCPU(
+        item.hardware?.cpu?.model ?? ""
+      );
+
+    const matchCPU =
+
+      selectedCPU === ""
+
+      ||
+
+      parsedCPU.family === selectedCPU;
+
+
+     const ramGB =
+        item.hardware?.memory?.total_gb ?? 0;
+
+      const matchRAM =
+
+        selectedRAM === ""
+
+        ||
+
+        ramGB >= Number(selectedRAM);
+
+   const matchDDR =
+
+  selectedDDR === ""
+
+  ||
+
+  item.hardware?.memory?.modules?.some(
+
+    (module) =>
+
+     module.type
+  ?.toUpperCase()
+  .includes(selectedDDR.toUpperCase())
+
+  );
+
+const windowsName =
+  item.hardware?.windows?.name ?? "";
+
+const matchWindows =
+
+  selectedWindows === ""
+
+  ||
+
+  windowsName.includes(
+    selectedWindows
+  );
+
+const matchScan =
+
+  selectedScan === "all"
+
+  ||
+
+  (
+    selectedScan === "scanned"
+      ? !!item.last_scan_at
+      : !item.last_scan_at
+  );
+
+//   console.log({
+//   device: item.ip_management.device,
+//   matchSearch,
+//   matchAddon,
+//   matchRoom,
+//   matchNetwork,
+//   matchSoftware,
+//   matchCPU,
+//   matchRAM,
+//   matchDDR,
+//   matchWindows,
+//   matchScan,
+// });
+
+   return (
+
+    matchSearch &&
+
+    matchAddon &&
+
+    matchRoom &&
+
+    matchNetwork &&
+
+    matchSoftware &&
+
+    matchCPU &&
+
+    matchRAM &&
+
+    matchDDR &&
+
+    matchWindows &&
+
+    matchScan
+
+);
+
+  });
+
+  // ======================
+  // SORT
+  // ======================
+
+  switch (sortBy) {
+
+    case "score_desc":
+
+      result.sort(
+        (a, b) =>
+          (b.score ?? 0) -
+          (a.score ?? 0)
+      );
+
+      break;
+
+    case "score_asc":
+
+      result.sort(
+        (a, b) =>
+          (a.score ?? 0) -
+          (b.score ?? 0)
+      );
+
+      break;
+
+    case "latest_scan":
+
+      result.sort(
+        (a, b) =>
+          new Date(b.last_scan_at ?? "").getTime() -
+          new Date(a.last_scan_at ?? "").getTime()
+      );
+
+      break;
+
+    case "oldest_scan":
+
+      result.sort(
+        (a, b) =>
+          new Date(a.last_scan_at ?? "").getTime() -
+          new Date(b.last_scan_at ?? "").getTime()
+      );
+
+      break;
+
+  }
+
+  return result;
+
+}, [
   peripherals,
   search,
   selectedAddon,
   selectedRoom,
   selectedNetwork,
   selectedSoftware,
+  selectedCPU,
+  sortBy,
+  selectedRAM,
+  selectedDDR,
+  selectedWindows,
+  selectedScan,
+]);
+
+
+useEffect(() => {
+
+  setPage(1);
+
+}, [
+
+  search,
+
+  selectedAddon,
+
+  selectedRoom,
+
+  selectedNetwork,
+
+  selectedSoftware,
+
+  selectedCPU,
+
+  selectedRAM,
+
+  selectedDDR,
+
+  selectedWindows,
+
+  selectedScan,
+
+  sortBy
+
 ]);
   
+
 const [showDetailModal, setShowDetailModal] =
   useState(false);
 
 const [selectedDetail, setSelectedDetail] =
   useState<Peripheral | null>(null);
+
+  const totalPages = Math.max(
+  1,
+  Math.ceil(
+    filteredPeripherals.length /
+    PAGE_SIZE
+  )
+);
+ 
+const paginatedPeripherals =
+  filteredPeripherals.slice(
+
+    (page - 1) * PAGE_SIZE,
+
+    page * PAGE_SIZE
+
+  );
   
+
   return (
     <div className="p-6 space-y-8">
 
@@ -304,31 +534,89 @@ const [selectedDetail, setSelectedDetail] =
 
                   setSelectedNetwork("");
 
+                  setSelectedCPU("");
+
+                  setSelectedRAM("");
+
+                  setSelectedDDR("");
+
+                  setSelectedWindows("");
+
+                  setSelectedSoftware("all");
+
+                  setSelectedScan("all");
+
                 }}
 
                  selectedSoftware={selectedSoftware}
                   onSoftwareChange={setSelectedSoftware}
+
+                  selectedCPU={selectedCPU}
+
+                  onCPUChange={setSelectedCPU}
+
+                  sortBy={sortBy}
+                  
+                  onSortChange={setSortBy}
+
+                  selectedRAM={selectedRAM}
+
+                  selectedDDR={selectedDDR}
+
+                  onRAMChange={setSelectedRAM}
+
+                  onDDRChange={setSelectedDDR}
+
+                  selectedWindows={selectedWindows}
+
+                  onWindowsChange={setSelectedWindows}
+
+                  selectedScan={selectedScan}
+
+                  onScanChange={setSelectedScan}
 
                 />
 </div>
                 {/* jumlah data  */}
               <div className="flex items-center justify-between">
 
-                  <div className="text-sm text-gray-500">
+  <div className="text-sm text-gray-500">
 
-                      Menampilkan
+    Menampilkan
 
-                      <span className="mx-1 font-semibold text-black">
+    <span className="mx-1 font-semibold">
 
-                          {filteredPeripherals.length}
+      {filteredPeripherals.length === 0
+        ? 0
+        : (page - 1) * PAGE_SIZE + 1}
 
-                      </span>
+    </span>
 
-                      Peripheral
+    -
 
-                  </div>
+    <span className="mx-1 font-semibold">
 
-              </div>
+      {Math.min(
+        page * PAGE_SIZE,
+        filteredPeripherals.length
+      )}
+
+    </span>
+
+    dari
+
+    <span className="mx-1 font-semibold text-black">
+
+      {filteredPeripherals.length}
+
+    </span>
+
+    Peripheral
+
+  </div>
+
+</div>
+
       {/* card view */}
 
       <div >
@@ -353,7 +641,7 @@ const [selectedDetail, setSelectedDetail] =
 
   <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
 
-    {filteredPeripherals.map((item) => (
+    {paginatedPeripherals.map((item) => (
 
      <PeripheralCard
         key={item.id}
@@ -377,6 +665,7 @@ const [selectedDetail, setSelectedDetail] =
             setShowDetailModal(true);
 
         }}
+        
     />
 
     ))}
@@ -384,7 +673,76 @@ const [selectedDetail, setSelectedDetail] =
   </div>
 
 )}
+<div className="mt-8 flex items-center justify-center gap-2">
 
+  <button
+
+    disabled={page === 1}
+
+    onClick={() =>
+
+      setPage(page - 1)
+
+    }
+
+    className="rounded border px-3 py-2 disabled:opacity-40"
+
+  >
+
+    ←
+
+  </button>
+
+  {Array.from(
+    { length: totalPages },
+    (_, i) => (
+
+      <button
+
+        key={i}
+
+        onClick={() =>
+          setPage(i + 1)
+        }
+
+        className={`rounded px-3 py-2 border
+
+          ${page === i + 1
+
+            ? "bg-blue-600 text-white"
+
+            : "bg-white"
+
+          }`}
+
+      >
+
+        {i + 1}
+
+      </button>
+
+    )
+  )}
+
+  <button
+
+    disabled={page === totalPages}
+
+    onClick={() =>
+
+      setPage(page + 1)
+
+    }
+
+    className="rounded border px-3 py-2 disabled:opacity-40"
+
+  >
+
+    →
+
+  </button>
+
+</div>
       </div>
 
      <HardwareDetailModal

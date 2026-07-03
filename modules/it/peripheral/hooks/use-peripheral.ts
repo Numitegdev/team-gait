@@ -59,7 +59,7 @@ console.log(data);
 
     setAddons(data ?? []);
 
-    console.log(data);
+    // console.log(data);
   }, []);
 
   
@@ -167,7 +167,7 @@ async (
 
     await loadPeripherals();
 
-    console.log(peripherals);
+    // console.log(peripherals);
 
 };
   // ===========================
