@@ -66,6 +66,61 @@ const suffix =
   }
 
   // =====================
+  // Pentium
+  // =====================
+
+if (text.includes("Pentium")) {
+
+    const match =
+        text.match(/G(\d{4})/i);
+
+    return {
+
+        vendor: "Intel",
+
+        family: "Pentium",
+
+        generation: match
+            ? Number(match[1].substring(0,1))
+            : 0,
+
+        model: match?.[1] ?? "",
+
+        suffix: "",
+
+        raw:text
+
+    };
+
+}
+
+//============================= 
+// Celeron
+// ============================
+if (text.includes("Celeron")) {
+
+    const match =
+        text.match(/G(\d{4})|N(\d{4})/i);
+
+    return {
+
+        vendor:"Intel",
+
+        family:"Celeron",
+
+        generation:0,
+
+        model:match?.[1] ?? match?.[2] ?? "",
+
+        suffix:"",
+
+        raw:text
+
+    };
+
+}
+
+  // =====================
   // AMD RYZEN
   // =====================
 
@@ -108,6 +163,30 @@ const suffix =
     }
 
   }
+
+// ==========================
+// Athlon
+// ==========================
+if(text.includes("Athlon")){
+
+    return{
+
+        vendor:"AMD",
+
+        family:"Athlon",
+
+        generation:0,
+
+        model:"",
+
+        suffix:"",
+
+        raw:text
+
+    };
+
+}
+
 
   // =====================
   // XEON

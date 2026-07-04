@@ -115,138 +115,311 @@ function scoreIntel(cpu: ParsedCPU): number {
 
     let score = 0;
 
-    switch (cpu.family) {
+    if (cpu.generation >= 12) {
 
-        case "i3":
-            score = 16;
-            break;
+        switch (cpu.family) {
 
-        case "i5":
-            score = 23;
-            break;
+            case "i9": score = 35; break;
+            case "i7": score = 34; break;
+            case "i5": score = 32; break;
+            case "i3": score = 29; break;
 
-        case "i7":
-            score = 30;
-            break;
+            case "Pentium Gold":
+                score = 22;
+                break;
 
-        case "i9":
-            score = 35;
-            break;
+            case "Pentium":
+                score = 18;
+                break;
 
-        case "Pentium":
-            score = 10;
-            break;
+            case "Celeron":
+                score = 12;
+                break;
 
-        case "Celeron":
-            score = 6;
-            break;
-
-        default:
-            score = 10;
+            default:
+                score = 15;
+        }
 
     }
 
-      if (cpu.generation >= 14)
-          score += 4;
+    else if (cpu.generation >= 10) {
 
-      else if (cpu.generation >= 12)
-          score += 3;
+        switch (cpu.family) {
 
-      else if (cpu.generation >= 10)
-          score += 2;
+            case "i9": score = 34; break;
+            case "i7": score = 31; break;
+            case "i5": score = 29; break;
+            case "i3": score = 27; break;
 
-      else if (cpu.generation >= 8)
-          score += 1;
+            case "Pentium Gold":
+                score = 20;
+                break;
 
-      else if (cpu.generation <= 4)
-          score -= 3;
-    // bonus generasi nanti
+            case "Pentium":
+                score = 16;
+                break;
 
-  score += scoreSuffix(cpu.suffix);
+            case "Celeron":
+                score = 10;
+                break;
 
-return Math.max(
-    0,
-    Math.min(score,35)
-);
+            default:
+                score = 14;
+        }
+
+    }
+
+    else if (cpu.generation >= 8) {
+
+        switch (cpu.family) {
+
+            case "i9": score = 32; break;
+            case "i7": score = 28; break;
+            case "i5": score = 26; break;
+            case "i3": score = 24; break;
+
+            case "Pentium Gold":
+                score = 18;
+                break;
+
+            case "Pentium":
+                score = 14;
+                break;
+
+            case "Celeron":
+                score = 9;
+                break;
+
+            default:
+                score = 13;
+        }
+
+    }
+
+    else if (cpu.generation >= 6) {
+
+        switch (cpu.family) {
+
+            case "i7": score = 25; break;
+            case "i5": score = 23; break;
+            case "i3": score = 20; break;
+
+            case "Pentium":
+                score = 13;
+                break;
+
+            case "Celeron":
+                score = 8;
+                break;
+
+            default:
+                score = 12;
+        }
+
+    }
+
+    else {
+
+        switch (cpu.family) {
+
+            case "i7": score = 22; break;
+            case "i5": score = 20; break;
+            case "i3": score = 17; break;
+
+            case "Pentium":
+                score = 12;
+                break;
+
+            case "Celeron":
+                score = 7;
+                break;
+
+            default:
+                score = 10;
+        }
+
+    }
+
+    score += scoreSuffix(cpu.suffix);
+
+    return Math.max(0, Math.min(score, 35));
 
 }
-
-
 function scoreAMD(cpu: ParsedCPU): number {
 
     let score = 0;
 
-    switch(cpu.family){
+    // Ryzen berdasarkan generasi
+    if (cpu.generation >= 7) {
 
-        case "Ryzen 3":
-            score = 18;
-            break;
+        switch (cpu.family) {
 
-        case "Ryzen 5":
-            score = 25;
-            break;
+            case "Ryzen 3":
+                score = 29;
+                break;
 
-        case "Ryzen 7":
-            score = 31;
-            break;
+            case "Ryzen 5":
+                score = 32;
+                break;
 
-        case "Ryzen 9":
-            score = 35;
-            break;
+            case "Ryzen 7":
+                score = 34;
+                break;
 
-        case "Athlon":
-            score = 10;
-            break;
+            case "Ryzen 9":
+                score = 35;
+                break;
 
-        default:
-            score = 15;
+            case "Athlon":
+                score = 14;
+                break;
+
+            default:
+                score = 15;
+        }
 
     }
 
-   score += scoreSuffix(cpu.suffix);
+    else if (cpu.generation >= 5) {
 
-return Math.max(
-    0,
-    Math.min(score,35)
-);
+        switch (cpu.family) {
+
+            case "Ryzen 3":
+                score = 27;
+                break;
+
+            case "Ryzen 5":
+                score = 30;
+                break;
+
+            case "Ryzen 7":
+                score = 32;
+                break;
+
+            case "Ryzen 9":
+                score = 34;
+                break;
+
+            case "Athlon":
+                score = 13;
+                break;
+
+            default:
+                score = 14;
+        }
+
+    }
+
+    else if (cpu.generation >= 3) {
+
+        switch (cpu.family) {
+
+            case "Ryzen 3":
+                score = 24;
+                break;
+
+            case "Ryzen 5":
+                score = 27;
+                break;
+
+            case "Ryzen 7":
+                score = 30;
+                break;
+
+            case "Ryzen 9":
+                score = 32;
+                break;
+
+            case "Athlon":
+                score = 12;
+                break;
+
+            default:
+                score = 13;
+        }
+
+    }
+
+    else {
+
+        switch (cpu.family) {
+
+            case "Ryzen 3":
+                score = 21;
+                break;
+
+            case "Ryzen 5":
+                score = 24;
+                break;
+
+            case "Ryzen 7":
+                score = 28;
+                break;
+
+            case "Ryzen 9":
+                score = 30;
+                break;
+
+            case "Athlon":
+                score = 10;
+                break;
+
+            default:
+                score = 12;
+        }
+
+    }
+
+    score += scoreSuffix(cpu.suffix);
+
+    return Math.max(
+        0,
+        Math.min(score, 35)
+    );
 
 }
 
 function scoreXeon(cpu: ParsedCPU): number {
 
-    let score = 0;
+    let score = 24;
 
     switch (cpu.family) {
 
         case "E3":
-            score = 24;
+
+            score = 21 + cpu.generation;
             break;
 
         case "E5":
-            score = 30;
+
+            score = 23 + (cpu.generation * 2);
             break;
 
         case "Silver":
-            score = 31;
+
+            score = 29;
             break;
 
         case "Gold":
-            score = 34;
+
+            score = 33;
             break;
 
         case "Platinum":
+
             score = 35;
             break;
 
         default:
+
             score = 26;
 
     }
 
-    if (cpu.generation >= 4)
-        score += 1;
-
-    return Math.min(score, 35);
+    return Math.max(
+        0,
+        Math.min(score, 35)
+    );
 
 }
 
