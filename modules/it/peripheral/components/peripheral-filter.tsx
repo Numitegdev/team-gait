@@ -256,6 +256,8 @@ onScanChange
   onChange={(e) =>
     onRAMChange(e.target.value)
   }
+
+   className="rounded-lg border px-3 py-2"
 >
   <option value="">
     Semua RAM
@@ -284,6 +286,8 @@ onScanChange
   onChange={(e) =>
     onDDRChange(e.target.value)
   }
+
+   className="rounded-lg border px-3 py-2"
 >
 
 <option value="">
