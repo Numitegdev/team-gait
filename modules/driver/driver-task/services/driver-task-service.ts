@@ -73,10 +73,15 @@ await supabase
 console.log("INSERT ERROR", error);
 
 const paymentInfo =
-
   data?.payment_type === "cash"
 
     ? `Cash Rp ${Number(
+        data.cash_amount || 0
+      ).toLocaleString("id-ID")}`
+
+    : data?.payment_type === "transfer"
+
+    ? `Transfer Rp ${Number(
         data.cash_amount || 0
       ).toLocaleString("id-ID")}`
 
