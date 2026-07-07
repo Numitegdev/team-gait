@@ -271,11 +271,11 @@ return (
           </th>
 
           <th className="p-4 text-left">
-            Pengirim
+            Kirim Ke
           </th>
 
           <th className="p-4 text-left">
-            Penerima
+            Ambil dari
           </th>
 
           <th className="p-4 text-left">
