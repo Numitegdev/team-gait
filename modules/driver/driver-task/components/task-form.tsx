@@ -460,6 +460,9 @@ return (
       <option value="cash">
         Cash
       </option>
+      <option value="transfer">
+        Transfer
+      </option>
       </select>
 
     </div>

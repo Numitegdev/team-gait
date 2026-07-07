@@ -34,6 +34,7 @@ import {
   cancelTask,
 } from "@/modules/driver/driver-task/services/driver-task-service";
 
+
 export function useDriverTask() {
 const [role, setRole] = useState("");
 
@@ -148,13 +149,15 @@ async function handleCreate(
 
   }
 
- await createTask({
+await createTask({
 
   ...taskData,
 
   cash_amount:
 
-    taskData.payment_type === "cash"
+    ["cash", "transfer"].includes(
+      taskData.payment_type
+    )
 
       ? Number(
           taskData.cash_amount || 0

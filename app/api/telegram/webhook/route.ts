@@ -175,18 +175,13 @@ if (message.photo) {
   const deskripsi =
     parts[1];
 
-  const paymentType =
-    parts[2] || "none";
+const paymentType =
+  parts[2] || "none";
 
-  const cashAmount =
-
-    paymentType === "cash"
-
-      ? Number(
-          parts[3] || 0
-        )
-
-      : null;
+const paymentAmount =
+  ["cash", "transfer"].includes(paymentType)
+    ? Number(parts[3] || 0)
+    : null;
 
   const nomorTask =
     `DRV-${Date.now()}`;
@@ -219,7 +214,7 @@ if (message.photo) {
         paymentType,
 
       cash_amount:
-        cashAmount,
+        paymentAmount,
 
       status:
         "pending",

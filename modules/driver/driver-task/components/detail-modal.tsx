@@ -28,7 +28,29 @@ file?: File
 ) => Promise<void>;
 
 }
+function getPaymentText(data: any) {
 
+  switch (data.payment_type) {
+
+    case "cash":
+      return `Cash Rp ${Number(
+        data.cash_amount || 0
+      ).toLocaleString("id-ID")}`;
+
+    case "transfer":
+      return `Transfer Rp ${Number(
+        data.cash_amount || 0
+      ).toLocaleString("id-ID")}`;
+
+    case "tempo":
+      return "Tempo";
+
+    default:
+      return "-";
+
+  }
+
+}
 function InfoItem({
 
 label,
@@ -167,8 +189,9 @@ try {
 
 
 }
-console.log("DETAIL DATA:");
-console.log(data);
+
+
+
 if (
 !open ||
 !data
@@ -344,22 +367,10 @@ return (
           value={data.nomor_resi}
         />
 
-        <InfoItem
-          label="Payment"
-          value={
-            data.payment_type === "cash"
-
-              ? `Cash Rp ${Number(
-                  data.cash_amount || 0
-                ).toLocaleString("id-ID")}`
-
-              : data.payment_type === "tempo"
-
-              ? "Tempo"
-
-              : "-"
-          }
-        />
+      <InfoItem
+  label="Payment"
+  value={getPaymentText(data)}
+/>
 
         <InfoItem
           label="Status"
