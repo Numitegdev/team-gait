@@ -117,8 +117,6 @@ export async function checkTodayChecklist(
 
   vehicleId: number,
 
-  userId: string,
-
   checklistDate: string
 
 ) {
@@ -127,8 +125,11 @@ export async function checkTodayChecklist(
     createClient();
 
   const {
+
     data,
+
     error,
+
   } = await supabase
 
     .from(
@@ -143,20 +144,15 @@ export async function checkTodayChecklist(
     )
 
     .eq(
-      "user_id",
-      userId
-    )
-
-    .eq(
       "checklist_date",
       checklistDate
-    )
-
-    .maybeSingle();
+    );
 
   if (error)
     throw error;
 
-  return data;
+  return (
+    data.length > 0
+  );
 
 }

@@ -47,6 +47,9 @@ export default function ChecklistKendaraanPage() {
     setSearch,
 
     filteredVehicles,
+
+      submitting,
+
   }
 
   = useChecklistKendaraan();
@@ -425,6 +428,8 @@ export default function ChecklistKendaraanPage() {
                         false
                       )
                     }
+
+                    submitting={submitting}
 
                     onSubmit={
                       handleSubmitChecklist

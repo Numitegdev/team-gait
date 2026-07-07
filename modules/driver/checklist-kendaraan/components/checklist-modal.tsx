@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  useState,
+  useState,useEffect
 } from "react";
 
 interface Props {
@@ -14,9 +14,13 @@ interface Props {
 
   checklistItems: any[];
 
+  submitting: boolean;
+
     onSubmit: (
     payload: any
     ) => void;
+
+    
 
 }
 
@@ -29,6 +33,8 @@ export function ChecklistModal({
   vehicle,
 
   checklistItems,
+
+    submitting,
 
   onSubmit,
 
@@ -63,7 +69,19 @@ export function ChecklistModal({
             ] = useState<any>(
             {}
     );
-        
+       useEffect(() => {
+
+  if (open) {
+
+    setValues({});
+
+    setNotes({});
+
+    setPhotos({});
+
+  }
+
+}, [open, vehicle?.id]); 
 
   if (!open)
     return null;
@@ -528,7 +546,9 @@ return (
           "
         >
 
-          <button
+         <button
+
+            disabled={submitting}
 
             onClick={() => {
 
@@ -552,31 +572,48 @@ return (
                 return;
 
               }
-          onSubmit({
 
-            values,
+              onSubmit({
 
-            photos,
+                values,
 
-            notes,
+                photos,
 
-          });
+                notes,
+
+              });
 
             }}
 
-            className="
+            className={`
               w-full
               rounded-2xl
-              bg-blue-600
               py-4
               text-lg
               font-semibold
               text-white
               transition
-              hover:bg-blue-700
-            "
+
+              ${
+                submitting
+
+                  ? "cursor-not-allowed bg-slate-400"
+
+                  : "bg-blue-600 hover:bg-blue-700"
+              }
+            `}
           >
-            Submit Checklist
+
+            {
+
+              submitting
+
+                ? "Menyimpan..."
+
+                : "Submit Checklist"
+
+            }
+
           </button>
 
         </div>

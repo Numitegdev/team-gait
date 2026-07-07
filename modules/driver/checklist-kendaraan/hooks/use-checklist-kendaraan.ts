@@ -70,6 +70,15 @@ const [
 
   ] = useState(false);
 
+
+  const [
+
+  submitting,
+
+  setSubmitting,
+
+] = useState(false);
+
   useEffect(() => {
 
     loadData();
@@ -163,15 +172,19 @@ const [
 
   }
 
-
-  async function handleSubmitChecklist(
+async function handleSubmitChecklist(
   payload: any
 ) {
 
-  if (
-    !selectedVehicle
-  )
+  if (submitting)
     return;
+
+  if (!selectedVehicle)
+    return;
+
+  setSubmitting(true);
+
+  try {
 
     const {
 
@@ -179,13 +192,9 @@ const [
 
       photos,
 
-       notes,
+      notes,
 
-    }
-    =
-    payload;
-
-  try {
+    } = payload;
 
     const {
 
@@ -203,27 +212,25 @@ const [
         .toISOString()
 
         .split("T")[0];
-    
+
     const existing =
-        await checkTodayChecklist(
+      await checkTodayChecklist(
 
-          selectedVehicle.id,
+        selectedVehicle.id,
 
-          user.id,
+        today
 
-          today
+      );
 
-        );
+    if (existing) {
 
-      if (existing) {
+      alert(
+        "Checklist kendaraan ini sudah dibuat hari ini."
+      );
 
-        alert(
-          "Checklist kendaraan ini sudah dibuat hari ini."
-        );
+      return;
 
-        return;
-
-      }
+    }
 
     const header =
       await createChecklistHeader({
@@ -242,106 +249,117 @@ const [
 
       });
 
-   for (
+    for (
 
-  const itemId of
+      const itemId of
 
-  Object.keys(
-    values
-  )
+      Object.keys(values)
 
-) {
+    ) {
 
-  
+      let photoUrl =
+        null;
 
-let photoUrl =
-  null;
+      if (
 
-if (
+        photos?.[itemId]
 
-  photos?.[itemId]
+      ) {
 
-) {
+        photoUrl =
+          await uploadChecklistPhoto(
 
-  photoUrl =
-    await uploadChecklistPhoto(
+            photos[itemId]
 
-      photos[itemId]
+          );
 
-    );
+      }
 
-}
+      const checklistItem =
 
-const checklistItem =
+        checklistItems.find(
 
-  checklistItems.find(
+          (item: any) =>
 
-    (item: any) =>
+            item.id ===
+            Number(itemId)
 
-      item.id ===
-      Number(itemId)
+        );
 
-  );
-await createChecklistDetail({
+      await createChecklistDetail({
 
-  checklist_id:
-    header.id,
+        checklist_id:
+          header.id,
 
-  item_id:
-    Number(itemId),
+        item_id:
+          Number(itemId),
 
-  condition:
+        condition:
 
-    checklistItem
-      ?.input_type ===
-      "option"
+          checklistItem
+            ?.input_type ===
+            "option"
 
-      ? values[itemId]
+            ? values[itemId]
 
-      : null,
+            : null,
 
-  value_text:
+        value_text:
 
-    checklistItem
-      ?.input_type !==
-      "option"
+          checklistItem
+            ?.input_type !==
+            "option"
 
-      ? String(
-          values[itemId]
-        )
+            ? String(
+                values[itemId]
+              )
 
-      : null,
+            : null,
 
-  photo_url:
-    photoUrl,
+        photo_url:
+          photoUrl,
 
-  notes:
-    notes?.[itemId]
-    ?? null,
+        notes:
+          notes?.[itemId]
+          ?? null,
 
-});
-}
+      });
+
+    }
 
     alert(
       "Checklist berhasil disimpan"
     );
 
-    setOpenChecklist(
-      false
-    );
+    setOpenChecklist(false);
+
+    setSelectedVehicle(null);
+
+    await loadData();
 
   } catch (error: any) {
 
-  console.error(
-    "CHECKLIST ERROR:",
-    error
-  );
+  if (error.code === "23505") {
+
+    alert(
+      "Checklist kendaraan ini sudah dibuat hari ini."
+    );
+
+    return;
+
+  }
+
+  console.error(error);
 
   alert(
-    JSON.stringify(error)
+    "Terjadi kesalahan."
   );
 
-}
+} finally {
+
+    setSubmitting(false);
+
+  }
 
 }
 
@@ -395,7 +413,9 @@ const filteredVehicles =
 
   setSearch,
 
-  filteredVehicles
+  filteredVehicles,
+
+  submitting,
 
   };
 
