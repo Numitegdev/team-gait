@@ -45,7 +45,7 @@ payment_type:
   "none",
 
 cash_amount:
-  "null",
+  "",
 
 });
 
@@ -95,7 +95,7 @@ setForm({
     "none",
 
   cash_amount:
-    "null",
+    "",
 
 });
 
@@ -429,14 +429,10 @@ return (
           payment_type:
             e.target.value,
 
-          cash_amount:
-
-            e.target.value === "cash"
-
-              ? form.cash_amount
-
-              : "",
-
+        cash_amount:
+        ["cash", "transfer"].includes(e.target.value)
+          ? form.cash_amount
+          : "",
         })
 
       }
@@ -477,7 +473,11 @@ return (
         font-medium
       "
     >
-      Nominal Cash
+      Nominal {
+    form.payment_type === "transfer"
+      ? "Transfer"
+      : "Cash"
+  }
     </label>
 
     <input
@@ -487,9 +487,8 @@ return (
       value={form.cash_amount}
 
       disabled={
-        form.payment_type !==
-        "cash"
-      }
+  !["cash", "transfer"].includes(form.payment_type)
+}
 
       onChange={(e) =>
 
@@ -504,7 +503,11 @@ return (
 
       }
 
-      placeholder="Masukkan nominal cash"
+     placeholder={
+        form.payment_type === "transfer"
+          ? "Masukkan nominal transfer"
+          : "Masukkan nominal cash"
+      }
 
       className="
         w-full
