@@ -1,6 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import {
+  useState,
+  useEffect,
+} from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
@@ -29,6 +32,30 @@ export default function LoginPage() {
 
   const [loading, setLoading] =
     useState(false);
+
+ const images = [
+  "/a.jpg",
+  "/b.jpg",
+  "/c.jpg",
+  "/d.jpg",
+  "/e.jpg",
+  "/f.jpg",
+];
+
+const [randomImage, setRandomImage] =
+  useState("/a.jpg");
+
+useEffect(() => {
+
+  setRandomImage(
+    images[
+      Math.floor(
+        Math.random() * images.length
+      )
+    ]
+  );
+
+}, []);
 
   async function handleLogin() {
 
@@ -65,12 +92,14 @@ window.location.href = "/dashboard";
 
   }
 
+
+
   return (
 
    <div
   className="
     min-h-screen
-    bg-gradient-to-br
+    bg-linear-to-br
     from-slate-200
     via-slate-200
     to-slate-300
@@ -85,7 +114,7 @@ window.location.href = "/dashboard";
       <div
         className="
           w-full
-          max-w-6xl
+          max-w-5xl
           overflow-hidden
           rounded-3xl
           bg-white
@@ -106,17 +135,17 @@ window.location.href = "/dashboard";
           "
         >
 
-          <Image
-            src="/a.jpg"
-            alt="Login"
-            width={700}
-            height={700}
-            className="
-              h-auto
-              w-full
-             
-            "
-          />
+         <Image
+          src={randomImage}
+          alt="Login"
+          width={700}
+          height={700}
+          priority
+          className="
+            h-auto
+            w-full
+          "
+        />
 
         </div>
 
@@ -125,8 +154,9 @@ window.location.href = "/dashboard";
             flex
             items-center
             justify-center
-            p-8
-            md:p-12
+           p-6 
+           md:p-10 
+           lg:p-12
           "
         >
 
@@ -140,7 +170,7 @@ window.location.href = "/dashboard";
 
             <h1
               className="
-                text-4xl
+               text-3xl md:text-4xl
                 font-bold
                 text-slate-900
               "
