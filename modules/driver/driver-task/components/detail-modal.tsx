@@ -51,17 +51,47 @@ function getPaymentText(data: any) {
   }
 
 }
+function renderText(text: string) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+  return text.split(urlRegex).map((part, index) => {
+    if (urlRegex.test(part)) {
+      return (
+        <a
+          key={index}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="
+            text-blue-600
+            underline
+            hover:text-blue-800
+          "
+        >
+          {part}
+        </a>
+      );
+    }
+
+    return part;
+  });
+}
+
 function InfoItem({
 
-label,
+  label,
 
-value,
+  value,
+
+  multiline = false,
 
 }: {
 
-label: string;
+  label: string;
 
-value: any;
+  value: any;
+
+  multiline?: boolean;
 
 }) {
 
@@ -88,16 +118,17 @@ return (
 
   </div>
 
-  <div
-    className="
-      mt-1
-      font-medium
-    "
-  >
-
-    {value || "-"}
-
-  </div>
+<div
+  className={`
+    mt-1
+    font-medium
+    ${multiline ? "whitespace-pre-wrap break-words" : ""}
+  `}
+>
+  {typeof value === "string"
+    ? renderText(value)
+    : value || "-"}
+</div>
 
 </div>
 
@@ -368,19 +399,20 @@ return (
         />
 
       <InfoItem
-  label="Payment"
-  value={getPaymentText(data)}
-/>
+        label="Payment"
+        value={getPaymentText(data)}
+      />
 
         <InfoItem
           label="Status"
           value={data.status}
         />
 
-        <InfoItem
-          label="Deskripsi"
-          value={data.deskripsi}
-        />
+      <InfoItem
+  label="Deskripsi"
+  value={data.deskripsi}
+  multiline
+/>
 
       </div>
 
