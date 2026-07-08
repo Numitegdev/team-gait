@@ -207,8 +207,6 @@ return (
                 flex
                 gap-2
               "
-               
-             
                 >
 
                   <button
@@ -265,7 +263,9 @@ return (
           <th className="p-4 text-left">
             No Task
           </th>
-
+          <th className="p-4 text-left">
+          Dibuat Oleh
+        </th>
           <th className="p-4 text-left">
             Driver
           </th>
@@ -321,9 +321,12 @@ return (
                 </td>
 
                 <td className="p-4">
+                  {item.creator?.full_name || "-"}
+                </td>
+
+                <td className="p-4">
                   {
-                    item.profiles
-                      ?.full_name
+                   item.driver?.full_name
                     || "-"
                   }
                 </td>

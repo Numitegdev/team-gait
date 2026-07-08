@@ -13,9 +13,12 @@ export async function getMonitoring() {
         "driver_tasks"
       )
 
-     .select(`
+ .select(`
   *,
-  profiles(
+  driver:profiles!driver_tasks_assigned_user_id_fkey(
+    full_name
+  ),
+  creator:profiles!driver_tasks_created_by_fkey(
     full_name
   ),
   driver_task_logs(*),

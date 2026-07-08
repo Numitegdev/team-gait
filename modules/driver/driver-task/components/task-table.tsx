@@ -205,7 +205,8 @@ return (
                           userRole === "staff_driver" ||
                           userRole === "staff_security" ||
                           userRole === "staff_officeboy" ||
-                          userRole === "it_admin"
+                          userRole === "it_admin" ||
+                          userRole === "ga_admin"
                         ) && (
                           <button
                             onClick={() =>

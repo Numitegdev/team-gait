@@ -15,8 +15,16 @@ export async function getTasks() {
 
 const { data, error } =
   await supabase
-    .from("driver_tasks")
-    .select("*")
+   .from("driver_tasks")
+ .select(`
+    *,
+    profiles!driver_tasks_assigned_user_id_fkey(
+      full_name
+    ),
+    creator:profiles!driver_tasks_created_by_fkey(
+      full_name
+    )
+  `)
 
 .in(
   "status",
@@ -43,10 +51,12 @@ export async function createTask(
 payload: any
 ) {
 
-
-
 const nomorTask =
 `DRV-${Date.now()}`;
+
+const {
+  data: { user },
+} = await supabase.auth.getUser();
 
 const { data, error } =
 await supabase
@@ -62,6 +72,7 @@ await supabase
         nomorTask,
       status:
         "pending",
+      created_by: user?.id,
     },
   ])
 
@@ -69,8 +80,8 @@ await supabase
 
   .single();
 
-  console.log("INSERT RESULT", data);
-console.log("INSERT ERROR", error);
+//   console.log("INSERT RESULT", data);
+// console.log("INSERT ERROR", error);
 
 const paymentInfo =
   data?.payment_type === "cash"
