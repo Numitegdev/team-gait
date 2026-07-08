@@ -143,26 +143,22 @@ return (
 
       </label>
 
-      <select
-
-        value={
-          form.jenis
-        }
-
+    <select
+        value={form.jenis}
         onChange={(e) =>
-
           setForm({
-
             ...form,
-
-            jenis:
-              e.target
-                .value,
-
+            jenis: e.target.value,
+            pengirim:
+              e.target.value === "penerimaan"
+                ? ""
+                : form.pengirim,
+            penerima:
+              e.target.value === "pengiriman"
+                ? ""
+                : form.penerima,
           })
-
         }
-
         className="
           w-full
           rounded-lg
@@ -170,7 +166,6 @@ return (
           px-3
           py-2
         "
-
       >
 
         <option value="pengiriman">
@@ -260,39 +255,26 @@ return (
 
       </label>
 
-      <input
-
-        value={
-          form.pengirim
-        }
-
-        onChange={(e) =>
-
-          setForm({
-
-            ...form,
-
-            pengirim:
-              e.target
-                .value,
-
-          })
-
-        }
-
-        placeholder="
-          Contoh : TOKO A
-        "
-
-        className="
-          w-full
-          rounded-lg
-          border
-          px-3
-          py-2
-        "
-
-      />
+     <input
+  value={form.pengirim}
+  disabled={form.jenis === "penerimaan"}
+  onChange={(e) =>
+    setForm({
+      ...form,
+      pengirim: e.target.value,
+    })
+  }
+  placeholder="Contoh : TOKO A"
+  className="
+    w-full
+    rounded-lg
+    border
+    px-3
+    py-2
+    disabled:bg-slate-100
+    disabled:text-slate-400
+  "
+/>
 
     </div>
 
@@ -312,38 +294,25 @@ return (
       </label>
 
       <input
-
-        value={
-          form.penerima
-        }
-
-        onChange={(e) =>
-
-          setForm({
-
-            ...form,
-
-            penerima:
-              e.target
-                .value,
-
-          })
-
-        }
-
-        placeholder="
-        Contoh : TOKO A
-        "
-
-        className="
-          w-full
-          rounded-lg
-          border
-          px-3
-          py-2
-        "
-
-      />
+  value={form.penerima}
+  disabled={form.jenis === "pengiriman"}
+  onChange={(e) =>
+    setForm({
+      ...form,
+      penerima: e.target.value,
+    })
+  }
+  placeholder="Contoh : TOKO A"
+  className="
+    w-full
+    rounded-lg
+    border
+    px-3
+    py-2
+    disabled:bg-slate-100
+    disabled:text-slate-400
+  "
+/>
 
     </div>
 
@@ -388,7 +357,7 @@ return (
         }
 
         placeholder="
-          Masukkan nomor resi
+          Masukkan nomor resi jika ada
         "
 
         className="
