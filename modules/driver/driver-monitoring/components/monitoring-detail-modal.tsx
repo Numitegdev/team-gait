@@ -45,6 +45,22 @@ default:
 
 }
 
+function getPaymentText(data: any) {
+  switch (data.payment_type) {
+    case "cash":
+      return `Cash - Rp ${Number(data.cash_amount || 0).toLocaleString("id-ID")}`;
+
+    case "transfer":
+      return `Transfer - Rp ${Number(data.cash_amount || 0).toLocaleString("id-ID")}`;
+
+    case "tempo":
+      return "Tempo";
+
+    default:
+      return "Tidak Ada Payment";
+  }
+}
+
 
 export function MonitoringDetailModal({
 
@@ -199,7 +215,7 @@ return (
           >
 
             {
-              data.profiles
+              data.driver
                 ?.full_name
               || "-"
             }
@@ -245,6 +261,7 @@ return (
             >
 
               {data.status}
+           
 
             </span>
 
@@ -344,6 +361,24 @@ return (
             </div>
 
           </div>
+            <div>
+
+            <div
+              className="
+                text-sm
+                text-slate-500
+              "
+            >
+
+           Deskripsi
+
+            </div>
+
+            <div>
+              {data.deskripsi}
+            </div>
+
+          </div>
 
           <div>
 
@@ -401,41 +436,25 @@ return (
             </div>
 
           </div>
+         
 
           {/* payment */}
-          <div>
+      <div>
 
-              <div
-                className="
-                  text-sm
-                  text-slate-500
-                "
-              >
-                Payment
-              </div>
+  <div
+    className="
+      text-sm
+      text-slate-500
+    "
+  >
+    Payment
+  </div>
 
-              <div>
+  <div>
+    {getPaymentText(data)}
+  </div>
 
-                {data.payment_type === "none" && (
-                  <span>Tidak Ada Payment</span>
-                )}
-
-                {data.payment_type === "tempo" && (
-                  <span>Tempo</span>
-                )}
-
-                {data.payment_type === "cash" && (
-                  <span>
-                    Cash - Rp{" "}
-                    {Number(
-                      data.cash_amount || 0
-                    ).toLocaleString("id-ID")}
-                  </span>
-                )}
-
-              </div>
-
-            </div>
+</div>
 
         </div>
 
