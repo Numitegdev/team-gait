@@ -1,7 +1,8 @@
 "use client";
 
 import {
-useState,
+  useState,
+  useRef,
 } from "react";
 
 interface Props {
@@ -59,49 +60,59 @@ setTaskPhoto,
 
 ] = useState<File>();
 
+const [submitting, setSubmitting] = useState(false);
+
+const fileInputRef =
+  useRef<HTMLInputElement>(null);
+
 async function handleSubmit(
-e: React.FormEvent
+  e: React.FormEvent
 ) {
 
-e.preventDefault();
+  e.preventDefault();
 
-await onSubmit({
+  if (submitting) return;
 
-  ...form,
+  try {
 
-  taskPhoto,
+    setSubmitting(true);
 
-});
+    await onSubmit({
 
-setForm({
+      ...form,
 
-  jenis:
-    "pengiriman",
+      taskPhoto,
 
-  pengirim:
-    "",
+    });
 
-  penerima:
-    "",
+    setForm({
 
-  nomor_resi:
-    "",
+      jenis: "pengiriman",
 
-  deskripsi:
-    "",
+      pengirim: "",
 
-  payment_type:
-    "none",
+      penerima: "",
 
-  cash_amount:
-    "",
+      nomor_resi: "",
 
-});
+      deskripsi: "",
 
-setTaskPhoto(
-  undefined
-);
+      payment_type: "none",
 
+      cash_amount: "",
+
+    });
+
+    setTaskPhoto(undefined);
+    if (fileInputRef.current) {
+  fileInputRef.current.value = "";
+}
+
+  } finally {
+
+    setSubmitting(false);
+
+  }
 
 }
 
@@ -196,26 +207,28 @@ return (
 
       <input
 
-        type="file"
+  ref={fileInputRef}
 
-        accept="image/*"
+  type="file"
 
-        onChange={(e) =>
+  accept="image/*"
 
-          setTaskPhoto(
-            e.target.files?.[0]
-          )
+  onChange={(e) =>
 
-        }
+    setTaskPhoto(
+      e.target.files?.[0]
+    )
 
-        className="
-          w-full
-          rounded-lg
-          border
-          p-2
-        "
+  }
 
-      />
+  className="
+    w-full
+    rounded-lg
+    border
+    p-2
+  "
+
+/>
 
       {
 
@@ -564,6 +577,8 @@ return (
 
       type="submit"
 
+      disabled={submitting}
+
       className="
         rounded-lg
         bg-blue-600
@@ -573,11 +588,15 @@ return (
         text-white
         transition
         hover:bg-blue-700
+        disabled:opacity-50
+        disabled:cursor-not-allowed
       "
 
     >
 
-      Simpan Task
+      {submitting
+        ? "Menyimpan..."
+        : "Simpan Task"}
 
     </button>
 
