@@ -12,7 +12,7 @@ export async function cleanupDriverPhotos() {
     new Date();
 
   limitDate.setDate(
-    limitDate.getDate() - 7
+    limitDate.getDate() - 4
   );
 
 // limitDate.setMinutes(

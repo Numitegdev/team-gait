@@ -61,7 +61,40 @@ function getPaymentText(data: any) {
   }
 }
 
+function renderText(text: string) {
 
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+  return text.split(urlRegex).map((part, index) => {
+
+    if (urlRegex.test(part)) {
+
+      return (
+
+        <a
+          key={index}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="
+            text-blue-600
+            underline
+            hover:text-blue-800
+            break-all
+          "
+        >
+          {part}
+        </a>
+
+      );
+
+    }
+
+    return part;
+
+  });
+
+}
 export function MonitoringDetailModal({
 
 open,
@@ -361,24 +394,32 @@ return (
             </div>
 
           </div>
-            <div>
+         
+           <div>
 
-            <div
-              className="
-                text-sm
-                text-slate-500
-              "
-            >
+              <div
+                className="
+                  text-sm
+                  text-slate-500
+                "
+              >
 
-           Deskripsi
+                Deskripsi
+
+              </div>
+
+              <div
+                className="
+                  whitespace-pre-wrap
+                  break-words
+                "
+              >
+                {data.deskripsi
+                  ? renderText(data.deskripsi)
+                  : "-"}
+              </div>
 
             </div>
-
-            <div>
-              {data.deskripsi}
-            </div>
-
-          </div>
 
           <div>
 
@@ -441,20 +482,20 @@ return (
           {/* payment */}
       <div>
 
-  <div
-    className="
-      text-sm
-      text-slate-500
-    "
-  >
-    Payment
-  </div>
+            <div
+              className="
+                text-sm
+                text-slate-500
+              "
+            >
+              Payment
+            </div>
 
-  <div>
-    {getPaymentText(data)}
-  </div>
+                <div>
+                  {getPaymentText(data)}
+                </div>
 
-</div>
+      </div>
 
         </div>
 
