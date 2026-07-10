@@ -146,18 +146,14 @@ export function MaintenanceFormCard({
               Pilih Ruangan
             </option>
 
-            {rooms.map(
-              (room) => (
-
-                <option
-                  key={room}
-                  value={room}
-                >
-                  {room}
-                </option>
-
-              )
-            )}
+           {rooms.map((room) => (
+              <option
+                key={room.code}
+                value={room.code}
+              >
+                {room.name}
+              </option>
+            ))}
 
           </select>
 

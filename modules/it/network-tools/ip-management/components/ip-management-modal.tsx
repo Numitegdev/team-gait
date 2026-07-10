@@ -38,6 +38,17 @@ export function IPManagementModal({
   setRecommendedIP,
 ] = useState("");
 
+const emptyForm = {
+  ruangan: "",
+  jenis_network: "Network Office",
+  device: "",
+  ip_terkini: "",
+  fungsional: "Office",
+  whitelist: "-",
+  keterangan: "",
+  isp_utama: "",
+  isp_backup: "",
+};
 
 
 const [
@@ -62,7 +73,11 @@ const [
   isp_utama: "",
 
   isp_backup: "",
+
+
+  
 });
+
 
   useEffect(() => {
     if (!editingDevice) {
@@ -126,42 +141,68 @@ const [
   form.jenis_network,
   usedIPs,
 ]);
+
+
   if (!open) return null;
 
-    
-
   async function handleSave() {
-    const duplicateIP =
-      existingDevices.find(
-        (device) => {
-          if (
-            editingDevice &&
-            device.id ===
-              editingDevice.id
-          ) {
-            return false;
-          }
+    if (form.ip_terkini !== "0.0.0.0") {
 
-          return (
-            device.ip_terkini ===
-            form.ip_terkini
-          );
-        }
+  const duplicateIP =
+    existingDevices.find((device) => {
+
+      if (
+        editingDevice &&
+        device.id === editingDevice.id
+      ) {
+        return false;
+      }
+
+      return (
+        device.ip_terkini.trim() ===
+        form.ip_terkini.trim()
       );
 
-    if (duplicateIP) {
-      setIpError(
-        "IP Address sudah digunakan"
-      );
+    });
 
-      return;
-    }
+  if (duplicateIP) {
 
-    setIpError("");
+    setIpError(
+      "IP Address sudah digunakan."
+    );
 
-    await onSave(form);
+    return;
 
-    onClose();
+  }
+
+}
+
+// setIpError("");
+
+ try {
+
+  await onSave(form);
+
+  setForm(emptyForm);
+
+  setIpError("");
+
+  setRecommendedIP("");
+
+  setAvailableIPs([]);
+
+  onClose();
+
+} catch (error: any) {
+
+  setIpError(
+    error.message ||
+    "Gagal menyimpan data."
+  );
+
+}
+
+    
   }
 
   return (
@@ -215,10 +256,10 @@ const [
               e.target.value;
 
             const serverRooms = [
-              "Server Utama",
-              "Tele OP CS Meja 1",
-              "Tele OP CS Meja 2",
-              "Voucher",
+              "R19", // Server Utama
+              "R26", // Telemarketing & CS
+              "R18", // Operator
+              "R3", // Voucher
             ];
 
             setForm({
@@ -243,12 +284,12 @@ const [
               Pilih Ruangan
             </option>
 
-            {rooms.map((room) => (
+               {rooms.map((room) => (
               <option
-                key={room}
-                value={room}
+                key={room.code}
+                value={room.code}
               >
-                {room}
+                {room.name}
               </option>
             ))}
           </select>

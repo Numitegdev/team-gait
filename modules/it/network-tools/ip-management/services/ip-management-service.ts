@@ -19,32 +19,48 @@ export async function createDevice(
   payload: any
 ) {
 
-  return supabase
-    .from("ip_management")
-    .insert([payload]);
-}
+  const { error } =
+    await supabase
+      .from("ip_management")
+      .insert([payload]);
 
+  if (error) {
+    throw error;
+  }
+
+}
 export async function updateDevice(
   id: number,
   payload: any
 ) {
 
-  return supabase
-    .from("ip_management")
-    .update(payload)
-    .eq("id", id);
+  const { error } =
+    await supabase
+      .from("ip_management")
+      .update(payload)
+      .eq("id", id);
+
+  if (error) {
+    throw error;
+  }
+
 }
 
 export async function deleteDevice(
   id: number
 ) {
 
-  return supabase
-    .from("ip_management")
-    .delete()
-    .eq("id", id);
-}
+  const { error } =
+    await supabase
+      .from("ip_management")
+      .delete()
+      .eq("id", id);
 
+  if (error) {
+    throw error;
+  }
+
+}
 export async function bulkInsertDevices(
   devices: any[]
 ) {

@@ -78,14 +78,31 @@ const [selectedISPBackup, setSelectedISPBackup] =
     }
   }
 
-  async function addDevice(
-    payload: Omit<Device, "id">
-  ) {
+ async function addDevice(
+  payload: Omit<Device, "id">
+) {
+
+  try {
 
     await createDevice(payload);
 
     await loadDevices();
+
+  } catch (error: any) {
+
+    if (error.code === "23505") {
+
+      throw new Error(
+        "IP Address sudah digunakan."
+      );
+
+    }
+
+    throw error;
+
   }
+
+}
 
   async function editDevice(
     id: number,

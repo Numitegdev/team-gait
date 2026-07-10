@@ -2,7 +2,7 @@
 
 import { Device }
 from "../types/ip-management";
-
+import { getRoomName } from "../constants/room-options";
 interface Props {
 
   devices: Device[];
@@ -34,6 +34,7 @@ export function IPManagementTable({
 
   onEdit,
   onDelete,
+  
 
 }: Props) {
 
@@ -124,7 +125,7 @@ export function IPManagementTable({
               </td>
 
               <td className="p-3 hidden md:table-cell">
-                {item.ruangan}
+               {getRoomName(item.ruangan)}
               </td>
 
               <td className="p-3 hidden md:table-cell">
@@ -135,9 +136,11 @@ export function IPManagementTable({
                 {item.fungsional}
               </td>
 
-              <td>{item.isp_utama || "-"}</td>
+              <td className="p-3">
+                {item.isp_utama || "-"}</td>
 
-              <td>{item.isp_backup || "-"}</td>
+              <td className="p-3">
+                {item.isp_backup || "-"}</td>
 
               <td className="p-3 hidden md:table-cell">
 

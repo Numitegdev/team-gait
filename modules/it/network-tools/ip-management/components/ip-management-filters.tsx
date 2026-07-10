@@ -88,12 +88,12 @@ export function IPManagementFilters({
         Semua Ruangan
       </option>
 
-      {rooms.map((room) => (
+    {rooms.map((room) => (
         <option
-          key={room}
-          value={room}
+          key={room.code}
+          value={room.code}
         >
-          {room}
+          {room.name}
         </option>
       ))}
     </select>
