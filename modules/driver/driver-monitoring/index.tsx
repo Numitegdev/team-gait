@@ -71,6 +71,9 @@ export default function DriverMonitoringPage() {
 
   verifyFilter,
 setVerifyFilter,
+creatorFilter,
+setCreatorFilter,
+creators,
 
 
 }
@@ -201,6 +204,36 @@ return (
       </option>
 
     </select>
+
+  <select
+    value={creatorFilter}
+    onChange={(e) =>
+      setCreatorFilter(e.target.value)
+    }
+    className="
+        rounded-lg
+        border
+        px-3
+        py-2
+      "
+  >
+
+    <option value="all">
+      Semua Creator
+    </option>
+
+    {creators.map((name) => (
+
+      <option
+        key={name}
+        value={name}
+      >
+        {name}
+      </option>
+
+    ))}
+
+  </select>
 
     <select
 

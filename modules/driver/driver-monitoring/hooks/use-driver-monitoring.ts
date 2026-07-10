@@ -70,6 +70,14 @@ const [
 ] = useState("all");
 
 const [
+
+  creatorFilter,
+
+  setCreatorFilter,
+
+] = useState("all");
+
+const [
   verifyFilter,
   setVerifyFilter,
 ] = useState("all");
@@ -126,6 +134,7 @@ useEffect(() => {
   search,
   statusFilter,
   driverFilter,
+  creatorFilter,
   verifyFilter,
   dateFrom,
   dateTo,
@@ -205,7 +214,7 @@ useEffect(() => {
 
       const data =
         await getMonitoring();
-
+console.log(data);
       setTasks(data);
 
     } finally {
@@ -341,9 +350,18 @@ const matchDriver =
 
   ||
 
-  item.profiles
-    ?.full_name ===
+  item.driver?.full_name ===
     driverFilter;
+
+const matchCreator =
+
+  creatorFilter === "all"
+
+  ||
+
+  item.creator?.full_name ===
+    creatorFilter;
+    
 
 const matchVerify =
 
@@ -365,12 +383,15 @@ const matchVerify =
     !item.is_verified
   );
    
-  return (
+return (
+
   matchSearch &&
   matchStatus &&
   matchDate &&
   matchDriver &&
+  matchCreator &&
   matchVerify
+
 );
      
 
@@ -405,8 +426,25 @@ const paginatedTasks =
 
       .map(
         (item) =>
-          item.profiles
+          item.driver
             ?.full_name
+      )
+
+      .filter(Boolean)
+
+  ),
+
+];
+
+const creators = [
+
+  ...new Set(
+
+    tasks
+
+      .map(
+        (item) =>
+          item.creator?.full_name
       )
 
       .filter(Boolean)
@@ -521,6 +559,10 @@ drivers,
 
 verifyFilter,
   setVerifyFilter,
+
+  creatorFilter,
+setCreatorFilter,
+creators,
 
     };
 
