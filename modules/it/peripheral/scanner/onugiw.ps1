@@ -1,8 +1,30 @@
+function Show-Step {
+
+    param(
+
+        [int]$Percent,
+
+        [string]$Status
+
+    )
+
+    Write-Progress `
+        -Activity "TEAM GA IT Scanner v1.0" `
+        -Status $Status `
+        -PercentComplete $Percent
+
+    Write-Host ("[{0,3}%] {1}" -f $Percent,$Status) -ForegroundColor Cyan
+
+}
+Show-Step 0 "Memulai Scanner..."
 #  Ambil info Hardware
+Show-Step 10 "Membaca Processor..."
 $Cpu = Get-CimInstance Win32_Processor
+Show-Step 20 "Membaca RAM..."
 $Memory = Get-CimInstance Win32_PhysicalMemory
 
 #  Olah data Memory (RAM)
+
 $MemoryInfo = @{
     total_gb = [math]::Round(($Memory | Measure-Object Capacity -Sum).Sum / 1GB, 0)
     modules = @()
@@ -26,6 +48,7 @@ foreach($ram in $Memory){
 }
 
 #  Olah data Storage
+Show-Step 35 "Membaca Storage..."
 $PhysicalDisks = Get-PhysicalDisk
 
 $Volumes = Get-Volume |
@@ -83,7 +106,7 @@ foreach($volume in $Volumes){
 # ============================
 # GPU
 # ============================
-
+Show-Step 60 "Membaca VGA..."
 $VideoControllers = Get-CimInstance Win32_VideoController
 
 $GpuInfo = @()
@@ -153,6 +176,8 @@ $BiosInfo = @{
 # ============================
 # WINDOWS
 # ============================
+Show-Step 50 "Membaca Windows..."
+
 
 $OS = Get-CimInstance Win32_OperatingSystem
 
@@ -175,7 +200,7 @@ $WindowsInfo = @{
 # ============================
 # NETWORK
 # ============================
-
+Show-Step 70 "Membaca Network..."
 $Adapters = Get-NetIPConfiguration |
 Where-Object {
     $_.IPv4Address -ne $null
@@ -214,7 +239,7 @@ foreach($adapter in $Adapters){
 # ============================
 # SOFTWARE
 # ============================
-
+Show-Step 80 "Mencari Software..."
 $SoftwareInfo = @()
 
 function Add-SoftwareResult {
@@ -405,25 +430,85 @@ if($SqlService){
     }
 }
 
-# $OtomaxInfo = @{
+$swPaths = @()
 
-#     installed = $false
+if (Test-Path "C:\SW") {
+    $swPaths += "C:\SW"
+}
 
-#     running = $false
+if (Test-Path "D:\SW") {
+    $swPaths += "D:\SW"
+}
 
-#     version = ""
+$clientAll = @()
+$client = @()
+$monitor = @()
 
-# }
+foreach ($swRoot in $swPaths) {
 
-# if($OtomaxService){
+    foreach ($dir in Get-ChildItem $swRoot -Directory) {
 
-#     $OtomaxInfo.installed = $true
+        switch -Wildcard ($dir.Name) {
 
-#     $OtomaxInfo.running =
-#         ($OtomaxService.Status -eq "Running")
+            "Otomax*" {
 
-# }
+                $clientAll += $dir.Name
 
+            }
+
+            "Client*" {
+
+                $client += $dir.Name
+
+            }
+
+            "OTO_Monitor*" {
+
+                $monitor += $dir.Name
+
+            }
+
+            "Client All Induk" {
+
+                Get-ChildItem $dir.FullName -Directory | ForEach-Object {
+
+                    if ($_.Name -like "Otomax*") {
+                        $clientAll += $_.Name
+                    }
+
+                }
+
+            }
+
+            "Client Otomax" {
+
+                Get-ChildItem $dir.FullName -Directory | ForEach-Object {
+
+                    if ($_.Name -like "Client*") {
+                        $client += $_.Name
+                    }
+
+                }
+
+            }
+
+            "New Oto Monitoring" {
+
+                Get-ChildItem $dir.FullName -Directory | ForEach-Object {
+
+                    if ($_.Name -like "OTO_Monitor*") {
+                        $monitor += $_.Name
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+}
 $SoftwareInfo += @{
 
     name = "SQL Server"
@@ -435,83 +520,52 @@ $SoftwareInfo += @{
     path = ""
 
 }
-# $SoftwareInfo += @{
 
-#     name = "Otomax Server"
+$SoftwareInfo += @{
 
-#     installed = $OtomaxInfo.installed
+    name = "Client All Induk"
 
-#     version = $OtomaxInfo.version
+    installed = ($clientAll.Count -gt 0)
 
-#     path = ""
+    version = ""
 
-# }
+    path = ($swPaths -join ", ")
 
-# $FolderList = @(
-#     "Client All Induk",
-#     "Client Otomax",
-#     "New Oto Monitoring"
-# )
+    items = $clientAll | Sort-Object -Unique
 
-# function FindFolder {
+}
+$SoftwareInfo += @{
 
-#     param(
-#         [string]$FolderName
-#     )
+    name = "Client Otomax"
 
-#     $roots = @(
-#         "C:\",
-#         "D:\",
-#         "E:\",
-#         "F:\"
-#     )
+    installed = ($client.Count -gt 0)
 
-#     foreach($root in $roots){
+    version = ""
 
-#         $folder = Get-ChildItem `
-#             -Path $root `
-#             -Directory `
-#             -Filter $FolderName `
-#             -Recurse `
-#             -ErrorAction SilentlyContinue |
-#             Select-Object -First 1
+    path = ($swPaths -join ", ")
 
-#         if($folder){
+    items = $client | Sort-Object -Unique
 
-#             return @{
-#                 installed = $true
-#                 path = $folder.FullName
-#             }
+}
+$SoftwareInfo += @{
 
-#         }
+    name = "OTO Monitor"
 
-#     }
+    installed = ($monitor.Count -gt 0)
 
-#     return @{
-#         installed = $false
-#         path = ""
-#     }
+    version = ""
 
-# }
+    path = ($swPaths -join ", ")
 
-# foreach($folder in $FolderList){
+    items = $monitor | Sort-Object -Unique
 
-#     $result = FindFolder $folder
+}
 
-#     $SoftwareInfo += @{
 
-#         name = $folder
-
-#         installed = $result.installed
-
-#         version = ""
-
-#         path = $result.path
-
-#     }
-
-# }
+###############################
 #  Satukan Output JSON
+##############################
+Show-Step 92 "Menyusun Hasil Scanner..."
 $Result = @{
 
     scanner_version = "1.0.0"
@@ -569,9 +623,21 @@ $Result = @{
 }
 
 # 5. Path Output (Menggunakan USERPROFILE agar pasti ke desktop user aktif)
+Show-Step 97 "Menyimpan scanner_result.json..."
 $Path = "$env:USERPROFILE\Desktop\$($env:COMPUTERNAME).json"
 
 # Export ke JSON
+
+Write-Progress `
+    -Activity "TEAM GA IT Scanner v1.0" `
+    -Completed
+
+Write-Host ""
+Write-Host "==================================" -ForegroundColor Green
+Write-Host " Scanner selesai." -ForegroundColor Green
+Write-Host " JSON berhasil dibuat." -ForegroundColor Green
+Write-Host "==================================" -ForegroundColor Green
+
 $Result | ConvertTo-Json -Depth 10 | Out-File $Path -Encoding UTF8
 
 Write-Host ""
