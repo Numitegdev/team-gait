@@ -187,17 +187,17 @@ const totalActivities = reports.reduce(
 
       </div>
 
-<DailyMonitorHeader
+      <DailyMonitorHeader
 
-  totalReports={totalReports}
+        totalReports={totalReports}
 
-  pendingReports={pendingReports}
+        pendingReports={pendingReports}
 
-  verifiedReports={verifiedReports}
+        verifiedReports={verifiedReports}
 
-  totalActivities={totalActivities}
+        totalActivities={totalActivities}
 
-/>
+      />
 
   <div className="grid gap-4 lg:grid-cols-2">
 

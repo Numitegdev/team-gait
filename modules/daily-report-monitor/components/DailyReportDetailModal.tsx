@@ -114,18 +114,6 @@ export function DailyReportDetailModal({
 
         <div className="flex justify-end gap-3 border-t pt-4">
 
-    <button
-
-        onClick={onClose}
-
-        className="rounded-lg border px-4 py-2"
-
-    >
-
-        Tutup
-
-    </button>
-
     {
 
         !report?.report.is_verified && (
