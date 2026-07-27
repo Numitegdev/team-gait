@@ -1,0 +1,9 @@
+export const HISTORY_ACTION = {
+  CREATE: "CREATE",
+  UPDATE: "UPDATE",
+  TRANSFER: "TRANSFER",
+  BORROW: "BORROW",
+  RETURN: "RETURN",
+  APPROVE: "APPROVE",
+  REJECT: "REJECT",
+} as const;

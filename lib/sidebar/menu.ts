@@ -6,6 +6,7 @@ import {
   Monitor,
   Settings,
   Briefcase,
+  ClipboardList,
 } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 
@@ -87,12 +88,20 @@ export const sidebarMenu: Record<
           title: "IP Management",
           url: "/dashboard/it/network-tools/ip-management",
         },
+      ]
+    },
+  {
+          title: "Assets Management",
+          url: "",
+
+          children: [
         {
-          title: "Kelola PC Aktif",
+          title: "Kelola PC Addon",
           url: "/dashboard/it/peripheral",
         },
       ]
     },
+
     {
           title: "Maintenance",
           url: "",
@@ -192,6 +201,23 @@ export const sidebarMenu: Record<
         },
       ],
     },
+
+    {
+      title: "Jobdesk Team",
+      url: "",
+      icon: ClipboardList,
+       children: [
+        {
+          title: "Jobdesk Checklist",
+          url: "/dashboard/daily/dailycheck",
+        },
+         {
+          title: "Jobdesk Monitoring",
+          url: "/dashboard/daily/dailycheck-monitor",
+        },
+      ],
+    },
+
     // {
     //   title: "Office Boy",
     //   url: "/dashboard/officeboy",
@@ -310,6 +336,19 @@ export const sidebarMenu: Record<
             },
           ]
         },
+
+        {
+      title: "Jobdesk Team",
+      url: "",
+      icon: ClipboardList,
+       children: [
+        {
+          title: "Jobdesk Checklist",
+          url: "/dashboard/daily/dailycheck",
+        },
+      ],
+    },
+
   ],
 },
   ],
@@ -364,6 +403,7 @@ export const sidebarMenu: Record<
                     
           ]
         },
+        
      
       ],
       
@@ -394,6 +434,22 @@ export const sidebarMenu: Record<
       ],
       
     },
+    {
+      title: "Jobdesk Team",
+      url: "",
+      icon: ClipboardList,
+       children: [
+        {
+          title: "Jobdesk Checklist",
+          url: "/dashboard/daily/dailycheck",
+        },
+         {
+          title: "Jobdesk Monitoring",
+          url: "/dashboard/daily/dailycheck-monitor",
+        },
+      ],
+    },
+
     // {
     //   title: "Office Boy",
     //   url: "/dashboard/officeboy",
@@ -459,6 +515,18 @@ export const sidebarMenu: Record<
      
       ],
     },
+    {
+      title: "Jobdesk Team",
+      url: "",
+      icon: ClipboardList,
+       children: [
+        {
+          title: "Jobdesk Checklist",
+          url: "/dashboard/daily/dailycheck",
+        },
+      ],
+    },
+
   ],
 
   staff_cheff: [
@@ -479,6 +547,18 @@ export const sidebarMenu: Record<
         },
       ],
     },
+    {
+      title: "Jobdesk Team",
+      url: "",
+      icon: ClipboardList,
+       children: [
+        {
+          title: "Jobdesk Checklist",
+          url: "/dashboard/daily/dailycheck",
+        },
+      ],
+    },
+
   ],
 
   staff_security: [
@@ -503,6 +583,19 @@ export const sidebarMenu: Record<
         },
       ],
     },
+    {
+      title: "Jobdesk Team",
+      url: "",
+      icon: ClipboardList,
+       children: [
+        {
+          title: "Jobdesk Checklist",
+          url: "/dashboard/daily/dailycheck",
+        },
+
+      ],
+    },
+
     
   ],
 
@@ -528,6 +621,18 @@ export const sidebarMenu: Record<
         },
       ],
     },
+    {
+      title: "Jobdesk Team",
+      url: "",
+      icon: ClipboardList,
+       children: [
+        {
+          title: "Jobdesk Checklist",
+          url: "/dashboard/daily/dailycheck",
+        },
+      ],
+    },
+
   ],
 
 staff_gudang: [
@@ -552,6 +657,7 @@ staff_gudang: [
         
       ],
     },
+    
   ],
 
   staff_admin: [

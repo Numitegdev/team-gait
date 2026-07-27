@@ -128,6 +128,17 @@ async function loadUser() {
 
       setLoading(true);
 
+      const supabase =
+  createClient();
+
+const {
+  data: { user },
+} = await supabase.auth.getUser();
+
+if (!user) {
+  throw new Error("User tidak ditemukan");
+}
+
       const header =
         await createCheck({
 
@@ -137,6 +148,9 @@ async function loadUser() {
           shift,
 
           petugas,
+
+          user_id:
+        user?.id,
 
           catatan,
 
