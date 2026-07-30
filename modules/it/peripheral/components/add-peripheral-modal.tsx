@@ -73,9 +73,9 @@ useMemo(() => {
 
         const matchSearch =
 
-            device.device
-                .toLowerCase()
-                .includes(keyword)
+            (device.device ?? "")
+            .toLowerCase()
+            .includes(keyword)
 
             ||
 
