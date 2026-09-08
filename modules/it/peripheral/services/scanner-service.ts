@@ -35,6 +35,10 @@ export async function uploadScanner(
   const scanTime =
     normalizeScanTime(scanner.scan_time);
 
+console.log("===== SCANNER UPLOAD =====");
+console.log("RAW:", scanner.scan_time);
+console.log("NORMALIZED:", scanTime);
+console.log("==========================");
   console.log("SCAN TIME ASLI:", scanner.scan_time);
   console.log("SCAN TIME NORMALIZED:", scanTime);
 
