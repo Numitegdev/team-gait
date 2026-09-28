@@ -90,7 +90,7 @@ export function DailyReportMiniCard({
 
         <p className="mb-2 text-xs font-medium uppercase text-gray-400">
 
-          Catatan
+         Jobdesk Lain
 
         </p>
 

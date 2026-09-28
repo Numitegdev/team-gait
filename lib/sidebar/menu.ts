@@ -683,5 +683,122 @@ staff_gudang: [
     },
   ],
 
+   adm_numiteg: [
+    // {
+    //   title: "Dashboard",
+    //   url: "/dashboard",
+    //   icon: LayoutDashboard,
+    // },
+    {
+      title: "Admin Numiteg",
+      url: "",
+      icon: Briefcase,
+       children: [
+         {
+          title: "Driver Task (Admin)",
+          url: "/dashboard/driver/driver-task",
+        },
+        {
+              title: "Driver Monitoring",
+              url: "/dashboard/driver/driver-monitoring",
+            },
+      ],
+    },
+  ],
+
+   adm_bekami: [
+    // {
+    //   title: "Dashboard",
+    //   url: "/dashboard",
+    //   icon: LayoutDashboard,
+    // },
+    {
+      title: "Admin Bekami",
+      url: "",
+      icon: Briefcase,
+       children: [
+         {
+          title: "Driver Task (Admin)",
+          url: "/dashboard/driver/driver-task",
+        },
+        {
+              title: "Driver Monitoring",
+              url: "/dashboard/driver/driver-monitoring",
+            },
+      ],
+    },
+  ],
+
+   adm_briza: [
+    // {
+    //   title: "Dashboard",
+    //   url: "/dashboard",
+    //   icon: LayoutDashboard,
+    // },
+    {
+      title: "Admin Briza",
+      url: "",
+      icon: Briefcase,
+       children: [
+         {
+          title: "Driver Task (Admin)",
+          url: "/dashboard/driver/driver-task",
+        },
+        {
+              title: "Driver Monitoring",
+              url: "/dashboard/driver/driver-monitoring",
+            },
+      ],
+    },
+  ],
+
+   adm_aswa: [
+    // {
+    //   title: "Dashboard",
+    //   url: "/dashboard",
+    //   icon: LayoutDashboard,
+    // },
+    {
+      title: "Admin Aswa",
+      url: "",
+      icon: Briefcase,
+       children: [
+         {
+          title: "Driver Task (Admin)",
+          url: "/dashboard/driver/driver-task",
+        },
+        {
+              title: "Driver Monitoring",
+              url: "/dashboard/driver/driver-monitoring",
+            },
+      ],
+    },
+  ],
+ adm_blueheron: [
+    // {
+    //   title: "Dashboard",
+    //   url: "/dashboard",
+    //   icon: LayoutDashboard,
+    // },
+    {
+      title: "Admin Blueheron",
+      url: "",
+      icon: Briefcase,
+       children: [
+         {
+          title: "Driver Task (Admin)",
+          url: "/dashboard/driver/driver-task",
+        },
+        {
+              title: "Driver Monitoring",
+              url: "/dashboard/driver/driver-monitoring",
+            },
+      ],
+    },
+  ],
+
+
+
+
 
 };

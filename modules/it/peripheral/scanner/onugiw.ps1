@@ -622,25 +622,99 @@ $Result = @{
 
 }
 
-# 5. Path Output (Menggunakan USERPROFILE agar pasti ke desktop user aktif)
-Show-Step 97 "Menyimpan scanner_result.json..."
-$Path = "$env:USERPROFILE\Desktop\$($env:COMPUTERNAME).json"
+# ============================
+# 5. SIMPAN HASIL SCANNER
+# ============================
 
-# Export ke JSON
+# Ambil lokasi Desktop Windows yang sebenarnya
+$DesktopPath = [Environment]::GetFolderPath("Desktop")
 
-Write-Progress `
-    -Activity "TEAM GA IT Scanner v1.0" `
-    -Completed
+# Pastikan lokasi Desktop ditemukan
+if ([string]::IsNullOrWhiteSpace($DesktopPath)) {
+
+    Write-Host ""
+    Write-Host "ERROR: Lokasi Desktop tidak ditemukan." -ForegroundColor Red
+    Write-Host "Scanner gagal menyimpan file JSON." -ForegroundColor Red
+    Pause
+    exit
+
+}
+
+$Path = Join-Path `
+    $DesktopPath `
+    "$($env:COMPUTERNAME).json"
+
 
 Write-Host ""
-Write-Host "==================================" -ForegroundColor Green
-Write-Host " Scanner selesai." -ForegroundColor Green
-Write-Host " JSON berhasil dibuat." -ForegroundColor Green
-Write-Host "==================================" -ForegroundColor Green
+Write-Host "[97%] Menyimpan scanner_result.json..." -ForegroundColor Cyan
 
-$Result | ConvertTo-Json -Depth 10 | Out-File $Path -Encoding UTF8
+try {
 
-Write-Host ""
-Write-Host "Scanner selesai."
-Write-Host "File disimpan di: $Path"
+    $JsonOutput =
+        $Result |
+        ConvertTo-Json -Depth 10
+
+    $JsonOutput |
+        Out-File `
+            -FilePath $Path `
+            -Encoding UTF8 `
+            -ErrorAction Stop
+
+
+    # Pastikan file benar-benar berhasil dibuat
+    if (Test-Path $Path) {
+
+        Write-Host ""
+        Write-Host "======================================" -ForegroundColor Green
+        Write-Host "Scanner selesai." -ForegroundColor Green
+        Write-Host "JSON berhasil dibuat." -ForegroundColor Green
+        Write-Host "File disimpan di:" -ForegroundColor Green
+        Write-Host $Path -ForegroundColor Yellow
+        Write-Host "======================================" -ForegroundColor Green
+
+    }
+    else {
+
+        Write-Host ""
+        Write-Host "ERROR: File JSON tidak ditemukan setelah proses penyimpanan." -ForegroundColor Red
+
+    }
+
+}
+catch {
+
+    Write-Host ""
+    Write-Host "======================================" -ForegroundColor Red
+    Write-Host "GAGAL MENYIMPAN JSON" -ForegroundColor Red
+    Write-Host "======================================" -ForegroundColor Red
+    Write-Host $_.Exception.Message -ForegroundColor Red
+    Write-Host ""
+    Write-Host "Path yang digunakan:" -ForegroundColor Yellow
+    Write-Host $Path -ForegroundColor Yellow
+
+}
+
 Pause
+
+# # 5. Path Output (Menggunakan USERPROFILE agar pasti ke desktop user aktif)
+# Show-Step 97 "Menyimpan scanner_result.json..."
+# $Path = "$env:USERPROFILE\Desktop\$($env:COMPUTERNAME).json"
+
+# # Export ke JSON
+
+# Write-Progress `
+#     -Activity "TEAM GA IT Scanner v1.0" `
+#     -Completed
+
+# Write-Host ""
+# Write-Host "==================================" -ForegroundColor Green
+# Write-Host " Scanner selesai." -ForegroundColor Green
+# Write-Host " JSON berhasil dibuat." -ForegroundColor Green
+# Write-Host "==================================" -ForegroundColor Green
+
+# $Result | ConvertTo-Json -Depth 10 | Out-File $Path -Encoding UTF8
+
+# Write-Host ""
+# Write-Host "Scanner selesai."
+# Write-Host "File disimpan di: $Path"
+# Pause

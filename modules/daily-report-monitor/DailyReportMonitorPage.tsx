@@ -247,25 +247,25 @@ const totalActivities = reports.reduce(
         >
           
 
-          {filteredReports.map((report) => (
+        {filteredReports.map((report) => (
 
-          <DailyReportMiniCard
+            <DailyReportMiniCard
 
-            key={report.userId}
+              key={report.report.id}
 
-            report={report}
+              report={report}
 
-            onDetail={(item) => {
+              onDetail={(item) => {
 
                 setSelectedReport(item);
 
                 setOpenDetail(true);
 
-            }}
+              }}
 
-        />
-        
-                ))}
+            />
+
+          ))}
 
               
         <DailyReportDetailModal

@@ -1,12 +1,12 @@
 "use client";
-
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
 import AssetToolbar from "./components/AssetToolbar";
 import AssetTable from "./components/AssetTable";
 import AssetPagination from "./components/AssetPagination";
 import AssetModal from "./components/AssetModal";
 import AssetDetailModal from "./components/AssetDetailModal";
+import AssetDashboard from "./components/AssetDashboard";
 import {
 
   deleteAsset,
@@ -16,6 +16,12 @@ import {
 import { useAssets } from "./hooks/use-assets";
 
 export default function AssetsPage() {
+
+  const supabase = createClient();
+
+const [role, setRole] =
+  useState<string | null>(null);
+
 
   const {
 
@@ -37,6 +43,54 @@ export default function AssetsPage() {
 
   } = useAssets();
 
+  useEffect(() => {
+
+  async function loadProfile() {
+
+    const {
+      data: {
+        user,
+      },
+    } = await supabase.auth.getUser();
+
+    if (!user)
+      return;
+
+    const {
+      data: profile,
+      error,
+    } = await supabase
+
+      .from("profiles")
+
+      .select("role")
+
+      .eq(
+        "id",
+        user.id
+      )
+
+      .single();
+
+    if (error) {
+
+      console.error(
+        "Gagal mengambil role:",
+        error
+      );
+
+      return;
+
+    }
+
+    setRole(profile.role);
+
+  }
+
+  loadProfile();
+
+}, []);
+
 const [openModal, setOpenModal] =
   useState(false);
 
@@ -49,7 +103,8 @@ const [openDetail, setOpenDetail] =
 const [selectedDetailId, setSelectedDetailId] =
   useState<number | null>(null);
   
-  
+
+
   async function handleDelete(
   id: number
 ) {
@@ -120,6 +175,8 @@ const [selectedDetailId, setSelectedDetailId] =
 
       </div>
 
+   <AssetDashboard />
+
       <AssetToolbar
 
         search={search}
@@ -143,6 +200,8 @@ const [selectedDetailId, setSelectedDetailId] =
         assets={assets}
 
         loading={loading}
+
+      role={role ?? ""}
 
         onView={(id) => {
 

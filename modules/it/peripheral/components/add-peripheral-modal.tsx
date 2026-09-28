@@ -73,7 +73,11 @@ useMemo(() => {
 
         const matchSearch =
 
+<<<<<<< HEAD
             (device.device ?? "")
+=======
+           (device.device ?? "")
+>>>>>>> 4364b72 (feat: tambah modul asset support dan update scanner)
             .toLowerCase()
             .includes(keyword)
 

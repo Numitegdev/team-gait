@@ -37,6 +37,19 @@ export async function getAssets() {
   return data;
 }
 
+export async function getActiveAssets() {
+
+  const { data, error } =
+    await supabase
+      .from("assets")
+      .select("*")
+      .eq("is_active", true);
+
+  if (error) throw error;
+
+  return data;
+}
+
 export async function getAssetList() {
 
   const { data, error } =

@@ -139,7 +139,7 @@ const selectedModel =
 
           value={form.asset_code}
            
-          readOnly
+          // readOnly
 
           onChange={(e) =>
 

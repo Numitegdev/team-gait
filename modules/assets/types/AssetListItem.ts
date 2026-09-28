@@ -31,4 +31,6 @@ export interface AssetListItem {
 
   status: AssetStatus | null;
 
+  company_id: number | null;
+
 }

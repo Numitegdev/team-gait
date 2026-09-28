@@ -112,6 +112,25 @@ export function CreateUserForm() {
              <option value="staff_gudang">
             Staff Gudang
           </option>
+          <option value="adm_numiteg">
+            Admin Numiteg
+          </option>
+
+          <option value="adm_bekami">
+            Admin Bekami
+          </option>
+
+          <option value="adm_briza">
+            Admin Briza
+          </option>
+
+          <option value="adm_aswa">
+            Admin Aswa
+          </option>
+
+          <option value="adm_blueheron">
+            Admin Bluheron
+          </option>
         </select>
 
         <button

@@ -1,0 +1,13 @@
+export const MUTATION_STATUS = {
+
+  PENDING: "PENDING",
+
+  APPROVED: "APPROVED",
+
+  REJECTED: "REJECTED",
+
+  EXECUTED: "EXECUTED",
+
+  CANCELLED: "CANCELLED",
+
+} as const;

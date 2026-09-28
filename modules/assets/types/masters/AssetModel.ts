@@ -28,5 +28,4 @@ export interface AssetModel {
 
   spec_source: string;
 
-
 }

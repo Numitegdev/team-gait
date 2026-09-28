@@ -96,7 +96,7 @@ const {
         activities.length,
 
     };
-console.log(data);
+
 
     return {
 

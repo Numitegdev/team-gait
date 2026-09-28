@@ -1,12 +1,16 @@
 "use client";
 
 import { AssetListItem } from "../types/AssetListItem";
-
+import {
+  canEditAsset,
+} from "@/lib/auth/company-permission";
 interface AssetTableProps {
 
   assets: AssetListItem[];
 
   loading: boolean;
+
+  role: string;
 
   onView: (
     id: number
@@ -23,10 +27,11 @@ interface AssetTableProps {
 }
 
 export default function AssetTable({
-
-  assets,
+ assets,
 
   loading,
+
+  role,
 
   onView,
 
@@ -237,27 +242,40 @@ export default function AssetTable({
 
                   </button>
 
-                    <button
+                 {canEditAsset(
+                        role,
+                        asset.company_id
+                      ) && (
 
-                      onClick={() =>
-                        onEdit(asset.id)
-                      }
+                        <button
 
-                      className="
-                        rounded-lg
-                        bg-amber-500
-                        px-3
-                        py-1
-                        mr-2
-                        text-white
-                        hover:bg-amber-600
-                      "
+                          onClick={() =>
+                            onEdit(asset.id)
+                          }
 
-                    >
+                          className="
+                            rounded-lg
+                            bg-amber-500
+                            px-3
+                            py-1
+                            mr-2
+                            text-white
+                            hover:bg-amber-600
+                          "
 
-                      Edit
+                        >
 
-                    </button>
+                          Edit
+
+                        </button>
+
+                      )}
+
+                     {canEditAsset(
+                          role,
+                          asset.company_id
+                        ) && ( 
+
                       <button
 
                       onClick={() =>
@@ -278,6 +296,8 @@ export default function AssetTable({
                       Delete
 
                     </button>
+
+                  )}
 
                 </td>
 
@@ -398,27 +418,41 @@ export default function AssetTable({
 
             </button>
 
-                <button
+            {canEditAsset(
+                    role,
+                    asset.company_id
+                  ) && (
 
-                  onClick={() =>
-                    onEdit(asset.id)
-                  }
+                    <button
 
-                  className="
-                    rounded-lg
-                    bg-amber-500
-                    px-3
-                    py-1
-                    mr-2
-                    text-white
-                    hover:bg-amber-600
-                  "
+                      onClick={() =>
+                        onEdit(asset.id)
+                      }
 
-                >
+                      className="
+                        rounded-lg
+                        bg-amber-500
+                        px-3
+                        py-1
+                        mr-2
+                        text-white
+                        hover:bg-amber-600
+                      "
 
-                  Edit
+                    >
 
-                </button>
+                      Edit
+
+                    </button>
+
+                  )}
+
+
+                {canEditAsset(
+                    role,
+                    asset.company_id
+                  ) && (
+
                   <button
 
                   onClick={() =>
@@ -439,6 +473,8 @@ export default function AssetTable({
                   Delete
 
                 </button>
+            )}
+          
           </div>
 
         ))}

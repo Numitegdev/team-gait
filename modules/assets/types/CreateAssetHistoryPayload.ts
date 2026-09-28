@@ -2,6 +2,9 @@ export interface CreateAssetHistoryPayload {
 
   asset_id: number;
 
+  old_asset_code?: string | null;
+  new_asset_code?: string | null;
+
   action_type: string;
 
   reference_no?: string | null;
