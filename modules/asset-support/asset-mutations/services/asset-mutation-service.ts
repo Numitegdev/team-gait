@@ -514,59 +514,124 @@ export async function getMutationById(
 
 }
 
+
 export async function approveMutation(
   mutationId: number
 ) {
-
+  // 1. Ambil user yang sedang login
   const {
     data: { user },
+    error: userError,
   } = await supabase.auth.getUser();
 
+  if (userError) throw userError;
+
   if (!user) {
+    throw new Error("User tidak ditemukan.");
+  }
+
+  // 2. Ambil permintaan mutasi
+  const {
+    data: mutation,
+    error: mutationError,
+  } = await supabase
+    .from("asset_mutations")
+    .select("id, asset_id, status")
+    .eq("id", mutationId)
+    .maybeSingle();
+
+  if (mutationError) throw mutationError;
+
+  if (!mutation) {
+    throw new Error("Mutation tidak ditemukan.");
+  }
+
+  if (mutation.status !== MUTATION_STATUS.PENDING) {
     throw new Error(
-      "User tidak ditemukan."
+      "Hanya mutation berstatus PENDING yang bisa disetujui."
     );
   }
 
+  // 3. Ambil status terkini aset
+  const {
+    data: asset,
+    error: assetError,
+  } = await supabase
+    .from("assets")
+    .select("id, status_id")
+    .eq("id", mutation.asset_id)
+    .maybeSingle();
+
+  if (assetError) throw assetError;
+
+  if (!asset) {
+    throw new Error("Asset tidak ditemukan.");
+  }
+
+  // 4. Ambil nama status aset
+  const {
+    data: assetStatus,
+    error: statusError,
+  } = await supabase
+    .from("asset_statuses")
+    .select("name")
+    .eq("id", asset.status_id)
+    .maybeSingle();
+
+  if (statusError) throw statusError;
+
+  if (!assetStatus?.name) {
+    throw new Error(
+      "Status aset tidak ditemukan. Mutasi tidak dapat disetujui."
+    );
+  }
+
+  const currentStatus = assetStatus.name.trim();
+
+  // 5. Hanya Available yang boleh disetujui
+  if (currentStatus.toLowerCase() !== "available") {
+    if (currentStatus.toLowerCase() === "loan") {
+      throw new Error(
+        "Mutasi tidak dapat disetujui karena aset masih berstatus Loan. " +
+        "Lakukan Return terlebih dahulu. Permintaan mutasi tetap PENDING; " +
+        "tekan Reject jika permintaan ini tidak dapat dilanjutkan."
+      );
+    }
+
+    throw new Error(
+      `Mutasi tidak dapat disetujui karena status aset masih ${currentStatus}. ` +
+      "Ubah status aset menjadi Available terlebih dahulu. " +
+      "Permintaan mutasi tetap PENDING; tekan Reject jika permintaan ini tidak dapat dilanjutkan."
+    );
+  }
+
+  // 6. Setujui hanya jika permintaan masih PENDING
   const {
     data,
     error,
   } = await supabase
-
     .from("asset_mutations")
-
     .update({
-
-      status:
-        MUTATION_STATUS.APPROVED,
-
-      approved_by:
-        user.id,
-
-      approved_at:
-        new Date().toISOString(),
-
+      status: MUTATION_STATUS.APPROVED,
+      approved_by: user.id,
+      approved_at: new Date().toISOString(),
     })
-
-    .eq(
-      "id",
-      mutationId
-    )
-
-    .eq(
-      "status",
-      MUTATION_STATUS.PENDING
-    )
-
+    .eq("id", mutationId)
+    .eq("status", MUTATION_STATUS.PENDING)
     .select()
+    .maybeSingle();
 
-    .single();
+  if (error) throw error;
 
-  if (error)
-    throw error;
+  if (!data) {
+    throw new Error(
+      "Permintaan mutasi sudah berubah atau telah diproses oleh pengguna lain."
+    );
+  }
 
   return data;
 }
+
 export async function rejectMutation(
   mutationId: number,
   rejectionReason: string
@@ -632,6 +697,7 @@ export async function rejectMutation(
 
   return data;
 }
+
 export async function executeMutation(
   mutationId: number
 ) {

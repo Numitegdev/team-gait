@@ -1,5 +1,6 @@
 "use client";
-
+import { Printer } from "lucide-react";
+import { printAssetLabel } from "../utils/asset-label";
 import { AssetListItem } from "../types/AssetListItem";
 import {
   canEditAsset,
@@ -40,6 +41,21 @@ export default function AssetTable({
   onDelete,
 
 }: AssetTableProps) {
+
+async function handlePrintLabel(asset: AssetListItem) {
+  try {
+    await printAssetLabel(asset);
+  } catch (error) {
+    console.error("Gagal mencetak label asset:", error);
+
+    alert(
+      error instanceof Error
+        ? error.message
+        : "Gagal mencetak label asset."
+    );
+  }
+}
+
 
   if (loading) {
 
@@ -299,6 +315,26 @@ export default function AssetTable({
 
                   )}
 
+                  
+                  <button
+                  type="button"
+                  onClick={() => handlePrintLabel(asset)}
+                  className="
+                    ml-2
+                    rounded-lg
+                    bg-gray-700
+                    px-3
+                    py-1
+                    text-white
+                    hover:bg-gray-800
+                  "
+                >
+                  <span className="inline-flex items-center gap-1">
+                    <Printer size={14} />
+                   Barcode
+                  </span>
+                </button>
+
                 </td>
 
               </tr>
@@ -474,7 +510,24 @@ export default function AssetTable({
 
                 </button>
             )}
-          
+           <button
+                  type="button"
+                  onClick={() => handlePrintLabel(asset)}
+                  className="
+                    ml-2
+                    rounded-lg
+                    bg-gray-700
+                    px-3
+                    py-1
+                    text-white
+                    hover:bg-gray-800
+                  "
+                >
+                  <span className="inline-flex items-center gap-1">
+                    <Printer size={14} />
+                   Barcode
+                  </span>
+                </button>
           </div>
 
         ))}

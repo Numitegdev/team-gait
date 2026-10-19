@@ -416,225 +416,220 @@ export async function createLoan(
 
 }
 
+
 // ==============================
-// buat Approve
+// APPROVE LOAN
 // ==============================
 
 export async function approveLoan(
   loanId: number
 ): Promise<AssetLoan> {
-
   const supabase = createClient();
 
-  // ============================================
   // 1. USER LOGIN
-  // ============================================
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) {
-    throw new Error(
-      "User belum login."
-    );
+    throw new Error("User belum login.");
   }
 
-
-  // ============================================
   // 2. AMBIL ROLE USER
-  // ============================================
-
   const {
     data: profile,
     error: profileError,
-  } =
-    await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
+  } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
 
   if (profileError) {
     throw profileError;
   }
 
-
   if (!profile?.role) {
-    throw new Error(
-      "Role user tidak ditemukan."
-    );
+    throw new Error("Role user tidak ditemukan.");
   }
 
+  const role = profile.role;
 
-  const role =
-    profile.role;
-
-
-  // ============================================
-  // 3. AMBIL DATA LOAN
-  // ============================================
-
+  // 3. AMBIL DATA LOAN DAN ASET
   const {
     data: loan,
     error: loanError,
-  } =
-    await supabase
-      .from("asset_loans")
-      .select(`
-        *,
-        asset:assets(
-          id,
-          asset_code,
-          asset_name,
-          company_id
-        )
-      `)
-      .eq(
-        "id",
-        loanId
+  } = await supabase
+    .from("asset_loans")
+    .select(`
+      *,
+      asset:assets(
+        id,
+        asset_code,
+        asset_name,
+        company_id,
+        status_id
       )
-      .single();
-
+    `)
+    .eq("id", loanId)
+    .single();
 
   if (loanError) {
     throw loanError;
   }
 
-
   if (!loan) {
-    throw new Error(
-      "Data loan tidak ditemukan."
-    );
+    throw new Error("Data loan tidak ditemukan.");
   }
 
-
-  // ============================================
   // 4. HANYA PENDING YANG BOLEH DI-APPROVE
-  // ============================================
-
-  if (
-    loan.status !== "PENDING"
-  ) {
-
+  if (loan.status !== "PENDING") {
     throw new Error(
       `Loan tidak dapat di-approve karena status saat ini ${loan.status}.`
     );
-
   }
 
-
-  // ============================================
   // 5. CEK PERMISSION BERDASARKAN OWNER
-  // ============================================
+  const ownerCompanyId = loan.owner_company_id;
 
-  const ownerCompanyId =
-    loan.owner_company_id;
+  if (role !== "it_admin") {
+    const adminCompanyId = getAdminCompanyId(role);
 
-
-  if (
-    role !== "it_admin"
-  ) {
-
-    const adminCompanyId =
-      getAdminCompanyId(role);
-
-
-    if (
-      adminCompanyId === null
-    ) {
-
-      throw new Error(
-        "User tidak memiliki company."
-      );
-
+    if (adminCompanyId === null) {
+      throw new Error("User tidak memiliki company.");
     }
 
-
-    if (
-      adminCompanyId !==
-      ownerCompanyId
-    ) {
-
+    if (adminCompanyId !== ownerCompanyId) {
       throw new Error(
         "Anda tidak memiliki akses untuk approve loan ini."
       );
-
     }
-
   }
 
+  // 6. PASTIKAN DATA ASET ADA
+  if (!loan.asset) {
+    throw new Error("Asset dari loan tidak ditemukan.");
+  }
 
-  // ============================================
-  // 6. UPDATE MENJADI APPROVED
-  // ============================================
+  // 7. PASTIKAN COMPANY OWNER SESUAI
+  if (loan.asset.company_id !== loan.owner_company_id) {
+    throw new Error(
+      "Company asset tidak sesuai dengan owner loan."
+    );
+  }
 
+  // 8. PERIKSA STATUS ASET
+  const {
+    data: assetStatus,
+    error: statusLookupError,
+  } = await supabase
+    .from("asset_statuses")
+    .select("id, name")
+    .eq("id", loan.asset.status_id)
+    .single();
+
+  if (statusLookupError) {
+    throw statusLookupError;
+  }
+
+  if (
+    assetStatus.name.trim().toLowerCase() !== "available"
+  ) {
+    throw new Error(
+      `Asset ${loan.asset.asset_code} tidak dapat di-approve karena statusnya ${assetStatus.name}. Hanya asset Available yang dapat dipinjam. Silakan Reject permintaan ini.`
+    );
+  }
+
+  // 9. PERIKSA PERMINTAAN LAIN YANG SUDAH APPROVED
+  const {
+    data: approvedLoan,
+    error: approvedLoanError,
+  } = await supabase
+    .from("asset_loans")
+    .select("id, loan_no, owner_company_id, borrower_company_id")
+    .eq("asset_id", loan.asset_id)
+    .eq("status", "APPROVED")
+    .neq("id", loanId)
+    .limit(1)
+    .maybeSingle();
+
+  if (approvedLoanError) {
+    throw approvedLoanError;
+  }
+
+  if (approvedLoan) {
+    throw new Error(
+      `Asset sudah memiliki permintaan peminjaman yang disetujui dengan nomor ${approvedLoan.loan_no}. Silakan Reject permintaan ini.`
+    );
+  }
+
+  // 10. PERIKSA PEMINJAMAN YANG MASIH AKTIF
+  const {
+    data: activeLoan,
+    error: activeLoanError,
+  } = await supabase
+    .from("asset_loans")
+    .select("id, loan_no")
+    .eq("asset_id", loan.asset_id)
+    .eq("status", "ACTIVE")
+    .limit(1)
+    .maybeSingle();
+
+  if (activeLoanError) {
+    throw activeLoanError;
+  }
+
+  if (activeLoan) {
+    throw new Error(
+      `Asset sedang dipinjam dengan nomor ${activeLoan.loan_no}. Silakan Reject permintaan baru ini.`
+    );
+  }
+
+  // 11. UPDATE MENJADI APPROVED
   const {
     data: updatedLoan,
     error: updateError,
-  } =
-    await supabase
-      .from("asset_loans")
-      .update({
-        status: "APPROVED",
-
-        approved_by:
-          user.id,
-
-        approved_at:
-          new Date().toISOString(),
-
-        rejected_by:
-          null,
-
-        rejected_at:
-          null,
-
-        rejection_reason:
-          null,
-      })
-      .eq(
-        "id",
-        loanId
+  } = await supabase
+    .from("asset_loans")
+    .update({
+      status: "APPROVED",
+      approved_by: user.id,
+      approved_at: new Date().toISOString(),
+      rejected_by: null,
+      rejected_at: null,
+      rejection_reason: null,
+    })
+    .eq("id", loanId)
+    .eq("status", "PENDING")
+    .select(`
+      *,
+      asset:assets(
+        id,
+        asset_code,
+        asset_name
+      ),
+      owner_company:companies!asset_loans_owner_company_id_fkey(
+        id,
+        name
+      ),
+      borrower_company:companies!asset_loans_borrower_company_id_fkey(
+        id,
+        name
       )
-      .eq(
-        "status",
-        "PENDING"
-      )
-      .select(`
-        *,
-        asset:assets(
-          id,
-          asset_code,
-          asset_name
-        ),
-        owner_company:companies!asset_loans_owner_company_id_fkey(
-          id,
-          name
-        ),
-        borrower_company:companies!asset_loans_borrower_company_id_fkey(
-          id,
-          name
-        )
-      `)
-      .single();
-
+    `)
+    .single();
 
   if (updateError) {
     throw updateError;
   }
 
-
   if (!updatedLoan) {
-    throw new Error(
-      "Loan gagal di-approve."
-    );
+    throw new Error("Loan gagal di-approve.");
   }
-
 
   return updatedLoan as AssetLoan;
 }
+
 
 // ==============================
 // buat RejectLoan
@@ -1365,6 +1360,50 @@ if (search.trim()) {
 
 }
 
+
+/**
+ * Mengambil status peminjaman untuk seluruh aset.
+ *
+ * ACTIVE = sedang dipinjam
+ * PENDING / APPROVED = proses peminjaman
+ *
+ * RETURNED dan REJECTED tidak memblokir peminjaman baru.
+ */
+export async function getAssetLoanAvailability() {
+  const { data, error } = await supabase
+    .from("asset_loans")
+    .select("asset_id, status")
+    .in("status", ["PENDING", "APPROVED", "ACTIVE"]);
+
+  if (error) {
+    throw error;
+  }
+
+  const availabilityMap = new Map<number, string>();
+
+  for (const loan of data ?? []) {
+    const assetId = Number(loan.asset_id);
+
+    if (!Number.isFinite(assetId)) {
+      continue;
+    }
+
+    // ACTIVE memiliki prioritas tertinggi.
+    if (loan.status === "ACTIVE") {
+      availabilityMap.set(assetId, "BORROWED");
+      continue;
+    }
+
+    // Jangan menimpa status ACTIVE dengan PENDING / APPROVED.
+    if (!availabilityMap.has(assetId)) {
+      availabilityMap.set(assetId, "PROCESSING");
+    }
+  }
+
+  return availabilityMap;
+}
+
+
 export async function updateLoanEndDate(
   loanId: number,
   endDate: string | null
@@ -1631,12 +1670,13 @@ export async function executeLoan(
       .from("asset_loans")
       .select(`
         *,
-        asset:assets(
-          id,
-          asset_code,
-          asset_name,
-          company_id
-        )
+       asset:assets(
+      id,
+      asset_code,
+      asset_name,
+      company_id,
+      status_id
+    )
       `)
       .eq(
         "id",
@@ -1736,6 +1776,44 @@ export async function executeLoan(
     );
 
   }
+
+  
+// ============================================
+// 6A. HANYA ASSET AVAILABLE YANG BOLEH DIPINJAM
+// ============================================
+
+
+const {
+  data: assetStatus,
+  error: statusLookupError,
+} = await supabase
+  .from("asset_statuses")
+  .select("id, name")
+  .eq("id", loan.asset.status_id)
+  .single();
+
+if (statusLookupError) {
+  throw statusLookupError;
+}
+
+if (
+  assetStatus.name.trim().toLowerCase() !==
+  "available"
+) {
+  throw new Error(
+    `Asset tidak dapat dipinjam karena statusnya ${assetStatus.name}. Hanya asset dengan status Available yang dapat dipinjam.`
+  );
+}
+
+
+if (
+  assetStatus.name.trim().toLowerCase() !==
+  "available"
+) {
+  throw new Error(
+    `Asset tidak dapat dipinjam karena statusnya ${assetStatus.name}. Hanya asset dengan status Available yang dapat dipinjam.`
+  );
+}
 
 
   // ============================================
@@ -1840,6 +1918,47 @@ export async function executeLoan(
   );
 
 }
+
+
+  // ============================================
+  // 8A. UPDATE STATUS ASSET MENJADI LOAN
+  // ============================================
+
+  const {
+    error: assetStatusError,
+  } = await supabase
+    .from("assets")
+    .update({
+      status_id: 4,
+      updated_by: user.id,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", loan.asset_id)
+    .select("id")
+    .single();
+
+  if (assetStatusError) {
+    // Kembalikan status loan jika update aset gagal.
+    const { error: rollbackError } = await supabase
+      .from("asset_loans")
+      .update({
+        status: "APPROVED",
+        executed_by: null,
+        executed_at: null,
+      })
+      .eq("id", loanId)
+      .eq("status", "ACTIVE");
+
+    if (rollbackError) {
+      throw new Error(
+        `Status aset gagal diperbarui dan rollback loan juga gagal: ${rollbackError.message}`
+      );
+    }
+
+    throw new Error(
+      `Gagal mengubah status aset menjadi Loan: ${assetStatusError.message}`
+    );
+  }
 
 
 // ============================================
@@ -1956,12 +2075,13 @@ export async function returnLoan(
       .from("asset_loans")
       .select(`
         *,
-        asset:assets(
-          id,
-          asset_code,
-          asset_name,
-          company_id
-        )
+      asset:assets(
+        id,
+        asset_code,
+        asset_name,
+        company_id,
+        status_id
+      )
       `)
       .eq(
         "id",
@@ -2100,6 +2220,51 @@ export async function returnLoan(
   );
 
 }
+
+
+  // ============================================
+  // 6A. KEMBALIKAN STATUS ASSET KE AVAILABLE
+  // HANYA JIKA STATUS SAAT INI MASIH LOAN
+  // ============================================
+
+  if (loan.asset?.status_id === 4) {
+    const {
+      error: assetStatusError,
+    } = await supabase
+      .from("assets")
+      .update({
+        status_id: 1,
+        updated_by: user.id,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", loan.asset_id)
+      .eq("status_id", 4)
+      .select("id")
+      .single();
+
+    if (assetStatusError) {
+      // Kembalikan loan ke ACTIVE jika update aset gagal.
+      const { error: rollbackError } = await supabase
+        .from("asset_loans")
+        .update({
+          status: "ACTIVE",
+          returned_by: null,
+          returned_at: null,
+        })
+        .eq("id", loanId)
+        .eq("status", "RETURNED");
+
+      if (rollbackError) {
+        throw new Error(
+          `Status aset gagal diperbarui dan rollback loan juga gagal: ${rollbackError.message}`
+        );
+      }
+
+      throw new Error(
+        `Gagal mengembalikan status aset ke Available: ${assetStatusError.message}`
+      );
+    }
+  }
 
 
 // ============================================

@@ -7,6 +7,9 @@ import {
 
 import {
   X,
+  Search,
+  Check,
+  ChevronDown,
 } from "lucide-react";
 
 import {
@@ -69,6 +72,9 @@ export default function AssetLoanCreateModal({
   onSuccess,
 
 }: AssetLoanCreateModalProps) {
+
+const [assetSearch, setAssetSearch] = useState("");
+const [assetDropdownOpen, setAssetDropdownOpen] = useState(false);
 
   const [
     assets,
@@ -200,6 +206,10 @@ export default function AssetLoanCreateModal({
 
       setErrorMessage("");
 
+      setAssetSearch("");
+
+setAssetDropdownOpen(false);
+
     }
 
   }, [open]);
@@ -216,6 +226,18 @@ export default function AssetLoanCreateModal({
         Number(assetId)
     );
 
+const filteredAssets = assets
+  .filter((asset) => {
+    const keyword = assetSearch.trim().toLowerCase();
+
+    if (!keyword) return true;
+
+    return (
+      asset.asset_code.toLowerCase().includes(keyword) ||
+      asset.asset_name.toLowerCase().includes(keyword)
+    );
+  })
+  .slice(0, 50);
 
   // ==========================================
   // OWNER COMPANY
@@ -490,58 +512,126 @@ export default function AssetLoanCreateModal({
 
           <div>
 
-            <label
-              className="
-                mb-2
-                block
-                text-sm
-                font-medium
-              "
-            >
-              Asset
-            </label>
 
-            <select
-              value={assetId}
-              onChange={(e) =>
-                setAssetId(
-                  e.target.value
-                )
-              }
-              disabled={loadingData}
-              className="
-                h-11
-                w-full
-                rounded-xl
-                border
-                px-4
-                outline-none
-                focus:border-black
-              "
-            >
+     
+{/* ASSET */}
 
-              <option value="">
-                {loadingData
-                  ? "Memuat asset..."
-                  : "Pilih asset"}
-              </option>
+<div>
+  <label className="mb-2 block text-sm font-medium">
+    Asset
+  </label>
 
-              {assets.map(
-                (asset) => (
+  <div className="relative">
+    <div className="relative">
+      <Search
+        size={18}
+        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+      />
 
-                  <option
-                    key={asset.id}
-                    value={asset.id}
-                  >
+      <input
+        value={
+          assetDropdownOpen
+            ? assetSearch
+            : selectedAsset
+              ? `${selectedAsset.asset_code} - ${selectedAsset.asset_name}`
+              : assetSearch
+        }
+        onChange={(e) => {
+          setAssetSearch(e.target.value);
+          setAssetDropdownOpen(true);
+          setAssetId("");
+        }}
+        onFocus={() => {
+          setAssetDropdownOpen(true);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            setAssetDropdownOpen(false);
+            setAssetSearch("");
+          }
+        }}
+        disabled={loadingData}
+        placeholder={
+          loadingData
+            ? "Memuat asset..."
+            : "Cari kode atau nama asset..."
+        }
+        className="h-11 w-full rounded-xl border pl-10 pr-10 outline-none focus:border-black dark:bg-gray-900"
+      />
+
+      <button
+        type="button"
+        onClick={() => {
+          setAssetDropdownOpen((prev) => !prev);
+          setAssetSearch("");
+        }}
+        disabled={loadingData}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+      >
+        <ChevronDown size={18} />
+      </button>
+    </div>
+
+    {assetDropdownOpen && (
+      <>
+        <button
+          type="button"
+          aria-label="Tutup pilihan aset"
+          className="fixed inset-0 z-40 cursor-default"
+          onClick={() => setAssetDropdownOpen(false)}
+        />
+
+        <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-64 overflow-y-auto rounded-xl border bg-white shadow-xl dark:border-gray-700 dark:bg-gray-900">
+          {filteredAssets.length === 0 ? (
+            <div className="px-4 py-6 text-center text-sm text-gray-500">
+              Tidak ada aset yang cocok.
+            </div>
+          ) : (
+            filteredAssets.map((asset) => (
+              <button
+                key={asset.id}
+                type="button"
+                onClick={() => {
+                  setAssetId(String(asset.id));
+                  setAssetSearch("");
+                  setAssetDropdownOpen(false);
+                }}
+                className="flex w-full items-center justify-between gap-3 border-b px-4 py-3 text-left last:border-b-0 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800"
+              >
+                <div className="min-w-0">
+                  <div className="font-medium">
                     {asset.asset_code}
-                    {" - "}
+                  </div>
+
+                  <div className="truncate text-sm text-gray-500">
                     {asset.asset_name}
-                  </option>
+                  </div>
+                </div>
 
-                )
-              )}
+                {asset.id === Number(assetId) && (
+                  <Check
+                    size={18}
+                    className="shrink-0 text-green-600"
+                  />
+                )}
+              </button>
+            ))
+          )}
+        </div>
+      </>
+    )}
+  </div>
 
-            </select>
+  {selectedAsset && (
+    <p className="mt-2 text-sm text-gray-500">
+      Aset dipilih:{" "}
+      <span className="font-medium text-gray-800 dark:text-gray-200">
+        {selectedAsset.asset_code} - {selectedAsset.asset_name}
+      </span>
+    </p>
+  )}
+</div>
+
 
           </div>
 

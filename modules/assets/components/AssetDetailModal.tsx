@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { getAssetById }
-from "../services/asset-service";
+import { getAssetById ,  finishAssetMaintenance, finishAssetUse, } from "../services/asset-service";
 
 import { AssetDetail }
 from "../types/AssetDetail";
@@ -116,6 +115,46 @@ const [
   AssetHistoryDetail[]
 
 >([]);
+
+const [actionLoading, setActionLoading] = useState(false);
+
+async function handleFinishStatus(
+  action: "maintenance" | "use"
+) {
+  if (!asset) return;
+
+  const isMaintenance = action === "maintenance";
+
+  const confirmed = window.confirm(
+    isMaintenance
+      ? `Apakah perbaikan aset ${asset.asset_code} sudah selesai?`
+      : `Apakah aset ${asset.asset_code} sudah selesai digunakan?`
+  );
+
+  if (!confirmed) return;
+
+  try {
+    setActionLoading(true);
+
+    if (isMaintenance) {
+      await finishAssetMaintenance(asset.id);
+    } else {
+      await finishAssetUse(asset.id);
+    }
+
+    await loadAsset();
+
+    alert("Status aset berhasil diperbarui.");
+  } catch (error) {
+    console.error("Gagal memperbarui status aset:", error);
+
+    alert(
+      "Status aset gagal diperbarui. Silakan periksa kembali data dan koneksi."
+    );
+  } finally {
+    setActionLoading(false);
+  }
+}
 
 const [
   loading,
@@ -569,35 +608,80 @@ useEffect(() => {
             </div>
             {/* history selesei */}
         </div>
-        {/* Footer */}
-        <div
-          className="
-            flex
-            justify-end
-            border-t
-            p-6
-          "
-        >
+{/* Footer */}
+<div
+  className="
+    flex
+    flex-wrap
+    items-center
+    justify-between
+    gap-3
+    border-t
+    p-6
+  "
+>
+  <div className="flex flex-wrap gap-2">
+    {asset?.status?.name === "Maintenance" && (
+      <button
+        type="button"
+        disabled={actionLoading}
+        onClick={() => handleFinishStatus("maintenance")}
+        className="
+          rounded-xl
+          bg-green-600
+          px-4
+          py-2
+          font-medium
+          text-white
+          hover:bg-green-700
+          disabled:cursor-not-allowed
+          disabled:opacity-50
+        "
+      >
+        {actionLoading
+          ? "Memproses..."
+          : "Selesai Perbaikan"}
+      </button>
+    )}
 
-          <button
+    {asset?.status?.name === "In Use" && (
+      <button
+        type="button"
+        disabled={actionLoading}
+        onClick={() => handleFinishStatus("use")}
+        className="
+          rounded-xl
+          bg-blue-600
+          px-4
+          py-2
+          font-medium
+          text-white
+          hover:bg-blue-700
+          disabled:cursor-not-allowed
+          disabled:opacity-50
+        "
+      >
+        {actionLoading
+          ? "Memproses..."
+          : "Selesai Digunakan"}
+      </button>
+    )}
+  </div>
 
-            onClick={onClose}
-
-            className="
-              rounded-xl
-              border
-              px-5
-              py-2
-              hover:bg-gray-100
-            "
-
-          >
-
-            Close
-
-          </button>
-
-        </div>
+  <button
+    type="button"
+    onClick={onClose}
+    className="
+      rounded-xl
+      border
+      px-5
+      py-2
+      hover:bg-gray-100
+    "
+  >
+    Close
+  </button>
+</div>
 
       </div>
 

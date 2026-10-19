@@ -6,7 +6,8 @@ import AssetTable from "./components/AssetTable";
 import AssetPagination from "./components/AssetPagination";
 import AssetModal from "./components/AssetModal";
 import AssetDetailModal from "./components/AssetDetailModal";
-import AssetDashboard from "./components/AssetDashboard";
+
+
 import {
 
   deleteAsset,
@@ -23,25 +24,38 @@ const [role, setRole] =
   useState<string | null>(null);
 
 
-  const {
+const {
+  assets,
+  loading,
+  search,
+  setSearch,
 
-    assets,
+  companyFilter,
+  setCompanyFilter,
+  categoryFilter,
+  setCategoryFilter,
+  locationFilter,
+  setLocationFilter,
+  conditionFilter,
+  setConditionFilter,
+  statusFilter,
+  setStatusFilter,
 
-    loading,
+  companyOptions,
+  categoryOptions,
+  locationOptions,
+  conditionOptions,
+  statusOptions,
 
-    search,
-
-    setSearch,
-
-    page,
-
-    setPage,
-
-    totalPages,
-
-    loadAssets,
-
-  } = useAssets();
+  resetFilters,
+  availabilityFilter,
+  setAvailabilityFilter,
+  availabilityError,
+  page,
+  setPage,
+  totalPages,
+  loadAssets,
+} = useAssets();
 
   useEffect(() => {
 
@@ -175,25 +189,35 @@ const [selectedDetailId, setSelectedDetailId] =
 
       </div>
 
-   <AssetDashboard />
+<AssetToolbar
+  search={search}
+  setSearch={setSearch}
 
-      <AssetToolbar
+  companyFilter={companyFilter}
+  setCompanyFilter={setCompanyFilter}
+  categoryFilter={categoryFilter}
+  setCategoryFilter={setCategoryFilter}
+  locationFilter={locationFilter}
+  setLocationFilter={setLocationFilter}
+  conditionFilter={conditionFilter}
+  setConditionFilter={setConditionFilter}
+  statusFilter={statusFilter}
+  setStatusFilter={setStatusFilter}
 
-        search={search}
-
-        setSearch={setSearch}
-
-       onAdd={() => {
-
-        setSelectedAssetId(
-          null
-        );
-
-        setOpenModal(true);
-
-      }}
-
-      />
+  companyOptions={companyOptions}
+  categoryOptions={categoryOptions}
+  locationOptions={locationOptions}
+  conditionOptions={conditionOptions}
+  statusOptions={statusOptions}
+availabilityFilter={availabilityFilter}
+setAvailabilityFilter={setAvailabilityFilter}
+availabilityError={availabilityError}
+  onResetFilters={resetFilters}
+  onAdd={() => {
+    setSelectedAssetId(null);
+    setOpenModal(true);
+  }}
+/>
 
       <AssetTable
 

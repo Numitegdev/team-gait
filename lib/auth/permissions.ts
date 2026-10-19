@@ -2,9 +2,10 @@ export const roleRoutes = {
   it_admin: [
     "/dashboard",
     "/dashboard/it",
-     "/dashboard/assets",
-      "/dashboard/asset-support",
-     "/dashboard/daily",
+    "/dashboard/assets",
+    "/dashboard/asset-support",
+    "/dashboard/asset-dashboard",
+    "/dashboard/daily",
     "/dashboard/driver",
     "/dashboard/chef",
     "/dashboard/security",
@@ -72,29 +73,39 @@ export const roleRoutes = {
   "/dashboard",
   "/dashboard/assets",
   "/dashboard/asset-support",
+  "/dashboard/asset-dashboard",
+
 ],
 
 adm_bekami: [
   "/dashboard",
   "/dashboard/assets",
   "/dashboard/asset-support",
+  "/dashboard/asset-dashboard",
+
 ],
 
 adm_briza: [
   "/dashboard",
   "/dashboard/assets",
   "/dashboard/asset-support",
+  "/dashboard/asset-dashboard",
+
 ],
 
 adm_aswa: [
   "/dashboard",
   "/dashboard/assets",
   "/dashboard/asset-support",
+  "/dashboard/asset-dashboard",
+
 ],
 
 adm_blueheron: [
   "/dashboard",
   "/dashboard/assets",
   "/dashboard/asset-support",
+  "/dashboard/asset-dashboard",
+
 ],
 };

@@ -124,7 +124,7 @@ if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
 
-      <div className="bg-white rounded-xl w-[650px] p-6">
+      <div className="bg-white rounded-xl w-162.5 p-6">
 
         <h2 className="text-xl font-semibold mb-4">
           Tambah PC Peripheral
@@ -199,7 +199,7 @@ if (!open) return null;
 
 </div>
 
-        <div className="max-h-[400px] overflow-y-auto border rounded-lg">
+        <div className="max-h-100 overflow-y-auto border rounded-lg">
 
           <table className="w-full">
 

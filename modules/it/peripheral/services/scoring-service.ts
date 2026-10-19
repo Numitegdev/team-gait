@@ -55,195 +55,97 @@ function scoreCPU(
 
 }
 
-function scoreSuffix(
-    suffix: string
-): number {
+function scoreSuffix(suffix: string): number {
+  const value = suffix.toUpperCase();
 
-    switch (suffix) {
+  if (value.startsWith("HX")) return 3;
+  if (value.startsWith("HK")) return 2;
+  if (value.startsWith("HQ")) return 2;
+  if (value.startsWith("H")) return 1;
 
-        case "Y":
-            return -6;
+  if (value.startsWith("KF")) return 2;
+  if (value.startsWith("K")) return 2;
+  if (value.startsWith("XE")) return 3;
+  if (value.startsWith("X")) return 2;
 
-        case "U":
-            return -5;
+  if (value.startsWith("P")) return 0;
+  if (value.startsWith("U")) return -1;
+  if (value.startsWith("Y")) return -3;
+  if (value.startsWith("G")) return -1;
 
-        case "P":
-            return -2;
-
-        case "G":
-            return -1;
-
-        case "GE":
-            return 0;
-
-        case "H":
-            return 1;
-
-        case "HQ":
-            return 2;
-
-        case "HK":
-            return 3;
-
-        case "HX":
-            return 4;
-
-        case "F":
-            return 0;
-
-        case "KF":
-            return 2;
-
-        case "K":
-            return 2;
-
-        case "X":
-            return 3;
-
-        case "XE":
-            return 4;
-
-        default:
-            return 0;
-
-    }
-
+  return 0;
 }
 
-
 function scoreIntel(cpu: ParsedCPU): number {
+  let score = 0;
 
-    let score = 0;
-
-    if (cpu.generation >= 12) {
-
-        switch (cpu.family) {
-
-            case "i9": score = 35; break;
-            case "i7": score = 34; break;
-            case "i5": score = 32; break;
-            case "i3": score = 29; break;
-
-            case "Pentium Gold":
-                score = 22;
-                break;
-
-            case "Pentium":
-                score = 18;
-                break;
-
-            case "Celeron":
-                score = 12;
-                break;
-
-            default:
-                score = 15;
-        }
-
+  if (cpu.generation >= 13) {
+    switch (cpu.family) {
+      case "i9": score = 35; break;
+      case "i7": score = 34; break;
+      case "i5": score = 33; break;
+      case "i3": score = 30; break;
+      case "Pentium Gold": score = 22; break;
+      case "Pentium": score = 18; break;
+      case "Celeron": score = 12; break;
+      default: score = 15;
     }
-
-    else if (cpu.generation >= 10) {
-
-        switch (cpu.family) {
-
-            case "i9": score = 34; break;
-            case "i7": score = 31; break;
-            case "i5": score = 29; break;
-            case "i3": score = 27; break;
-
-            case "Pentium Gold":
-                score = 20;
-                break;
-
-            case "Pentium":
-                score = 16;
-                break;
-
-            case "Celeron":
-                score = 10;
-                break;
-
-            default:
-                score = 14;
-        }
-
+  } else if (cpu.generation >= 12) {
+    switch (cpu.family) {
+      case "i9": score = 35; break;
+      case "i7": score = 33; break;
+      case "i5": score = 32; break;
+      case "i3": score = 29; break;
+      case "Pentium Gold": score = 22; break;
+      case "Pentium": score = 18; break;
+      case "Celeron": score = 12; break;
+      default: score = 15;
     }
-
-    else if (cpu.generation >= 8) {
-
-        switch (cpu.family) {
-
-            case "i9": score = 32; break;
-            case "i7": score = 28; break;
-            case "i5": score = 26; break;
-            case "i3": score = 24; break;
-
-            case "Pentium Gold":
-                score = 18;
-                break;
-
-            case "Pentium":
-                score = 14;
-                break;
-
-            case "Celeron":
-                score = 9;
-                break;
-
-            default:
-                score = 13;
-        }
-
+  } else if (cpu.generation >= 10) {
+    switch (cpu.family) {
+      case "i9": score = 34; break;
+      case "i7": score = 31; break;
+      case "i5": score = 29; break;
+      case "i3": score = 27; break;
+      case "Pentium Gold": score = 20; break;
+      case "Pentium": score = 16; break;
+      case "Celeron": score = 10; break;
+      default: score = 14;
     }
-
-    else if (cpu.generation >= 6) {
-
-        switch (cpu.family) {
-
-            case "i7": score = 25; break;
-            case "i5": score = 23; break;
-            case "i3": score = 20; break;
-
-            case "Pentium":
-                score = 13;
-                break;
-
-            case "Celeron":
-                score = 8;
-                break;
-
-            default:
-                score = 12;
-        }
-
+  } else if (cpu.generation >= 8) {
+    switch (cpu.family) {
+      case "i9": score = 32; break;
+      case "i7": score = 28; break;
+      case "i5": score = 26; break;
+      case "i3": score = 24; break;
+      case "Pentium Gold": score = 18; break;
+      case "Pentium": score = 14; break;
+      case "Celeron": score = 9; break;
+      default: score = 13;
     }
-
-    else {
-
-        switch (cpu.family) {
-
-            case "i7": score = 22; break;
-            case "i5": score = 20; break;
-            case "i3": score = 17; break;
-
-            case "Pentium":
-                score = 12;
-                break;
-
-            case "Celeron":
-                score = 7;
-                break;
-
-            default:
-                score = 10;
-        }
-
+  } else if (cpu.generation >= 6) {
+    switch (cpu.family) {
+      case "i7": score = 25; break;
+      case "i5": score = 23; break;
+      case "i3": score = 20; break;
+      case "Pentium": score = 13; break;
+      case "Celeron": score = 8; break;
+      default: score = 12;
     }
+  } else {
+    switch (cpu.family) {
+      case "i7": score = 22; break;
+      case "i5": score = 20; break;
+      case "i3": score = 17; break;
+      case "Pentium": score = 12; break;
+      case "Celeron": score = 7; break;
+      default: score = 10;
+    }
+  }
 
-    score += scoreSuffix(cpu.suffix);
+  score += scoreSuffix(cpu.suffix);
 
-    return Math.max(0, Math.min(score, 35));
-
+  return Math.max(0, Math.min(score, 35));
 }
 function scoreAMD(cpu: ParsedCPU): number {
 

@@ -104,6 +104,10 @@ export const rooms = [
     code: "R26",
     name: "Telemarketing & CS",
   },
+    {
+    code: "R27",
+    name: "Kantor Numiteg",
+  },
 ];
 export const getRoomName = (
   code: string

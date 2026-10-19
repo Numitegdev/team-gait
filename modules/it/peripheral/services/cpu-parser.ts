@@ -19,52 +19,45 @@ export function parseCPU(raw: string): ParsedCPU {
   const text = raw.trim();
 
   // =====================
-  // INTEL CORE
-  // =====================
+// INTEL CORE
+// =====================
 
-  if (text.includes("Intel") && text.includes("Core")) {
+if (text.includes("Intel") && text.includes("Core")) {
+  const match = text.match(/\bi([3579])[-\s](\d{4,5})([A-Za-z]{0,3}\d*)?/i);
 
-    const match = text.match(/i([3579])-(\d{4,5})/i);
+  if (match) {
+    const family = `i${match[1]}`;
+    const model = match[2];
 
-    if (match) {
+    // 10510 -> Gen 10
+    // 1245  -> Gen 12
+    // 1135  -> Gen 11
+    // 8650  -> Gen 8
+    const firstTwoDigits = Number(model.substring(0, 2));
 
-      const family = `i${match[1]}`;
+    const generation =
+      firstTwoDigits >= 10 && firstTwoDigits <= 19
+        ? firstTwoDigits
+        : Number(model.substring(0, 1));
 
-      const model = match[2];
+    const suffixMatch = text.match(
+      /\d{4,5}([A-Za-z]{1,3}\d*)\b/i
+    );
 
-      const generation =
-        model.length === 5
-          ? Number(model.substring(0, 2))
-          : Number(model.substring(0, 1));
+    const suffix = suffixMatch
+      ? suffixMatch[1].toUpperCase()
+      : "";
 
-      const suffixMatch =
-    text.match(/[0-9]{4,5}([A-Za-z]{1,3})/);
-
-const suffix =
-    suffixMatch
-        ? suffixMatch[1].toUpperCase()
-        : "";    
-
-      return {
-
-    vendor: "Intel",
-
-    family,
-
-    generation,
-
-    model,
-
-    suffix,
-
-    raw: text,
-
-};
-
-    }
-
+    return {
+      vendor: "Intel",
+      family,
+      generation,
+      model,
+      suffix,
+      raw: text,
+    };
   }
-
+}
   // =====================
   // Pentium
   // =====================

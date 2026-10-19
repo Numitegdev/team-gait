@@ -638,61 +638,32 @@ const selectedModel =
 
       </select>
 
-      <select
+   
+<select
+  value={form.status_id ?? ""}
+  onChange={(e) =>
+    setForm({
+      ...form,
+      status_id: e.target.value
+        ? Number(e.target.value)
+        : null,
+    })
+  }
+  className="rounded-xl border p-3"
+>
+  <option value="">Status</option>
 
-        value={form.status_id ?? ""}
-
-        onChange={(e)=>
-
-          setForm({
-
-            ...form,
-
-            status_id:
-
-              e.target.value
-
-                ? Number(
-                    e.target.value
-                  )
-
-                : null,
-
-          })
-
-        }
-
-        className="
-          rounded-xl
-          border
-          p-3
-        "
-
-      >
-
-        <option value="">
-
-          Status
-
-        </option>
-
-        {statuses.map((item)=>(
-
-          <option
-
-            key={item.id}
-
-            value={item.id}
-
-          >
-
-            {item.name}
-
-          </option>
-
-        ))}
-
-      </select>
+  {statuses
+    .filter(
+      (item) =>
+        item.name.trim().toLowerCase() !== "loan"
+    )
+    .map((item) => (
+      <option key={item.id} value={item.id}>
+        {item.name}
+      </option>
+    ))}
+</select>
 
       </div>
   
