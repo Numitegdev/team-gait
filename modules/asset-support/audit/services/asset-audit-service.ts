@@ -1,6 +1,6 @@
 
 import { createClient } from "@/lib/supabase/client";
-
+import { getAdminCompanyId } from "@/lib/auth/company-permission";
 import type {
   AssetAuditFilter,
   AssetAuditHistory,
@@ -49,7 +49,13 @@ export async function getAssetAuditList(
 ) {
   const supabase = getSupabase();
   const auditMonth = normalizeAuditMonth(filters.auditMonth);
+const access = await getAuditAccess();
 
+// Hanya it_admin dan admin PT yang terdaftar
+// dalam adminCompanyMap yang boleh membuka audit.
+if (!access.isItAdmin && access.companyId === null) {
+  return [];
+}
   let query = supabase
     .from("assets")
     .select(`
@@ -82,9 +88,11 @@ export async function getAssetAuditList(
     .eq("is_active", true)
     .order("asset_code", { ascending: true });
 
-  if (filters.companyId != null) {
-    query = query.eq("company_id", filters.companyId);
-  }
+if (!access.isItAdmin) {
+  query = query.eq("company_id", access.companyId!);
+} else if (filters.companyId != null) {
+  query = query.eq("company_id", filters.companyId);
+}
 
   if (filters.locationId != null) {
     query = query.eq("location_id", filters.locationId);
@@ -111,6 +119,41 @@ export async function getAssetAuditList(
       auditProgress: currentAudit?.result ?? "unchecked",
     };
   });
+}
+
+async function getAuditAccess() {
+  const supabase = getSupabase();
+
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError) throw authError;
+
+  if (!user) {
+    throw new Error("Silakan login terlebih dahulu.");
+  }
+
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (error) throw error;
+
+  if (!profile?.role) {
+    throw new Error("Role pengguna tidak ditemukan.");
+  }
+
+  const role = profile.role as string;
+
+  return {
+    role,
+    companyId: getAdminCompanyId(role),
+    isItAdmin: role === "it_admin",
+  };
 }
 
 export async function findAssetForAudit(
@@ -297,4 +340,41 @@ export async function saveAssetAudit(
   }
 
   return savedRecord;
+}
+
+export async function getAssetAuditFilterOptions() {
+  const supabase = getSupabase();
+  const access = await getAuditAccess();
+
+  if (!access.isItAdmin && access.companyId === null) {
+    throw new Error("Role tidak memiliki akses audit aset.");
+  }
+
+  let companyQuery = supabase
+    .from("companies")
+    .select("id, name")
+    .order("name");
+
+  if (!access.isItAdmin) {
+    companyQuery = companyQuery.eq("id", access.companyId!);
+  }
+
+  const { data: companies, error: companyError } =
+    await companyQuery;
+
+  if (companyError) throw companyError;
+
+  const { data: locations, error: locationError } =
+    await supabase
+      .from("locations")
+      .select("id, code, name")
+      .eq("is_active", true)
+      .order("display_order");
+
+  if (locationError) throw locationError;
+
+  return {
+    companies: companies ?? [],
+    locations: locations ?? [],
+  };
 }
