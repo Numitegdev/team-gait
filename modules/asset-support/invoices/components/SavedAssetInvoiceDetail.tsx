@@ -8,6 +8,7 @@ import {
   getSavedAssetInvoiceDetail,
   SavedAssetInvoice,
   SavedAssetInvoiceItem,
+  SavedAssetInvoiceBrandingSnapshot,
 } from "../services/invoice-service";
 
 interface Props {
@@ -57,7 +58,7 @@ export default function SavedAssetInvoiceDetail({
 }: Props) {
   const [data, setData] = useState<InvoiceDetailData | null>(null);
   const [branding, setBranding] =
-    useState<InvoiceCompanyBranding | null>(null);
+  useState<SavedAssetInvoiceBrandingSnapshot | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -81,12 +82,27 @@ export default function SavedAssetInvoiceDetail({
         // milik PT penerbit invoice.
         const supabase = createClient();
 
-        const { data: companySettings, error: settingsError } =
-          await supabase
+      
+        // Utamakan snapshot yang tersimpan saat invoice diterbitkan.
+        const savedBranding = result.invoice.branding_snapshot;
+
+        if (savedBranding) {
+          if (active) {
+            setBranding(savedBranding);
+          }
+        } else {
+          // Cadangan untuk invoice lama yang belum memiliki snapshot.
+          const supabase = createClient();
+
+          const {
+            data: companySettings,
+            error: settingsError,
+          } = await supabase
             .from("invoice_company_settings")
             .select(`
               logo_url,
               header_image_url,
+              footer_image_url,
               bank_name,
               bank_account_name,
               bank_account_number,
@@ -94,19 +110,28 @@ export default function SavedAssetInvoiceDetail({
               signer_position,
               signature_image_url
             `)
-            .eq("company_id", result.invoice.issuer_company_id)
+            .eq(
+              "company_id",
+              result.invoice.issuer_company_id
+            )
+            .eq("is_active", true)
+            .order("updated_at", { ascending: false })
+            .order("id", { ascending: false })
+            .limit(1)
             .maybeSingle();
 
-        if (settingsError) {
-          console.error(
-            "Gagal mengambil pengaturan invoice:",
-            settingsError
-          );
+          if (settingsError) {
+            console.error(
+              "Gagal mengambil pengaturan invoice:",
+              settingsError
+            );
+          }
+
+          if (active) {
+            setBranding(companySettings ?? null);
+          }
         }
 
-        if (active) {
-          setBranding(companySettings ?? null);
-        }
       } catch (err) {
         if (active) {
           setError(
@@ -184,7 +209,7 @@ export default function SavedAssetInvoiceDetail({
                 <img
                   src={branding.header_image_url}
                   alt="Header invoice"
-                  className="mx-auto max-h-28 w-full object-contain"
+                  className="mx-auto  w-full object-contain"
                 />
               </div>
             )}

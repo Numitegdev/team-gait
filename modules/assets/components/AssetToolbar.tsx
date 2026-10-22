@@ -160,7 +160,7 @@ export default function AssetToolbar({
           ))}
         </select>
 
-        <select
+        {/* <select
           value={availabilityFilter}
           onChange={(e) =>
             setAvailabilityFilter(
@@ -176,7 +176,7 @@ export default function AssetToolbar({
             Dalam proses peminjaman
           </option>
           <option value="BORROWED">Dipinjam</option>
-        </select>
+        </select> */}
 
         <button
           type="button"

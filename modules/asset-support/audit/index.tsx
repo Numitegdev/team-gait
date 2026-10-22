@@ -1,6 +1,6 @@
 
 "use client";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
   Search,
@@ -15,12 +15,16 @@ import {
   Clock,
   Monitor,
   ChevronRight,
+  ChevronLeft,
   Camera,
+  Download,
+  FileSpreadsheet,
 } from "lucide-react";
 
 import AssetAuditForm from "./components/asset-audit-form";
 import AssetAuditScanner from "./components/asset-audit-scanner";
 import { useAssetAudit } from "./hooks/use-asset-audit";
+import * as XLSX from "xlsx";
 
 export default function AssetAuditPage() {
   const {
@@ -57,6 +61,12 @@ const handleScan = useCallback(
 const [search, setSearch] = useState("");
 const [scannerOpen, setScannerOpen] = useState(false);
 const [scanning, setScanning] = useState(false);
+const [pageSize, setPageSize] = useState(10);
+const [currentPage, setCurrentPage] = useState(1);
+
+useEffect(() => {
+  setCurrentPage(1);
+}, [search, filters.auditMonth, filters.companyId, filters.locationId]);
 
   const filteredAssets = useMemo(() => {
     const keyword = search.toLowerCase().trim();
@@ -80,6 +90,53 @@ const [scanning, setScanning] = useState(false);
         ),
     );
   }, [assets, search]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredAssets.length / pageSize));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const paginatedAssets = useMemo(() => {
+    const start = (safeCurrentPage - 1) * pageSize;
+    return filteredAssets.slice(start, start + pageSize);
+  }, [filteredAssets, pageSize, safeCurrentPage]);
+
+  const exportAuditExcel = useCallback(() => {
+    const exportRows = filteredAssets.map((asset: any) => {
+      const resultLabels: Record<string, string> = {
+        found: "Ditemukan",
+        discrepancy: "Tidak Sesuai",
+        not_found: "Tidak Ditemukan",
+        unchecked: "Belum Dicek",
+      };
+
+      return {
+        "Periode Audit": filters.auditMonth,
+        "Kode Aset": asset.asset_code ?? "-",
+        "Barcode": asset.barcode ?? "-",
+        "Nama Aset": asset.asset_name ?? "-",
+        "Kategori": asset.category?.name ?? "-",
+        "Merek": asset.brand ?? "-",
+        "Nomor Seri": asset.serial_number ?? "-",
+        "PT Pemilik": asset.company?.name ?? "-",
+        "Lokasi Terdaftar": asset.location?.name ?? "-",
+        "Hasil Audit": resultLabels[asset.auditProgress] ?? "Belum Dicek",
+        "Jenis Ketidaksesuaian": asset.audit?.discrepancy_type ?? "-",
+        "Catatan Audit": asset.audit?.notes ?? "-",
+        "Lokasi Aktual": locations.find((location: any) => location.id === asset.audit?.actual_location_id)?.name ?? "-",
+        "Waktu Cek": formatCheckedAt(asset.audit?.checked_at),
+      };
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(exportRows);
+    worksheet["!cols"] = [
+      { wch: 16 }, { wch: 18 }, { wch: 18 }, { wch: 28 },
+      { wch: 20 }, { wch: 18 }, { wch: 22 }, { wch: 26 },
+      { wch: 24 }, { wch: 20 }, { wch: 28 }, { wch: 36 },
+      { wch: 18 }, { wch: 22 },
+    ];
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Audit Aset");
+    XLSX.writeFile(workbook, `audit-aset-${filters.auditMonth}.xlsx`);
+  }, [filteredAssets, filters.auditMonth, locations]);
 
   const summary = useMemo(
     () => ({
@@ -370,21 +427,34 @@ const [scanning, setScanning] = useState(false);
       {/* Asset list */}
       <section className="min-w-0 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
         <div className="space-y-3 border-b border-gray-200 p-4 sm:p-5">
-          <div className="flex items-start gap-3">
-            <ClipboardCheck
-              size={20}
-              className="mt-0.5 shrink-0 text-blue-600"
-            />
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-start gap-3">
+              <ClipboardCheck
+                size={20}
+                className="mt-0.5 shrink-0 text-blue-600"
+              />
 
-            <div className="min-w-0 flex-1">
-              <h2 className="font-semibold text-gray-900">
-                Daftar Aset Audit
-              </h2>
+              <div className="min-w-0 flex-1">
+                <h2 className="font-semibold text-gray-900">
+                  Daftar Aset Audit
+                </h2>
 
-              <p className="mt-1 text-sm text-gray-500">
-                {filteredAssets.length} aset ditampilkan
-              </p>
+                <p className="mt-1 text-sm text-gray-500">
+                  {filteredAssets.length} aset sesuai filter dan pencarian
+                </p>
+              </div>
             </div>
+
+            <button
+              type="button"
+              onClick={exportAuditExcel}
+              disabled={loading || filteredAssets.length === 0}
+              className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 text-sm font-semibold text-green-700 hover:bg-green-100 disabled:cursor-not-allowed disabled:opacity-50 lg:w-auto"
+            >
+              <FileSpreadsheet size={17} />
+              <span>Export Excel</span>
+              <Download size={15} />
+            </button>
           </div>
 
           <div className="relative">
@@ -392,8 +462,13 @@ const [scanning, setScanning] = useState(false);
               size={17}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
             />
-
-         
+            <input
+              type="search"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Cari kode, nama aset, barcode, PT, atau lokasi..."
+              className="h-11 w-full rounded-xl border border-gray-300 bg-white pl-10 pr-4 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            />
           </div>
         </div>
 
@@ -415,7 +490,7 @@ const [scanning, setScanning] = useState(false);
           <>
             {/* Mobile cards */}
             <div className="divide-y divide-gray-100 md:hidden">
-              {filteredAssets.map((asset: any) => {
+              {paginatedAssets.map((asset: any) => {
                 const status = statusLabel(asset.auditProgress);
                 const StatusIcon = status.icon;
 
@@ -525,7 +600,7 @@ const [scanning, setScanning] = useState(false);
                 </thead>
 
                 <tbody className="divide-y divide-gray-100">
-                  {filteredAssets.map((asset: any) => {
+                  {paginatedAssets.map((asset: any) => {
                     const status = statusLabel(asset.auditProgress);
                     const StatusIcon = status.icon;
 
@@ -583,6 +658,57 @@ const [scanning, setScanning] = useState(false);
                   })}
                 </tbody>
               </table>
+            </div>
+
+            {/* Pagination: berlaku untuk kartu HP dan tabel desktop */}
+            <div className="flex flex-col gap-3 border-t border-gray-200 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+              <div className="text-sm text-gray-500">
+                {filteredAssets.length === 0
+                  ? "Tidak ada data"
+                  : `Menampilkan ${(safeCurrentPage - 1) * pageSize + 1}–${Math.min(safeCurrentPage * pageSize, filteredAssets.length)} dari ${filteredAssets.length} aset`}
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <label className="flex items-center gap-2 text-sm text-gray-600">
+                  <span>Per halaman</span>
+                  <select
+                    value={pageSize}
+                    onChange={(event) => {
+                      setPageSize(Number(event.target.value));
+                      setCurrentPage(1);
+                    }}
+                    className="h-9 rounded-lg border border-gray-300 bg-white px-2 text-sm outline-none focus:border-blue-500"
+                  >
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value={50}>50</option>
+                  </select>
+                </label>
+
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                  disabled={safeCurrentPage <= 1}
+                  className="inline-flex h-9 items-center gap-1 rounded-lg border border-gray-300 px-3 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <ChevronLeft size={16} />
+                  Sebelumnya
+                </button>
+
+                <span className="min-w-20 text-center text-sm font-medium text-gray-700">
+                  Halaman {safeCurrentPage} / {totalPages}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                  disabled={safeCurrentPage >= totalPages}
+                  className="inline-flex h-9 items-center gap-1 rounded-lg border border-gray-300 px-3 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Berikutnya
+                  <ChevronRight size={16} />
+                </button>
+              </div>
             </div>
           </>
         )}

@@ -5,7 +5,20 @@ const supabase = createClient();
 
 // =====================================================
 // TYPES
-// =====================================================
+// ===========
+
+export interface SavedAssetInvoiceBrandingSnapshot {
+  logo_url: string | null;
+  header_image_url: string | null;
+  footer_image_url: string | null;
+  bank_name: string | null;
+  bank_account_name: string | null;
+  bank_account_number: string | null;
+  signer_name: string | null;
+  signer_position: string | null;
+  signature_image_url: string | null;
+}
+
 
 export interface InvoiceCompanyInfo {
   companyId: number;
@@ -1197,6 +1210,18 @@ export async function createAssetInvoice(
   month: number,
   year: number
 ) {
+
+    // SOP: invoice hanya boleh disimpan
+  // mulai tanggal 25 setiap bulan.
+  const today = new Date();
+
+  if (today.getDate() < 25) {
+    throw new Error(
+      "Invoice belum boleh disimpan sebelum tanggal 25 dibulan ini. " +
+      "Silakan periksa preview terlebih dahulu dan simpan " +
+      "setelah tanggal 25 di bulan ini."
+    );
+  }
   const {
     data: { user },
     error: userError,
@@ -1296,6 +1321,17 @@ export interface SavedAssetInvoice {
   total: number;
   status: string;
   created_at: string;
+  branding_snapshot?: {
+  logo_url: string | null;
+  header_image_url: string | null;
+  footer_image_url: string | null;
+  bank_name: string | null;
+  bank_account_name: string | null;
+  bank_account_number: string | null;
+  signer_name: string | null;
+  signer_position: string | null;
+  signature_image_url: string | null;
+} | null;
 }
 
 export async function getSavedAssetInvoices(
@@ -1356,6 +1392,209 @@ export async function getSavedAssetInvoices(
 }
 
 
+export interface SavedAssetInvoiceFilterOption {
+  status: string;
+  period_month: number;
+  period_year: number;
+  issuer_company_id: number;
+  buyer_company_id: number;
+  issuer_name: string;
+  buyer_name: string;
+}
+
+export interface SavedAssetInvoicePageParams {
+  page: number;
+  pageSize: number;
+  companyId?: number | null;
+  search?: string;
+  status?: string;
+  month?: string;
+  year?: string;
+  invoiceCompany?: string;
+}
+
+export interface SavedAssetInvoicePageResult {
+  data: SavedAssetInvoice[];
+  count: number;
+}
+
+/**
+ * Mengambil invoice sesuai halaman dan filter.
+ * Data invoice dibatasi langsung oleh Supabase.
+ */
+export async function getSavedAssetInvoicesPaginated(
+  params: SavedAssetInvoicePageParams
+): Promise<SavedAssetInvoicePageResult> {
+  const page = Math.max(1, Math.floor(params.page));
+  const pageSize = Math.min(
+    50,
+    Math.max(1, Math.floor(params.pageSize))
+  );
+
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  let query = supabase
+    .from("invoices")
+    .select(
+      `
+        id,
+        invoice_no,
+        invoice_type,
+        issuer_company_id,
+        buyer_company_id,
+        invoice_date,
+        due_date,
+        period_month,
+        period_year,
+        issuer_name,
+        issuer_address,
+        buyer_name,
+        buyer_address,
+        subtotal,
+        ppn,
+        pph23,
+        total,
+        status,
+        created_at
+      `,
+      { count: "exact" }
+    )
+    .eq("invoice_type", "ASSET")
+    .order("created_at", { ascending: false })
+    .order("id", { ascending: false });
+
+  // Filter PT pada dashboard.
+  if (params.companyId != null) {
+    query = query.or(
+      `issuer_company_id.eq.${params.companyId},buyer_company_id.eq.${params.companyId}`
+    );
+  }
+
+  // Pencarian nomor invoice atau nama PT.
+  // Karakter khusus filter dibuang agar tidak merusak sintaks .or().
+  const search = (params.search ?? "")
+    .trim()
+    .replace(/[,%()_*]/g, "");
+
+  if (search) {
+    query = query.or(
+      `invoice_no.ilike.%${search}%,issuer_name.ilike.%${search}%,buyer_name.ilike.%${search}%`
+    );
+  }
+
+  if (params.status && params.status !== "ALL") {
+    query = query.eq("status", params.status);
+  }
+
+  if (params.month && params.month !== "ALL") {
+    query = query.eq(
+      "period_month",
+      Number(params.month)
+    );
+  }
+
+  if (params.year && params.year !== "ALL") {
+    query = query.eq(
+      "period_year",
+      Number(params.year)
+    );
+  }
+
+  // Filter PT penerbit/penerima invoice.
+  if (
+    params.invoiceCompany &&
+    params.invoiceCompany !== "ALL"
+  ) {
+    const companyId = Number(params.invoiceCompany);
+
+    if (Number.isInteger(companyId)) {
+      query = query.or(
+        `issuer_company_id.eq.${companyId},buyer_company_id.eq.${companyId}`
+      );
+    }
+  }
+
+  // Pagination dilakukan setelah semua filter diterapkan.
+  const {
+    data,
+    error,
+    count,
+  } = await query.range(from, to);
+
+  if (error) {
+    throw new Error(
+      `Gagal mengambil daftar invoice: ${error.message}`
+    );
+  }
+
+  const invoices = (data ?? []).map((invoice) => ({
+    ...invoice,
+    id: Number(invoice.id),
+    issuer_company_id: Number(invoice.issuer_company_id),
+    buyer_company_id: Number(invoice.buyer_company_id),
+    period_month: Number(invoice.period_month),
+    period_year: Number(invoice.period_year),
+    subtotal: Number(invoice.subtotal),
+    ppn: Number(invoice.ppn),
+    pph23: Number(invoice.pph23),
+    total: Number(invoice.total),
+  }));
+
+  return {
+    data: invoices,
+    count: count ?? 0,
+  };
+}
+
+/**
+ * Mengambil pilihan filter yang ringan:
+ * status, tahun, dan daftar PT.
+ *
+ * Dipanggil ketika filter PT dashboard berubah,
+ * bukan setiap kali berpindah halaman.
+ */
+export async function getSavedAssetInvoiceFilterOptions(
+  companyId?: number | null
+): Promise<SavedAssetInvoiceFilterOption[]> {
+  let query = supabase
+    .from("invoices")
+    .select(`
+      status,
+      period_month,
+      period_year,
+      issuer_company_id,
+      buyer_company_id,
+      issuer_name,
+      buyer_name
+    `)
+    .eq("invoice_type", "ASSET")
+    .order("created_at", { ascending: false });
+
+  if (companyId != null) {
+    query = query.or(
+      `issuer_company_id.eq.${companyId},buyer_company_id.eq.${companyId}`
+    );
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw new Error(
+      `Gagal mengambil pilihan filter invoice: ${error.message}`
+    );
+  }
+
+  return (data ?? []).map((invoice) => ({
+    ...invoice,
+    period_month: Number(invoice.period_month),
+    period_year: Number(invoice.period_year),
+    issuer_company_id: Number(invoice.issuer_company_id),
+    buyer_company_id: Number(invoice.buyer_company_id),
+  }));
+}
+
+
 export interface SavedAssetInvoiceItem {
   id: number;
   invoice_id: number;
@@ -1403,7 +1642,8 @@ export async function getSavedAssetInvoiceDetail(
       pph23,
       total,
       status,
-      created_at
+      created_at,
+      branding_snapshot
     `)
     .eq("id", invoiceId)
     .eq("invoice_type", "ASSET")

@@ -131,8 +131,10 @@ export interface AssetDashboardCompany {
   company_name: string;
   total: number;
 }
+
 export interface AssetDashboardType {
   family_code: string;
+  family_name: string;
   model_names: string[];
   total: number;
 }
@@ -335,87 +337,70 @@ export async function getAssetDashboardByCompany(
 }
 
 
+function getFamilyName(familyCode: string): string {
+  const familyNames: Record<string, string> = {
+    "03": "Printer",
+    "05": "Monitor",
+    "06": "Telepon & PABX",
+    "08": "Modem",
+    "10": "Router & Switch",
+    "11": "Periferal & Multimedia",
+    "14": "UPS, Inverter & Aki",
+    "15": "Access Control & Fingerprint",
+    "16": "CCTV",
+    "20": "Kendaraan",
+    "21": "Rack Server",
+    "91": "PC Desktop Office",
+    "92": "PC Workstation",
+    "93": "PC Desktop Medium",
+    "94": "PC Desktop High End",
+    "95": "PC & Server High End",
+    "97": "Laptop",
+  };
+
+  return familyNames[familyCode] ?? `Family ${familyCode}`;
+}
+
+
 export async function getAssetDashboardByFamily(
   companyId?: number | null
 ): Promise<AssetDashboardType[]> {
+  const assets = await getAssetDashboardAssets(companyId);
 
-  const assets =
-    await getAssetDashboardAssets(
-      companyId
-    );
-
-  const familyMap =
-    new Map<
-      string,
-      AssetDashboardType
-    >();
+  const familyMap = new Map<string, AssetDashboardType>();
 
   for (const asset of assets) {
+    const model = Array.isArray(asset.model)
+      ? asset.model[0]
+      : asset.model;
 
-    const model =
-      Array.isArray(asset.model)
-        ? asset.model[0]
-        : asset.model;
+    if (!model) continue;
 
-    if (!model) {
-      continue;
-    }
+    const familyCode = model.family_code;
 
-    const familyCode =
-      model.family_code;
+    if (!familyCode) continue;
 
-    if (!familyCode) {
-      continue;
-    }
-
-    const existing =
-      familyMap.get(
-        familyCode
-      );
+    const existing = familyMap.get(familyCode);
 
     if (existing) {
-
       existing.total += 1;
 
-      if (
-        !existing.model_names.includes(
-          model.name
-        )
-      ) {
-
-        existing.model_names.push(
-          model.name
-        );
-
+      if (!existing.model_names.includes(model.name)) {
+        existing.model_names.push(model.name);
       }
-
     } else {
-
-      familyMap.set(
-        familyCode,
-        {
-          family_code:
-            familyCode,
-
-          model_names: [
-            model.name,
-          ],
-
-          total: 1,
-        }
-      );
-
+      familyMap.set(familyCode, {
+        family_code: familyCode,
+        family_name: getFamilyName(familyCode),
+        model_names: [model.name],
+        total: 1,
+      });
     }
-
   }
 
-  return Array.from(
-    familyMap.values()
-  ).sort(
-    (a, b) =>
-      b.total - a.total
+  return Array.from(familyMap.values()).sort(
+    (a, b) => b.total - a.total
   );
-
 }
 
 export async function getAssetDashboardLoanedAssets(

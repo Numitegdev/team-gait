@@ -5,8 +5,10 @@ import {
   useState,
 } from "react";
 import {
-  getSavedAssetInvoices,
+    getSavedAssetInvoicesPaginated,
+  getSavedAssetInvoiceFilterOptions,
   SavedAssetInvoice,
+  SavedAssetInvoiceFilterOption,
 } from "@/modules/asset-support/invoices/services/invoice-service";
 import { createClient } from "@/lib/supabase/client";
 
@@ -74,6 +76,36 @@ const [loanPricings, setLoanPricings] =
 
   const [savedInvoices, setSavedInvoices] =
   useState<SavedAssetInvoice[]>([]);
+
+const [invoiceTotal, setInvoiceTotal] = useState(0);
+
+const [invoicePage, setInvoicePage] = useState(1);
+
+const [invoicePageSize, setInvoicePageSize] = useState(10);
+
+const [invoiceFilterOptions, setInvoiceFilterOptions] =
+  useState<SavedAssetInvoiceFilterOption[]>([]);
+
+const invoiceTotalPages = Math.max(
+  1,
+  Math.ceil(invoiceTotal / invoicePageSize)
+);
+
+  // Filter riwayat invoice
+const [invoiceSearch, setInvoiceSearch] =
+  useState("");
+
+const [invoiceStatusFilter, setInvoiceStatusFilter] =
+  useState("ALL");
+
+const [invoiceMonthFilter, setInvoiceMonthFilter] =
+  useState("ALL");
+
+const [invoiceYearFilter, setInvoiceYearFilter] =
+  useState("ALL");
+
+const [invoiceCompanyFilter, setInvoiceCompanyFilter] =
+  useState("ALL");
 
 const [invoiceListLoading, setInvoiceListLoading] =
   useState(false);
@@ -401,10 +433,42 @@ useEffect(() => {
 ]);
 
 useEffect(() => {
-   if (role === null) return;
+  if (role === null) return;
 
-   loadSavedInvoices();
- }, [selectedCompanyId, role]);
+  loadSavedInvoices();
+}, [
+  selectedCompanyId,
+  role,
+  invoicePage,
+  invoicePageSize,
+  invoiceSearch,
+  invoiceStatusFilter,
+  invoiceMonthFilter,
+  invoiceYearFilter,
+  invoiceCompanyFilter,
+]);
+
+useEffect(() => {
+  if (role === null) return;
+
+  async function loadInvoiceFilterOptions() {
+    try {
+      const options = await getSavedAssetInvoiceFilterOptions(
+        selectedCompanyId
+      );
+
+      setInvoiceFilterOptions(options);
+    } catch (error) {
+      console.error(
+        "Gagal mengambil pilihan filter invoice:",
+        error
+      );
+    }
+  }
+
+  loadInvoiceFilterOptions();
+}, [selectedCompanyId, role]);
+
 
   if (loading) {
 
@@ -425,16 +489,24 @@ useEffect(() => {
 
   }
 
-  async function loadSavedInvoices() {
+async function loadSavedInvoices() {
   try {
     setInvoiceListLoading(true);
     setInvoiceListError(null);
 
-    const invoices = await getSavedAssetInvoices(
-      selectedCompanyId
-    );
+    const result = await getSavedAssetInvoicesPaginated({
+      page: invoicePage,
+      pageSize: invoicePageSize,
+      companyId: selectedCompanyId,
+      search: invoiceSearch,
+      status: invoiceStatusFilter,
+      month: invoiceMonthFilter,
+      year: invoiceYearFilter,
+      invoiceCompany: invoiceCompanyFilter,
+    });
 
-    setSavedInvoices(invoices);
+    setSavedInvoices(result.data);
+    setInvoiceTotal(result.count);
   } catch (error) {
     console.error(
       "Gagal mengambil invoice tersimpan:",
@@ -446,10 +518,60 @@ useEffect(() => {
         ? error.message
         : "Gagal mengambil daftar invoice."
     );
+
+    setSavedInvoices([]);
+    setInvoiceTotal(0);
   } finally {
     setInvoiceListLoading(false);
   }
 }
+// =====================================================
+// FILTER DAN PENCARIAN INVOICE
+// =====================================================
+
+// =====================================================
+// OPSI FILTER INVOICE
+// =====================================================
+
+const invoiceStatuses = Array.from(
+  new Set(
+    invoiceFilterOptions.map((invoice) => invoice.status)
+  )
+).sort();
+
+const invoiceYears = Array.from(
+  new Set(
+    invoiceFilterOptions.map((invoice) =>
+      String(invoice.period_year)
+    )
+  )
+).sort((a, b) => Number(b) - Number(a));
+
+const invoiceCompanies = new Map<number, string>();
+
+invoiceFilterOptions.forEach((invoice) => {
+  invoiceCompanies.set(
+    invoice.issuer_company_id,
+    invoice.issuer_name
+  );
+
+  invoiceCompanies.set(
+    invoice.buyer_company_id,
+    invoice.buyer_name
+  );
+});
+savedInvoices.forEach((invoice) => {
+  invoiceCompanies.set(
+    invoice.issuer_company_id,
+    invoice.issuer_name
+  );
+
+  invoiceCompanies.set(
+    invoice.buyer_company_id,
+    invoice.buyer_name
+  );
+});
+
 
   return (
 
@@ -474,11 +596,13 @@ useEffect(() => {
                 const value =
                   e.target.value;
 
-                setSelectedCompanyId(
-                  value === ""
-                    ? null
-                    : Number(value)
-                );
+              setSelectedCompanyId(
+              value === ""
+                ? null
+                : Number(value)
+            );
+
+            setInvoicePage(1);
 
               }}
               className="
@@ -732,8 +856,7 @@ useEffect(() => {
                         font-semibold
                       "
                     >
-                      Family{" "}
-                      {family.family_code}
+                     {family.family_name}
                     </span>
 
                     <span
@@ -803,15 +926,134 @@ useEffect(() => {
     </p>
   )}
 
+  {/* FILTER RIWAYAT INVOICE */}
+<div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+
+  {/* PENCARIAN */}
+  <input
+    type="text"
+    value={invoiceSearch}
+   onChange={(e) => {
+  setInvoiceSearch(e.target.value);
+  setInvoicePage(1);
+}}
+    placeholder="Cari nomor invoice atau nama PT..."
+    className="h-11 min-w-0 rounded-xl border px-4 text-sm outline-none focus:border-black"
+  />
+
+  {/* FILTER PT */}
+  <select
+    value={invoiceCompanyFilter}
+    onChange={(e) => setInvoiceCompanyFilter(e.target.value)}
+    className="h-11 min-w-0 rounded-xl border bg-white px-3 text-sm outline-none focus:border-black"
+  >
+    <option value="ALL">Semua PT</option>
+
+    {Array.from(invoiceCompanies.entries()).map(
+      ([companyId, companyName]) => (
+        <option key={companyId} value={String(companyId)}>
+          {companyName}
+        </option>
+      )
+    )}
+  </select>
+
+  {/* FILTER STATUS */}
+  {/* <select
+    value={invoiceStatusFilter}
+  onChange={(e) => {
+  setInvoiceStatusFilter(e.target.value);
+  setInvoicePage(1);
+}}
+    className="h-11 min-w-0 rounded-xl border bg-white px-3 text-sm outline-none focus:border-black"
+  >
+    <option value="ALL">Semua Status</option>
+
+    {invoiceStatuses.map((status) => (
+      <option key={status} value={status}>
+        {status}
+      </option>
+    ))}
+  </select> */}
+
+  {/* FILTER BULAN */}
+  <select
+    value={invoiceMonthFilter}
+    onChange={(e) => setInvoiceMonthFilter(e.target.value)}
+    className="h-11 min-w-0 rounded-xl border bg-white px-3 text-sm outline-none focus:border-black"
+  >
+    <option value="ALL">Semua Bulan</option>
+    <option value="1">Januari</option>
+    <option value="2">Februari</option>
+    <option value="3">Maret</option>
+    <option value="4">April</option>
+    <option value="5">Mei</option>
+    <option value="6">Juni</option>
+    <option value="7">Juli</option>
+    <option value="8">Agustus</option>
+    <option value="9">September</option>
+    <option value="10">Oktober</option>
+    <option value="11">November</option>
+    <option value="12">Desember</option>
+  </select>
+
+  {/* FILTER TAHUN */}
+  <select
+    value={invoiceYearFilter}
+    onChange={(e) => setInvoiceYearFilter(e.target.value)}
+    className="h-11 min-w-0 rounded-xl border bg-white px-3 text-sm outline-none focus:border-black"
+  >
+    <option value="ALL">Semua Tahun</option>
+
+    {invoiceYears.map((year) => (
+      <option key={year} value={year}>
+        {year}
+      </option>
+    ))}
+  </select>
+
+  {/* RESET FILTER */}
+  <button
+    type="button"
+onClick={() => {
+  setInvoiceSearch("");
+  setInvoiceStatusFilter("ALL");
+  setInvoiceMonthFilter("ALL");
+  setInvoiceYearFilter("ALL");
+  setInvoiceCompanyFilter("ALL");
+  setInvoicePage(1);
+}}
+    className="h-11 rounded-xl border px-4 text-sm font-medium hover:bg-gray-50"
+  >
+    Reset Filter
+  </button>
+
+</div>
+
+<p className="mt-3 text-sm text-gray-500">
+  Menampilkan{" "}
+  {invoiceTotal === 0
+    ? 0
+    : (invoicePage - 1) * invoicePageSize + 1}
+  {"–"}
+  {Math.min(invoicePage * invoicePageSize, invoiceTotal)}
+  {" dari "}
+  {invoiceTotal} invoice.
+</p>
+
   {invoiceListLoading ? (
     <p className="mt-4 text-sm text-gray-500">
       Memuat daftar invoice...
     </p>
-  ) : savedInvoices.length === 0 ? (
-    <p className="mt-4 text-sm text-gray-500">
-      Belum ada invoice tersimpan.
-    </p>
-  ) : (
+) : invoiceTotal === 0 ? (
+  <p className="mt-4 text-sm text-gray-500">
+    Belum ada invoice tersimpan.
+  </p>
+) : savedInvoices.length === 0 ? (
+  <p className="mt-4 rounded-xl border border-dashed p-6 text-center text-sm text-gray-500">
+    Tidak ada invoice yang cocok dengan pencarian atau filter.
+  </p>
+) : (
     <div className="mt-4 overflow-x-auto">
       <table className="w-full min-w-212.5 text-left text-sm">
         <thead>
@@ -822,13 +1064,13 @@ useEffect(() => {
             <th className="px-3 py-3">Periode</th>
             <th className="px-3 py-3">Jatuh Tempo</th>
             <th className="px-3 py-3 text-right">Total</th>
-            <th className="px-3 py-3">Status</th>
+            {/* <th className="px-3 py-3">Status</th> */}
             <th className="px-3 py-3">Aksi</th>
           </tr>
         </thead>
 
         <tbody>
-          {savedInvoices.map((invoice) => (
+        {savedInvoices.map((invoice) => (
             <tr
               key={invoice.id}
               className="border-b last:border-0"
@@ -859,11 +1101,11 @@ useEffect(() => {
                 {invoice.total.toLocaleString("id-ID")}
               </td>
 
-              <td className="px-3 py-3">
+              {/* <td className="px-3 py-3">
                 <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium">
                   {invoice.status}
                 </span>
-              </td>
+              </td> */}
               <td className="px-3 py-3">
               <button
                 type="button"
@@ -879,6 +1121,62 @@ useEffect(() => {
       </table>
     </div>
   )}
+  
+  {/* PAGINATION INVOICE */}
+  {invoiceTotal > 0 && (
+    <div className="mt-5 flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-center gap-2 text-sm text-gray-600">
+        <span>Data per halaman:</span>
+
+        <select
+          value={invoicePageSize}
+          onChange={(e) => {
+            setInvoicePageSize(Number(e.target.value));
+            setInvoicePage(1);
+          }}
+          className="h-9 rounded-lg border bg-white px-2"
+        >
+          <option value={10}>10</option>
+          <option value={20}>20</option>
+          <option value={50}>50</option>
+        </select>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          disabled={invoicePage <= 1 || invoiceListLoading}
+          onClick={() => {
+            setInvoicePage((page) => Math.max(1, page - 1));
+          }}
+          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          Sebelumnya
+        </button>
+
+        <span className="px-2 text-sm text-gray-600">
+          Halaman {invoicePage} dari {invoiceTotalPages}
+        </span>
+
+        <button
+          type="button"
+          disabled={
+            invoicePage >= invoiceTotalPages ||
+            invoiceListLoading
+          }
+          onClick={() => {
+            setInvoicePage((page) =>
+              Math.min(invoiceTotalPages, page + 1)
+            );
+          }}
+          className="rounded-lg border px-3 py-2 text-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          Berikutnya
+        </button>
+      </div>
+    </div>
+  )}
+
 </div>
 
 

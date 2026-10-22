@@ -428,10 +428,14 @@ const filteredAssets = assets
       "
     >
 
-      <div
+        <div
         className="
+          flex
+          max-h-[90dvh]
           w-full
           max-w-2xl
+          flex-col
+          overflow-hidden
           rounded-2xl
           bg-white
           shadow-xl
@@ -449,6 +453,7 @@ const filteredAssets = assets
             border-b
             px-6
             py-4
+              shrink-0
           "
         >
 
@@ -499,15 +504,25 @@ const filteredAssets = assets
         {/* FORM */}
 
         <form
-          onSubmit={
-            handleSubmit
-          }
+        onSubmit={handleSubmit}
+        className="
+          flex
+          min-h-0
+          flex-1
+          flex-col
+          overflow-hidden
+        "
+        >
+        <div
           className="
+            min-h-0
+            flex-1
             space-y-5
+            overflow-y-auto
+            overscroll-contain
             p-6
           "
         >
-
           {/* ASSET */}
 
           <div>
@@ -872,18 +887,22 @@ const filteredAssets = assets
 
           )}
 
-
+</div>
           {/* ACTION */}
 
-          <div
-            className="
-              flex
-              justify-end
-              gap-3
-              border-t
-              pt-5
-            "
-          >
+     <div
+  className="
+    flex
+    shrink-0
+    justify-end
+    gap-3
+    border-t
+    bg-white
+    p-4
+    dark:border-gray-700
+    dark:bg-gray-900
+  "
+>
 
             <button
               type="button"

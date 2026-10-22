@@ -31,6 +31,8 @@ export interface AssetListItem {
 
   status: AssetStatus | null;
 
+  warranty_until: string | null;
+
   company_id: number | null;
 
 }

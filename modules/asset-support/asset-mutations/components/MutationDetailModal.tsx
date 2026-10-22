@@ -314,15 +314,19 @@ return (
       p-4
     "
   >
-    <div
-      className="
-        w-full
-        max-w-4xl
-        rounded-2xl
-        bg-white
-        shadow-xl
-      "
-    >
+<div
+  className="
+    flex
+    max-h-[90dvh]
+    w-full
+    max-w-4xl
+    flex-col
+    overflow-hidden
+    rounded-2xl
+    bg-white
+    shadow-xl
+  "
+>
       {/* Header */}
       <div
         className="
@@ -330,6 +334,7 @@ return (
           items-center
           justify-between
           border-b
+          shrink-0
           p-6
         "
       >
@@ -350,7 +355,16 @@ return (
       </div>
 
       {/* Body */}
-     <div className="space-y-6 p-6">
+   <div
+  className="
+    min-h-0
+    flex-1
+    space-y-6
+    overflow-y-auto
+    overscroll-contain
+    p-6
+  "
+>
 
   <div>
     <h2 className="text-2xl font-bold">
@@ -738,6 +752,7 @@ return (
     justify-end
     gap-3
     border-t
+    shrink-0
     p-6
   "
 >

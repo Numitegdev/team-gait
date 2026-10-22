@@ -27,6 +27,131 @@ interface AssetTableProps {
 
 }
 
+function getWarrantyInfo(
+  warrantyUntil: string | null
+) {
+  if (!warrantyUntil) {
+    return {
+      label: "Belum diketahui",
+      color: "bg-gray-100 text-gray-600",
+    };
+  }
+
+  // Gunakan tanggal kalender agar tidak terpengaruh jam.
+  const today = new Date();
+  const todayUTC = Date.UTC(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate()
+  );
+
+  const parts = warrantyUntil.split("-").map(Number);
+
+  if (
+    parts.length !== 3 ||
+    parts.some((part) => !Number.isInteger(part))
+  ) {
+    return {
+      label: "Tanggal tidak valid",
+      color: "bg-gray-100 text-gray-600",
+    };
+  }
+
+  const [year, month, day] = parts;
+  const endUTC = Date.UTC(year, month - 1, day);
+  const endDate = new Date(endUTC);
+
+  if (
+    endDate.getUTCFullYear() !== year ||
+    endDate.getUTCMonth() !== month - 1 ||
+    endDate.getUTCDate() !== day
+  ) {
+    return {
+      label: "Tanggal tidak valid",
+      color: "bg-gray-100 text-gray-600",
+    };
+  }
+
+  if (endUTC < todayUTC) {
+    return {
+      label: "Garansi habis",
+      color: "bg-red-100 text-red-700",
+    };
+  }
+
+  const remainingDays = Math.floor(
+    (endUTC - todayUTC) / 86400000
+  );
+
+  // Prioritaskan merah jika tersisa maksimal 1 bulan.
+  const oneMonthLater = new Date(todayUTC);
+  oneMonthLater.setUTCMonth(
+    oneMonthLater.getUTCMonth() + 1
+  );
+
+  // Prioritaskan oranye jika tersisa maksimal 2 bulan.
+  const twoMonthsLater = new Date(todayUTC);
+  twoMonthsLater.setUTCMonth(
+    twoMonthsLater.getUTCMonth() + 2
+  );
+
+  const oneMonthDays = Math.floor(
+    (oneMonthLater.getTime() - todayUTC) / 86400000
+  );
+
+  const twoMonthDays = Math.floor(
+    (twoMonthsLater.getTime() - todayUTC) / 86400000
+  );
+
+  let color = "bg-green-100 text-green-700";
+
+  if (remainingDays <= oneMonthDays) {
+    color = "bg-red-100 text-red-700";
+  } else if (remainingDays <= twoMonthDays) {
+    color = "bg-orange-100 text-orange-700";
+  }
+
+  // Tampilkan tahun, bulan, dan hari tersisa.
+  let remainingMonths =
+    (endDate.getUTCFullYear() - today.getFullYear()) * 12 +
+    endDate.getUTCMonth() -
+    today.getMonth();
+
+  const anniversary = new Date(todayUTC);
+  anniversary.setUTCMonth(
+    anniversary.getUTCMonth() + remainingMonths
+  );
+
+  if (anniversary.getTime() > endUTC) {
+    remainingMonths--;
+  }
+
+  const monthDate = new Date(todayUTC);
+  monthDate.setUTCMonth(
+    monthDate.getUTCMonth() + remainingMonths
+  );
+
+  const remainingDaysAfterMonths = Math.floor(
+    (endUTC - monthDate.getTime()) / 86400000
+  );
+
+  const years = Math.floor(remainingMonths / 12);
+  const months = remainingMonths % 12;
+
+  const partsLabel = [];
+
+  if (years > 0) partsLabel.push(`${years} tahun`);
+  if (months > 0) partsLabel.push(`${months} bulan`);
+  if (remainingDaysAfterMonths > 0 || partsLabel.length === 0) {
+    partsLabel.push(`${remainingDaysAfterMonths} hari`);
+  }
+
+  return {
+    label: partsLabel.join(" "),
+    color,
+  };
+}
+
 export default function AssetTable({
  assets,
 
@@ -170,6 +295,10 @@ async function handlePrintLabel(asset: AssetListItem) {
 
               </th>
 
+              <th className="p-3 text-left">
+                Garansi
+              </th>
+
               <th className="p-3 text-center">
 
                 Action
@@ -226,6 +355,30 @@ async function handlePrintLabel(asset: AssetListItem) {
 
                   {asset.status?.name ?? "-"}
 
+                </td>
+
+                <td className="p-3">
+                  {(() => {
+                    const warranty = getWarrantyInfo(
+                      asset.warranty_until
+                    );
+
+                    return (
+                      <span
+                        className={`
+                          inline-flex
+                          rounded-full
+                          px-3
+                          py-1
+                          text-xs
+                          font-semibold
+                          ${warranty.color}
+                        `}
+                      >
+                        {warranty.label}
+                      </span>
+                    );
+                  })()}
                 </td>
 
                 <td
@@ -429,6 +582,32 @@ async function handlePrintLabel(asset: AssetListItem) {
 
                 {asset.status?.name ?? "-"}
 
+              </div>
+
+              <div>
+                <b>Garansi :</b>{" "}
+                {(() => {
+                  const warranty = getWarrantyInfo(
+                    asset.warranty_until
+                  );
+
+                  return (
+                    <span
+                      className={`
+                        ml-1
+                        inline-flex
+                        rounded-full
+                        px-3
+                        py-1
+                        text-xs
+                        font-semibold
+                        ${warranty.color}
+                      `}
+                    >
+                      {warranty.label}
+                    </span>
+                  );
+                })()}
               </div>
 
             </div>
