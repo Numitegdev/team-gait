@@ -1,7 +1,7 @@
 "use client";
 
 import { Addon, Peripheral } from "../types/peripheral.types";
-
+import { getRoomName } from "@/modules/it/network-tools/ip-management/constants/room-options";
 interface Props {
   peripheral: Peripheral;
 
@@ -125,7 +125,7 @@ function scoreBar(
           </div>
 
           <div>
-            {peripheral.ip_management.ruangan}
+            {getRoomName(peripheral.ip_management.ruangan)}
           </div>
 
         </div>

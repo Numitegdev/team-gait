@@ -18,21 +18,44 @@ export function parseCPU(raw: string): ParsedCPU {
 
   const text = raw.trim();
 
-  // =====================
+// =====================
 // INTEL CORE
 // =====================
-
 if (text.includes("Intel") && text.includes("Core")) {
-  const match = text.match(/\bi([3579])[-\s](\d{4,5})([A-Za-z]{0,3}\d*)?/i);
+  // Contoh yang didukung:
+  // i3-1215U
+  // i5-12450H
+  // i3-N305
+  // i3-N300
+
+  const nSeriesMatch = text.match(
+    /\bi([3579])[-\s]+(N\d{3,4})([A-Za-z]{0,3})\b/i
+  );
+
+  if (nSeriesMatch) {
+    const family = `i${nSeriesMatch[1]}`;
+    const model = nSeriesMatch[2].toUpperCase();
+    const suffix = nSeriesMatch[3].toUpperCase();
+
+    return {
+      vendor: "Intel",
+      family,
+      generation: 0,
+      model,
+      suffix,
+      raw: text,
+    };
+  }
+
+  // Intel Core generasi biasa
+  const match = text.match(
+    /\bi([3579])[-\s](\d{4,5})([A-Za-z]{0,3}\d*)?/i
+  );
 
   if (match) {
     const family = `i${match[1]}`;
     const model = match[2];
 
-    // 10510 -> Gen 10
-    // 1245  -> Gen 12
-    // 1135  -> Gen 11
-    // 8650  -> Gen 8
     const firstTwoDigits = Number(model.substring(0, 2));
 
     const generation =

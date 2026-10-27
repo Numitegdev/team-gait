@@ -1,7 +1,7 @@
 "use client";
 
 import { Addon } from "../types/peripheral.types";
-
+import { getRoomName } from "@/modules/it/network-tools/ip-management/constants/room-options";
 interface Props {
 
   search: string;
@@ -375,7 +375,7 @@ DDR5
         value={room}
       >
 
-        {room}
+          {getRoomName(room)}
 
       </option>
 

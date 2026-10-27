@@ -79,7 +79,27 @@ function scoreSuffix(suffix: string): number {
 function scoreIntel(cpu: ParsedCPU): number {
   let score = 0;
 
-  if (cpu.generation >= 13) {
+  // Intel Core seri N, misalnya i3-N305, i3-N300.
+  const isIntelNSeries = /^N\d{3,4}$/i.test(cpu.model);
+
+  if (isIntelNSeries) {
+    switch (cpu.family) {
+      case "i9":
+        score = 33;
+        break;
+      case "i7":
+        score = 31;
+        break;
+      case "i5":
+        score = 29;
+        break;
+      case "i3":
+        score = 27;
+        break;
+      default:
+        score = 10;
+    }
+  } else if (cpu.generation >= 13) {
     switch (cpu.family) {
       case "i9": score = 35; break;
       case "i7": score = 34; break;
