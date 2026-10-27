@@ -6,11 +6,11 @@ export const rooms = [
   },
   {
     code: "R2",
-    name: "Gudang Mapuk",
+    name: "Voucher Luar",
   },
   {
     code: "R3",
-    name: "Voucher",
+    name: "Voucher Dalam",
   },
   {
     code: "R4",
@@ -22,7 +22,7 @@ export const rooms = [
   },
    {
     code: "R6",
-    name: "Data Analis",
+    name: "Admin Program",
   },
   {
     code: "R7",
@@ -107,6 +107,10 @@ export const rooms = [
     {
     code: "R27",
     name: "Kantor Numiteg",
+  },
+     {
+    code: "R28",
+    name: "Luar Kota",
   },
 ];
 export const getRoomName = (

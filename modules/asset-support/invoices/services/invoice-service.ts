@@ -142,45 +142,51 @@ function getDueDate(
 }
 
 
+
 /**
- * Ambil jumlah hari antara
- * dua tanggal DATE.
+ * Menghitung durasi peminjaman secara inklusif.
+ *
+ * Hari mulai pinjam dihitung sebagai hari ke-1.
  *
  * Contoh:
+ * 1 Nov - 1 Nov = 1 hari
+ * 1 Nov - 5 Nov = 5 hari
+ * 1 Nov - 7 Nov = 7 hari
  *
- * 26 Okt -> 1 Nov
- * = 6 hari
+ * Peminjaman minimal 7 hari dapat ditagihkan.
  */
 function getDurationDays(
   startDate: string,
   endDate: string
-) {
-
-  const start =
-    new Date(
-      `${startDate}T00:00:00`
-    );
-
-  const end =
-    new Date(
-      `${endDate}T00:00:00`
-    );
-
-  const difference =
-    end.getTime() -
-    start.getTime();
-
-  return Math.floor(
-    difference /
-      (
-        1000 *
-        60 *
-        60 *
-        24
-      )
+): number {
+  const start = new Date(
+    `${startDate.slice(0, 10)}T00:00:00Z`
   );
 
+  const end = new Date(
+    `${endDate.slice(0, 10)}T00:00:00Z`
+  );
+
+  const startTime = start.getTime();
+  const endTime = end.getTime();
+
+  if (
+    !Number.isFinite(startTime) ||
+    !Number.isFinite(endTime) ||
+    endTime < startTime
+  ) {
+    return 0;
+  }
+
+  const difference = Math.floor(
+    (endTime - startTime) /
+      (1000 * 60 * 60 * 24)
+  );
+
+  // +1 agar tanggal mulai dihitung sebagai hari pertama.
+  return difference + 1;
 }
+
 
 
 /**
@@ -229,13 +235,15 @@ function getLoanEndDate(
 }
 
 
-// =====================================================
-// CEK FRIENDSHIP LOAN
-// =====================================================
 
 /**
- * Loan kurang dari 7 hari
- * tidak pernah ditagihkan.
+ * Peminjaman kurang dari 7 hari tidak ditagihkan.
+ *
+ * Peminjaman 7 hari atau lebih memenuhi syarat durasi.
+ *
+ * Jika belum dikembalikan dan tidak memiliki end_date,
+ * peminjaman masih berjalan dan tidak dianggap
+ * sebagai friendship loan.
  */
 export function isFriendshipLoan(
   loan: {
@@ -243,109 +251,97 @@ export function isFriendshipLoan(
     end_date: string | null;
     returned_at: string | null;
   }
-) {
+): boolean {
+  const endDate = loan.returned_at
+    ? loan.returned_at.slice(0, 10)
+    : loan.end_date?.slice(0, 10) ?? null;
 
-  const endDate =
-    loan.returned_at
-      ? loan.returned_at.slice(
-          0,
-          10
-        )
-      : loan.end_date;
-
-  /**
-   * Belum dikembalikan
-   * dan tidak punya end_date.
-   *
-   * Berarti masih berjalan.
-   */
+  // Peminjaman masih berjalan.
   if (!endDate) {
-
     return false;
-
   }
 
-  const duration =
-    getDurationDays(
-      loan.start_date,
-      endDate
-    );
+  const duration = getDurationDays(
+    loan.start_date,
+    endDate
+  );
 
   return duration < 7;
-
 }
+
 
 
 // =====================================================
 // TENTUKAN BULAN INVOICE PERTAMA
 // =====================================================
 
+
 /**
- * Menentukan invoice pertama
- * berdasarkan tanggal mulai.
+ * Menentukan periode invoice pertama berdasarkan tanggal mulai.
  *
- * Tanggal 2 - 25
- * -> bulan yang sama
+ * Tanggal 1–18:
+ * -> invoice tanggal 25 bulan yang sama.
  *
- * Tanggal 26 - akhir bulan
- * -> bulan berikutnya
+ * Tanggal 19–akhir bulan:
+ * -> invoice tanggal 25 bulan berikutnya.
  *
- * Tanggal 1
- * -> bulan tersebut
+ * Otomatis menangani pergantian tahun.
  */
 export function getFirstInvoicePeriod(
   startDate: string
-) {
+): {
+  month: number;
+  year: number;
+} {
+  const date = new Date(
+    `${startDate.slice(0, 10)}T00:00:00Z`
+  );
 
-  const date =
-    new Date(
-      `${startDate}T00:00:00`
+  if (!Number.isFinite(date.getTime())) {
+    throw new Error(
+      `Tanggal mulai peminjaman tidak valid: ${startDate}`
     );
-
-  const day =
-    date.getDate();
-
-  let month =
-    date.getMonth() + 1;
-
-  let year =
-    date.getFullYear();
-
-
-  /**
-   * Tanggal 26 sampai akhir bulan
-   * masuk invoice bulan berikutnya.
-   */
-  if (
-    day >= 26
-  ) {
-
-    month += 1;
-
-    if (
-      month > 12
-    ) {
-
-      month = 1;
-      year += 1;
-
-    }
-
   }
 
+  const day = date.getUTCDate();
+
+  let month = date.getUTCMonth() + 1;
+  let year = date.getUTCFullYear();
+
+  if (day >= 19) {
+    month += 1;
+
+    if (month > 12) {
+      month = 1;
+      year += 1;
+    }
+  }
 
   return {
     month,
     year,
   };
-
 }
+
 
 
 // =====================================================
 // CEK LOAN MASUK INVOICE
 // =====================================================
 
+
+/**
+ * Menentukan apakah peminjaman masuk invoice tertentu.
+ *
+ * Aturan:
+ * 1. Peminjaman kurang dari 7 hari tidak ditagihkan.
+ * 2. Invoice pertama mengikuti getFirstInvoicePeriod().
+ * 3. Periode sebelum invoice pertama tidak boleh menagih.
+ * 4. Setelah invoice pertama, loan hanya ditagihkan
+ *    jika masih berlangsung pada tanggal invoice.
+ * 5. Loan yang sudah dikembalikan sebelum tanggal invoice
+ *    tidak ditagihkan kembali pada invoice berikutnya.
+ */
 export function isLoanBillableForInvoice(
   loan: {
     status: string;
@@ -355,136 +351,86 @@ export function isLoanBillableForInvoice(
   },
   invoiceMonth: number,
   invoiceYear: number
-) {
-
-  /**
-   * Friendship loan tidak pernah ditagihkan.
-   */
+): boolean {
+  // Validasi periode invoice.
   if (
-    isFriendshipLoan(
-      loan
-    )
+    !Number.isInteger(invoiceMonth) ||
+    invoiceMonth < 1 ||
+    invoiceMonth > 12 ||
+    !Number.isInteger(invoiceYear) ||
+    invoiceYear < 2000
   ) {
-
     return false;
-
   }
 
+  // Peminjaman kurang dari 7 hari tidak pernah ditagihkan.
+  if (isFriendshipLoan(loan)) {
+    return false;
+  }
 
-  /**
-   * Tentukan invoice pertama.
-   */
-  const firstInvoice =
-    getFirstInvoicePeriod(
-      loan.start_date
-    );
+  // Tentukan periode invoice pertama.
+  const firstInvoice = getFirstInvoicePeriod(
+    loan.start_date
+  );
 
+  // Ubah periode menjadi angka agar mudah dibandingkan,
+  // termasuk ketika melewati pergantian tahun.
+  const firstInvoiceIndex =
+    firstInvoice.year * 12 +
+    firstInvoice.month;
 
-  /**
-   * Kalau ini invoice pertama,
-   * langsung masuk selama loan
-   * bukan friendship.
-   */
-  if (
-    firstInvoice.month ===
-      invoiceMonth &&
-    firstInvoice.year ===
-      invoiceYear
-  ) {
+  const currentInvoiceIndex =
+    invoiceYear * 12 +
+    invoiceMonth;
 
+  // Jangan menagih sebelum periode invoice pertama.
+  if (currentInvoiceIndex < firstInvoiceIndex) {
+    return false;
+  }
+
+  // Invoice pertama:
+  // loan sudah memenuhi syarat durasi dan masuk periode ini.
+  if (currentInvoiceIndex === firstInvoiceIndex) {
     return true;
-
   }
 
+  // Untuk invoice berikutnya, periksa kondisi loan
+  // pada tanggal 25 periode invoice yang sedang diperiksa.
+  const invoiceDate = getInvoiceDate(
+    invoiceMonth,
+    invoiceYear
+  );
 
-  /**
-   * Untuk invoice bulan berikutnya,
-   * hanya loan yang masih aktif
-   * pada tanggal 25 yang ditagihkan.
-   */
-  const invoiceDate =
-    getInvoiceDate(
-      invoiceMonth,
-      invoiceYear
-    );
-
-
-  /**
-   * Kalau loan baru dimulai
-   * setelah tanggal invoice,
-   * belum masuk invoice ini.
-   */
-  if (
-    loan.start_date >
-    invoiceDate
-  ) {
-
+  // Loan belum dimulai pada tanggal invoice.
+  if (loan.start_date.slice(0, 10) > invoiceDate) {
     return false;
-
   }
 
-
-  /**
-   * Kalau RETURNED sebelum
-   * invoice berikutnya,
-   * jangan ditagihkan lagi.
-   */
+  // Loan yang dikembalikan sebelum tanggal invoice
+  // tidak ditagihkan lagi pada periode berikutnya.
   if (
-    loan.status ===
-      "RETURNED"
+    loan.status === "RETURNED" &&
+    loan.returned_at
   ) {
+    const returnedDate = loan.returned_at.slice(0, 10);
 
-    if (
-      loan.returned_at
-    ) {
-
-      const returnedDate =
-        loan.returned_at.slice(
-          0,
-          10
-        );
-
-      if (
-        returnedDate <
-        invoiceDate
-      ) {
-
-        return false;
-
-      }
-
+    if (returnedDate < invoiceDate) {
+      return false;
     }
-
   }
 
-
-  /**
-   * Kalau ACTIVE dengan end_date
-   * sebelum tanggal invoice,
-   * berarti sudah selesai sebelum
-   * invoice berikutnya.
-   */
+  // Untuk ACTIVE yang memiliki end_date,
+  // jangan tagih jika sudah berakhir sebelum tanggal invoice.
   if (
-    loan.status ===
-      "ACTIVE" &&
+    loan.status === "ACTIVE" &&
     loan.end_date &&
-    loan.end_date <
-      invoiceDate
+    loan.end_date.slice(0, 10) < invoiceDate
   ) {
-
     return false;
-
   }
 
-
-  /**
-   * Masih menjadi loan
-   * pada tanggal 25.
-   */
   return true;
-
 }
-
 
 // =====================================================
 // GET INVOICE PREVIEW
