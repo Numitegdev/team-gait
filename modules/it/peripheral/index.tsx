@@ -1,5 +1,5 @@
 "use client";
-
+import { exportPeripheralsToExcel } from "@/modules/it/peripheral/utils/export-peripheral";
 import { useState , useEffect} from "react";
 import {
   Addon,
@@ -493,6 +493,18 @@ const paginatedPeripherals =
     >
       + Tambah PC
     </button>
+    <div className="flex flex-wrap gap-2">
+  <button
+    onClick={() => exportPeripheralsToExcel(peripherals)}
+    disabled={loading || peripherals.length === 0}
+    className="rounded-lg bg-green-600 px-4 py-2 text-white
+               hover:bg-green-700 disabled:cursor-not-allowed
+               disabled:opacity-50"
+  >
+    Export Excel
+  </button>
+
+</div>
 
   </div>
 
