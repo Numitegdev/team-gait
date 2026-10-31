@@ -1,5 +1,10 @@
 "use client";
-import { Printer } from "lucide-react";
+import {
+  Eye,
+  Pencil,
+  Trash2,
+  Printer,
+} from "lucide-react";
 import { printAssetLabel } from "../utils/asset-label";
 import { AssetListItem } from "../types/AssetListItem";
 import {
@@ -381,114 +386,87 @@ async function handlePrintLabel(asset: AssetListItem) {
                   })()}
                 </td>
 
-                <td
-                  className="
-                    p-3
-                    text-center
-                    gap-2
-                    m-2
-                  "
-                >
+              <td className="p-3">
+  <div className="flex items-center justify-center gap-2">
 
-                   <button
+    {/* VIEW */}
+    <button
+      type="button"
+      onClick={() => onView(asset.id)}
+      title="Lihat Detail"
+      aria-label="Lihat Detail"
+      className="
+        flex h-9 w-9 items-center justify-center
+        rounded-lg
+        bg-blue-600
+        text-white
+        transition
+        hover:bg-blue-700
+      "
+    >
+      <Eye size={17} />
+    </button>
 
-                    onClick={() =>
-                      onView(asset.id)
-                    }
+    {/* EDIT */}
+    {canEditAsset(role, asset.company_id) && (
+      <button
+        type="button"
+        onClick={() => onEdit(asset.id)}
+        title="Edit Aset"
+        aria-label="Edit Aset"
+        className="
+          flex h-9 w-9 items-center justify-center
+          rounded-lg
+          bg-amber-500
+          text-white
+          transition
+          hover:bg-amber-600
+        "
+      >
+        <Pencil size={17} />
+      </button>
+    )}
 
-                    className="
-                      rounded-lg
-                      bg-blue-600
-                      px-3
-                      py-1
-                      mr-2
-                      text-white
-                    "
+    {/* DELETE */}
+    {canEditAsset(role, asset.company_id) && (
+      <button
+        type="button"
+        onClick={() => onDelete(asset.id)}
+        title="Hapus Aset"
+        aria-label="Hapus Aset"
+        className="
+          flex h-9 w-9 items-center justify-center
+          rounded-lg
+          bg-red-600
+          text-white
+          transition
+          hover:bg-red-700
+        "
+      >
+        <Trash2 size={17} />
+      </button>
+    )}
 
-                  >
+    {/* BARCODE */}
+    <button
+      type="button"
+      onClick={() => handlePrintLabel(asset)}
+      title="Cetak Barcode"
+      aria-label="Cetak Barcode"
+      className="
+        flex h-9 w-9 items-center justify-center
+        rounded-lg
+        bg-gray-700
+        text-white
+        transition
+        hover:bg-gray-800
+      "
+    >
+      <Printer size={17} />
+    </button>
 
-                    View
-
-                  </button>
-
-                 {canEditAsset(
-                        role,
-                        asset.company_id
-                      ) && (
-
-                        <button
-
-                          onClick={() =>
-                            onEdit(asset.id)
-                          }
-
-                          className="
-                            rounded-lg
-                            bg-amber-500
-                            px-3
-                            py-1
-                            mr-2
-                            text-white
-                            hover:bg-amber-600
-                          "
-
-                        >
-
-                          Edit
-
-                        </button>
-
-                      )}
-
-                     {canEditAsset(
-                          role,
-                          asset.company_id
-                        ) && ( 
-
-                      <button
-
-                      onClick={() =>
-                        onDelete(asset.id)
-                      }
-
-                      className="
-                        rounded-lg
-                        bg-red-600
-                        px-3
-                        py-1
-                        text-white
-                        hover:bg-red-700
-                      "
-
-                    >
-
-                      Delete
-
-                    </button>
-
-                  )}
-
-                  
-                  <button
-                  type="button"
-                  onClick={() => handlePrintLabel(asset)}
-                  className="
-                    ml-2
-                    rounded-lg
-                    bg-gray-700
-                    px-3
-                    py-1
-                    text-white
-                    hover:bg-gray-800
-                  "
-                >
-                  <span className="inline-flex items-center gap-1">
-                    <Printer size={14} />
-                   Barcode
-                  </span>
-                </button>
-
-                </td>
+  </div>
+</td>
 
               </tr>
 
@@ -629,7 +607,7 @@ async function handlePrintLabel(asset: AssetListItem) {
 
               >
 
-                View
+                <Eye size={17} />
 
             </button>
 
@@ -656,7 +634,7 @@ async function handlePrintLabel(asset: AssetListItem) {
 
                     >
 
-                      Edit
+                     <Pencil size={17} />
 
                     </button>
 
@@ -685,7 +663,7 @@ async function handlePrintLabel(asset: AssetListItem) {
 
                 >
 
-                  Delete
+                   <Trash2 size={17} />
 
                 </button>
             )}
@@ -704,7 +682,7 @@ async function handlePrintLabel(asset: AssetListItem) {
                 >
                   <span className="inline-flex items-center gap-1">
                     <Printer size={14} />
-                   Barcode
+                
                   </span>
                 </button>
           </div>

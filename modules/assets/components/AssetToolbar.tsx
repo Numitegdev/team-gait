@@ -1,13 +1,18 @@
 
 "use client";
 
-import { Plus, RotateCcw } from "lucide-react";
+import { Plus, RotateCcw, Download } from "lucide-react";
 import type {
   AssetFilterOption,
   AssetAvailability,
 } from "../hooks/use-assets";
 
+
 interface AssetToolbarProps {
+
+onExport: () => void;
+exportDisabled: boolean;
+
   search: string;
   setSearch: (value: string) => void;
 
@@ -21,6 +26,7 @@ interface AssetToolbarProps {
   setConditionFilter: (value: string) => void;
   statusFilter: string;
   setStatusFilter: (value: string) => void;
+  
 
   availabilityFilter: AssetAvailability | "";
   setAvailabilityFilter: (
@@ -65,13 +71,15 @@ export default function AssetToolbar({
 
   onResetFilters,
   onAdd,
+  onExport,
+  exportDisabled,
 }: AssetToolbarProps) {
   const selectClass =
     "h-11 min-w-0 w-full rounded-xl border border-gray-300 bg-white px-3 text-sm outline-none focus:border-blue-500";
 
   return (
     <div className="mb-5 space-y-3">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+      {/* <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -87,6 +95,36 @@ export default function AssetToolbar({
           <Plus size={18} />
           Add Asset
         </button>
+      </div> */}
+
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Cari kode, nama, merek, atau serial number..."
+          className="h-11 min-w-0 flex-1 rounded-xl border border-gray-300 px-4 outline-none focus:border-blue-500"
+        />
+
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <button
+            type="button"
+            onClick={onExport}
+            disabled={exportDisabled}
+            className="flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-green-600 px-5 font-medium text-green-700 hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Download size={18} />
+            Export Excel
+          </button>
+
+          <button
+            type="button"
+            onClick={onAdd}
+            className="flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 font-medium text-white hover:bg-blue-700"
+          >
+            <Plus size={18} />
+            Add Asset
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

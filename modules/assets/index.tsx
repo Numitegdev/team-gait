@@ -6,7 +6,12 @@ import AssetTable from "./components/AssetTable";
 import AssetPagination from "./components/AssetPagination";
 import AssetModal from "./components/AssetModal";
 import AssetDetailModal from "./components/AssetDetailModal";
-
+import {
+  exportAssetsToExcel,
+} from "./services/asset-export-service";
+import {
+  Download,
+} from "lucide-react";
 
 import {
 
@@ -26,6 +31,7 @@ const [role, setRole] =
 
 const {
   assets,
+  fullAssets,
   loading,
   search,
   setSearch,
@@ -217,6 +223,8 @@ availabilityError={availabilityError}
     setSelectedAssetId(null);
     setOpenModal(true);
   }}
+  onExport={() => exportAssetsToExcel(fullAssets)}
+exportDisabled={loading || fullAssets.length === 0}
 />
 
       <AssetTable

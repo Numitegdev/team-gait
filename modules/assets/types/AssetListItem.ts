@@ -19,6 +19,16 @@ export interface AssetListItem {
 
   serial_number: string | null;
 
+  purchase_date: string | null;
+
+  purchase_price: number | null;
+
+  supplier: string | null;
+
+  invoice_number: string | null;
+
+  warranty_until: string | null;
+
   company: Company | null;
 
   location: Location | null;
@@ -30,8 +40,6 @@ export interface AssetListItem {
   condition: AssetCondition | null;
 
   status: AssetStatus | null;
-
-  warranty_until: string | null;
 
   company_id: number | null;
 

@@ -11,19 +11,19 @@ const supabase = createClient(
 );
 
 async function testCPU98() {
-  // 1. Ambil data peripheral ID 98
+  // 1. Ambil data peripheral ID 156
   const { data, error } = await supabase
     .from("peripherals")
     .select("id, hardware, score, status, score_detail")
-    .eq("id", 98)
+    .eq("id", 156)
     .single();
 
   if (error || !data) {
-    console.error("Gagal mengambil ID 98:", error?.message);
+    console.error("Gagal mengambil ID 156:", error?.message);
     return;
   }
 
-  console.log("=== DATA HARDWARE ID 98 ===");
+  console.log("=== DATA HARDWARE ID 156 ===");
   console.dir(data.hardware, { depth: null });
 
   // 2. Tes parser CPU Intel N305
@@ -56,7 +56,7 @@ async function testCPU98() {
   }
 
   // 5. Simpan skor baru ke Supabase
-  console.log("\n=== UPDATE SKOR ID 98 ===");
+  console.log("\n=== UPDATE SKOR ID 156 ===");
 
   const { data: updatedData, error: updateError } = await supabase
     .from("peripherals")
@@ -71,7 +71,7 @@ async function testCPU98() {
         gpu: result.gpu,
       },
     })
-    .eq("id", 98)
+    .eq("id", 156)
     .select("id, score, status, score_detail")
     .single();
 
@@ -80,7 +80,7 @@ async function testCPU98() {
     return;
   }
 
-  console.log("Berhasil memperbarui skor ID 98:");
+  console.log("Berhasil memperbarui skor ID 156:");
   console.dir(updatedData, { depth: null });
 }
 
