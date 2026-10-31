@@ -112,6 +112,14 @@ export const rooms = [
     code: "R28",
     name: "Luar Kota",
   },
+       {
+    code: "R29",
+    name: "Konter",
+  },
+         {
+    code: "R30",
+    name: "Restoran",
+  },
 ];
 export const getRoomName = (
   code: string

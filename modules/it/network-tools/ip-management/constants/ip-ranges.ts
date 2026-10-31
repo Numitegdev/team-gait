@@ -32,7 +32,7 @@ export const ipRanges = {
       end: 69,
     },
 
-    "Data Analis": {
+    "Admin Program": {
       prefix: "192.168.4",
       start: 70,
       end: 76,
