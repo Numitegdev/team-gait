@@ -31,14 +31,26 @@ export interface ScoreResult {
 
 }
 
+
 function scoreCPU(
   cpu: ScannerFile["cpu"]
 ): number {
+  // Scanner dapat mengirim satu CPU atau beberapa CPU dalam array.
+  const rawModel = cpu.model;
 
-  const parsed = parseCPU(cpu.model);
+  const models = Array.isArray(rawModel)
+    ? rawModel
+    : [rawModel];
+
+  const model = models.find(
+    (item) => typeof item === "string" && item.trim().length > 0
+  );
+
+  if (!model) return 10;
+
+  const parsed = parseCPU(model);
 
   switch (parsed.vendor) {
-
     case "Intel":
       return scoreIntel(parsed);
 
@@ -50,10 +62,9 @@ function scoreCPU(
 
     default:
       return 10;
-
   }
-
 }
+
 
 function scoreSuffix(suffix: string): number {
   const value = suffix.toUpperCase();

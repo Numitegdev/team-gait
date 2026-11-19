@@ -14,243 +14,163 @@ export interface ParsedCPU {
 
 }
 
+
+export interface ParsedCPU {
+  vendor: "Intel" | "AMD" | "Xeon" | "Unknown";
+  family: string;
+  generation: number;
+  model: string;
+  suffix: string;
+  raw: string;
+}
+
 export function parseCPU(raw: string): ParsedCPU {
+  const text = String(raw ?? "").trim();
 
-  const text = raw.trim();
+  const unknown: ParsedCPU = {
+    vendor: "Unknown",
+    family: "",
+    generation: 0,
+    model: "",
+    suffix: "",
+    raw: text,
+  };
 
-// =====================
-// INTEL CORE
-// =====================
-if (text.includes("Intel") && text.includes("Core")) {
-  // Contoh yang didukung:
-  // i3-1215U
-  // i5-12450H
-  // i3-N305
-  // i3-N300
-
-  const nSeriesMatch = text.match(
-    /\bi([3579])[-\s]+(N\d{3,4})([A-Za-z]{0,3})\b/i
-  );
-
-  if (nSeriesMatch) {
-    const family = `i${nSeriesMatch[1]}`;
-    const model = nSeriesMatch[2].toUpperCase();
-    const suffix = nSeriesMatch[3].toUpperCase();
-
-    return {
-      vendor: "Intel",
-      family,
-      generation: 0,
-      model,
-      suffix,
-      raw: text,
-    };
-  }
-
-  // Intel Core generasi biasa
-  const match = text.match(
-    /\bi([3579])[-\s](\d{4,5})([A-Za-z]{0,3}\d*)?/i
-  );
-
-  if (match) {
-    const family = `i${match[1]}`;
-    const model = match[2];
-
-    const firstTwoDigits = Number(model.substring(0, 2));
-
-    const generation =
-      firstTwoDigits >= 10 && firstTwoDigits <= 19
-        ? firstTwoDigits
-        : Number(model.substring(0, 1));
-
-    const suffixMatch = text.match(
-      /\d{4,5}([A-Za-z]{1,3}\d*)\b/i
-    );
-
-    const suffix = suffixMatch
-      ? suffixMatch[1].toUpperCase()
-      : "";
-
-    return {
-      vendor: "Intel",
-      family,
-      generation,
-      model,
-      suffix,
-      raw: text,
-    };
-  }
-}
-  // =====================
-  // Pentium
-  // =====================
-
-if (text.includes("Pentium")) {
-
-    const match =
-        text.match(/G(\d{4})/i);
-
-    return {
-
-        vendor: "Intel",
-
-        family: "Pentium",
-
-        generation: match
-            ? Number(match[1].substring(0,1))
-            : 0,
-
-        model: match?.[1] ?? "",
-
-        suffix: "",
-
-        raw:text
-
-    };
-
-}
-
-//============================= 
-// Celeron
-// ============================
-if (text.includes("Celeron")) {
-
-    const match =
-        text.match(/G(\d{4})|N(\d{4})/i);
-
-    return {
-
-        vendor:"Intel",
-
-        family:"Celeron",
-
-        generation:0,
-
-        model:match?.[1] ?? match?.[2] ?? "",
-
-        suffix:"",
-
-        raw:text
-
-    };
-
-}
-
-  // =====================
-  // AMD RYZEN
-  // =====================
-
-  if (text.includes("Ryzen")) {
-
-    const match = text.match(/Ryzen\s+([3579])\s+(\d{4})/i);
-
-    if (match) {
-
-      const family = `Ryzen ${match[1]}`;
-
-      const model = match[2];
-
-      const generation =
-        Number(model.substring(0, 1)) * 1000;
-
-        const suffixMatch =
-            text.match(/[0-9]{4,5}([A-Za-z]{1,3})/);
-
-        const suffix =
-            suffixMatch
-                ? suffixMatch[1].toUpperCase()
-                : "";
-      return {
-
-        vendor: "AMD",
-
-        family,
-
-        generation,
-
-        model,
-
-        suffix,
-
-        raw: text,
-
-    };
-
-    }
-
-  }
-
-// ==========================
-// Athlon
-// ==========================
-if(text.includes("Athlon")){
-
-    return{
-
-        vendor:"AMD",
-
-        family:"Athlon",
-
-        generation:0,
-
-        model:"",
-
-        suffix:"",
-
-        raw:text
-
-    };
-
-}
-
+  if (!text) return unknown;
 
   // =====================
   // XEON
   // =====================
+  if (/Xeon/i.test(text)) {
+    const familyMatch = text.match(
+      /Xeon.*?\b(E3|E5|E7|Silver|Gold|Platinum)\b/i
+    );
 
-  if (text.includes("Xeon")) {
-
-    const family =
-      text.match(/Xeon.*?(E3|E5|E7|Silver|Gold|Platinum)/i);
-
-    const version =
-      text.match(/v(\d+)/i);
+    const versionMatch = text.match(/\bv(\d+)\b/i);
 
     return {
-
       vendor: "Xeon",
-
-      family: family?.[1] ?? "Xeon",
-
-      generation:
-        version
-          ? Number(version[1])
-          : 1,
-
-      model: "",
-
+      family: familyMatch?.[1]
+        ? familyMatch[1][0].toUpperCase() +
+          familyMatch[1].slice(1).toLowerCase()
+        : "Xeon",
+      generation: versionMatch ? Number(versionMatch[1]) : 1,
+      model: text.match(/\b\d{4,5}\b/)?.[0] ?? "",
       suffix: "",
-      
       raw: text,
-
     };
-
   }
 
- return {
+  // =====================
+  // INTEL CORE N SERIES
+  // =====================
+  if (/Intel/i.test(text) && /Core/i.test(text)) {
+    const nSeriesMatch = text.match(
+      /\bi([3579])[-\s]+(N\d{3,4})([A-Za-z]{0,3})\b/i
+    );
 
-    vendor: "Unknown",
+    if (nSeriesMatch) {
+      return {
+        vendor: "Intel",
+        family: `i${nSeriesMatch[1]}`,
+        generation: 0,
+        model: nSeriesMatch[2].toUpperCase(),
+        suffix: nSeriesMatch[3].toUpperCase(),
+        raw: text,
+      };
+    }
 
-    family: "",
+    const match = text.match(/\bi([3579])[-\s]+(\d{4,5})([A-Za-z]{0,3})\b/i);
 
-    generation: 0,
+    if (match) {
+      const model = match[2];
+      const firstTwoDigits = Number(model.substring(0, 2));
 
-    model: "",
+      const generation =
+        firstTwoDigits >= 10 && firstTwoDigits <= 19
+          ? firstTwoDigits
+          : Number(model.substring(0, 1));
 
-    suffix: "",
+      return {
+        vendor: "Intel",
+        family: `i${match[1]}`,
+        generation,
+        model,
+        suffix: match[3].toUpperCase(),
+        raw: text,
+      };
+    }
+  }
 
-    raw: text,
+  // =====================
+  // PENTIUM
+  // =====================
+  if (/Pentium/i.test(text)) {
+    const match = text.match(/G(\d{4})/i);
 
-};
+    return {
+      vendor: "Intel",
+      family: /Gold/i.test(text) ? "Pentium Gold" : "Pentium",
+      generation: match ? Number(match[1].substring(0, 1)) : 0,
+      model: match?.[1] ?? "",
+      suffix: "",
+      raw: text,
+    };
+  }
 
+  // =====================
+  // CELERON
+  // =====================
+  if (/Celeron/i.test(text)) {
+    const match = text.match(/G(\d{4})|N(\d{4})/i);
+
+    return {
+      vendor: "Intel",
+      family: "Celeron",
+      generation: 0,
+      model: match?.[1] ?? match?.[2] ?? "",
+      suffix: "",
+      raw: text,
+    };
+  }
+
+  // =====================
+  // AMD RYZEN
+  // =====================
+  if (/Ryzen/i.test(text)) {
+    const match = text.match(/Ryzen\s+([3579])\s+(\d{4,5})/i);
+
+    if (match) {
+      const model = match[2];
+
+      const suffixMatch = text.match(
+        /\d{4,5}([A-Za-z]{1,3})\b/
+      );
+
+      return {
+        vendor: "AMD",
+        family: `Ryzen ${match[1]}`,
+        generation: Number(model.substring(0, 1)) * 1000,
+        model,
+        suffix: suffixMatch?.[1]?.toUpperCase() ?? "",
+        raw: text,
+      };
+    }
+  }
+
+  // =====================
+  // AMD ATHLON
+  // =====================
+  if (/Athlon/i.test(text)) {
+    return {
+      vendor: "AMD",
+      family: "Athlon",
+      generation: 0,
+      model: "",
+      suffix: "",
+      raw: text,
+    };
+  }
+
+  return unknown;
 }
