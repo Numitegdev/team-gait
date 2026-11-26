@@ -138,83 +138,40 @@ async function validateIPManagement(
 
 }
 
+
 export async function createAsset(
-
-  payload:
-    CreateAssetPayload
-
+  payload: CreateAssetPayload
 ) {
+  const { data, error } = await supabase.rpc(
+    "create_asset_with_ip",
+    {
+      p_payload: {
+        asset_code: payload.asset_code,
+        asset_name: payload.asset_name,
+        company_id: payload.company_id,
+        location_id: payload.location_id,
+        category_id: payload.category_id,
+        model_id: payload.model_id,
+        condition_id: payload.condition_id,
+        status_id: payload.status_id,
+        brand: payload.brand,
+        serial_number: payload.serial_number,
+        purchase_date: payload.purchase_date,
+        purchase_price: payload.purchase_price,
+        warranty_until: payload.warranty_until,
+        notes: payload.notes,
+        spec_json: payload.spec_json,
+      },
+    }
+  );
 
-await validateIPManagement(
+  if (error) {
+    console.error("Gagal membuat asset:", error);
+    throw error;
+  }
 
-  payload.ip_management_id
-
-);
-
-const {
-  data,
-  error,
-} = await supabase
-
-  .from("assets")
-
-  .insert([payload])
-
-  .select()
-
-  .single();
-
-if (error)
-  throw error;
-
-await syncIPManagementDevice({
-
-  newIPId:
-    data.ip_management_id,
-
-  device:
-    `${data.asset_code} - ${data.asset_name}`,
-
-});
-
-
-const {
-  data: { user },
-} = await supabase.auth.getUser();
-
-await createAssetHistory({
-
-  asset_id: data.id,
-
-  action_type:
-    HISTORY_ACTION.CREATE,
-
-  new_company_id:
-    data.company_id,
-
-  new_location_id:
-    data.location_id,
-
-  new_condition_id:
-    data.condition_id,
-
-  new_status_id:
-    data.status_id,
-
-  new_ip_management_id:
-    data.ip_management_id,
-
-  remarks:
-    "Asset berhasil dibuat.",
-
-  created_by:
-    user?.id ?? null,
-
-});
-
-return data;
-
-} 
+  return data;
+}
 
 
 export async function updateAsset(

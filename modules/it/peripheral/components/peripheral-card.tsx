@@ -1,7 +1,7 @@
 "use client";
 
 import { Addon, Peripheral } from "../types/peripheral.types";
-import { getRoomName } from "@/modules/it/network-tools/ip-management/constants/room-options";
+import { Location } from "@/modules/assets/types/masters/Location";
 interface Props {
   peripheral: Peripheral;
 
@@ -26,24 +26,20 @@ interface Props {
   onDetail: (
     peripheral: Peripheral
   ) => void;
+
+  rooms: Location[];
 }
 
 export default function PeripheralCard({
-
   peripheral,
-
+  addons,
+  rooms,
   onAssignAddon,
-
   onRemovePeripheral,
-
   onRemoveAddon,
-
   onUploadScanner,
- 
   onDetail,
-  
-
-}: Props)  {
+}: Props) {
 
   const hardware = peripheral.hardware;
 
@@ -125,7 +121,10 @@ function scoreBar(
           </div>
 
           <div>
-            {getRoomName(peripheral.ip_management.ruangan)}
+          {rooms.find(
+          (room) =>
+            room.code === peripheral.ip_management.ruangan
+        )?.name ?? peripheral.ip_management.ruangan}
           </div>
 
         </div>

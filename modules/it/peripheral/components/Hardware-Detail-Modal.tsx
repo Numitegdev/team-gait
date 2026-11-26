@@ -2,17 +2,19 @@
 
 import { useState } from "react";
 import { Peripheral } from "../types/peripheral.types";
-
+import { Location } from "@/modules/assets/types/masters/Location";
 interface Props {
   open: boolean;
   peripheral: Peripheral | null;
   onClose: () => void;
+  rooms: Location[];
 }
 
 export default function HardwareDetailModal({
   open,
   peripheral,
   onClose,
+   rooms,
 }: Props) {
   const [tab, setTab] = useState<
     "hardware" | "software" | "network"
@@ -42,7 +44,14 @@ export default function HardwareDetailModal({
             <p className="text-sm text-gray-500">
               {peripheral.ip_management.ip_terkini}
             </p>
-
+            <p className="text-sm text-gray-500">
+              Lokasi: {
+                rooms.find(
+                  (room) =>
+                    room.code === peripheral.ip_management.ruangan
+                )?.name ?? peripheral.ip_management.ruangan
+              }
+            </p>
           </div>
 
           <button

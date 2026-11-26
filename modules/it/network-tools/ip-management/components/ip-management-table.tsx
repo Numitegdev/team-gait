@@ -2,7 +2,7 @@
 
 import { Device }
 from "../types/ip-management";
-import { getRoomName } from "../constants/room-options";
+import { Location } from "@/modules/assets/types/masters/Location";
 interface Props {
 
   devices: Device[];
@@ -19,22 +19,18 @@ interface Props {
     device: Device
   ) => void;
 
-  onDelete: (
-    id: number
-  ) => void;
+
+
+  rooms: Location[];
 }
 
 export function IPManagementTable({
-
   devices,
-
+  rooms,
   page,
   setPage,
   totalPages,
-
   onEdit,
-  onDelete,
-  
 
 }: Props) {
 
@@ -125,7 +121,9 @@ export function IPManagementTable({
               </td>
 
               <td className="p-3 hidden md:table-cell">
-               {getRoomName(item.ruangan)}
+               {rooms.find(
+                  (room) => room.code === item.ruangan
+                )?.name ?? item.ruangan}
               </td>
 
               <td className="p-3 hidden md:table-cell">
@@ -161,21 +159,7 @@ export function IPManagementTable({
                     Edit
                   </button>
 
-                  <button
-                    onClick={() =>
-                      onDelete(item.id)
-                    }
-                    className="
-                      rounded-lg
-                      bg-red-600
-                      px-3
-                      py-1
-                      text-white
-                    "
-                  >
-                    Delete
-                  </button>
-
+                 
                 </div>
 
               </td>

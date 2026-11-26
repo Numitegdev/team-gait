@@ -20,6 +20,11 @@ import PeripheralFilter from "./components/peripheral-filter";
 import AddonManagerModal from "./components/addon-manager-modal";
 import { parseCPU } from "./services/cpu-parser";
 import { useMemo } from "react";
+import {
+  getLocations,
+} from "@/modules/assets/services/master-service";
+
+import { Location } from "@/modules/assets/types/masters/Location";
 export default function PeripheralPage() {
   const {
     loading,
@@ -44,7 +49,7 @@ export default function PeripheralPage() {
     loadPeripherals
 
   } = usePeripheral();
-  
+  const [rooms, setRooms] = useState<Location[]>([]);
 
   const [showPeripheralModal, setShowPeripheralModal] =
     useState(false);
@@ -89,23 +94,6 @@ const [selectedDDR, setSelectedDDR] =
 
 const [selectedScan, setSelectedScan] =
   useState("all");
-
-  const rooms = useMemo(() => {
-
-  return Array.from(
-
-    new Set(
-
-      peripherals.map(
-        p => p.ip_management.ruangan
-      )
-
-    )
-
-  ).sort();
-
-}, [peripherals]);
-
 
 const networks = useMemo(() => {
 
@@ -422,7 +410,18 @@ useEffect(() => {
 
 ]);
   
+useEffect(() => {
+  async function loadLocations() {
+    try {
+      const data = await getLocations();
+      setRooms(data ?? []);
+    } catch (error) {
+      console.error("Gagal mengambil lokasi:", error);
+    }
+  }
 
+  loadLocations();
+}, []);
 const [showDetailModal, setShowDetailModal] =
   useState(false);
 
@@ -658,6 +657,7 @@ const paginatedPeripherals =
      <PeripheralCard
         key={item.id}
         peripheral={item}
+        rooms={rooms}
         addons={addons}
         onAssignAddon={(id) => {
             setSelectedPeripheral(id);
@@ -764,6 +764,7 @@ const paginatedPeripherals =
     setShowDetailModal(false);
     setSelectedDetail(null);
   }}
+   rooms={rooms}
 />
 
 

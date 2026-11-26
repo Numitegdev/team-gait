@@ -30,9 +30,13 @@ interface AssetFormProps {
 
   ips: IPManagement[];
 
+    isEditing: boolean;
+    role: string
 }
 
 export default function AssetForm({
+
+  role,
 
   form,
 
@@ -52,7 +56,7 @@ export default function AssetForm({
 
    ips,
 
-
+ isEditing,
 }: AssetFormProps) {
 
 const filteredModels =
@@ -117,29 +121,13 @@ const selectedModel =
 
         />
 
-      
-        {/* <input
 
-          value={form.asset_code}
-
-          readOnly
-
-          placeholder="Auto Generate"
-
-          className="
-            rounded-xl
-            border
-            bg-gray-100
-            p-3
-          "
-
-        /> */}
 
         <input
 
           value={form.asset_code}
            
-          // readOnly
+          readOnly
 
           onChange={(e) =>
 
@@ -164,50 +152,39 @@ const selectedModel =
 
         />
 
+      {role === "it_admin" ? (
         <select
-
-          value={
-            form.company_id ?? ""
-          }
-
+          value={form.company_id ?? ""}
           onChange={(e) =>
             setForm({
               ...form,
-              company_id:
-                Number(
-                  e.target.value
-                ),
+              company_id: e.target.value
+                ? Number(e.target.value)
+                : null,
             })
           }
-
-          className="
-            rounded-xl
-            border
-            p-3
-          "
-
+          className="rounded-xl border p-3"
         >
-
-          <option value="">
-
-            Company
-
-          </option>
+          <option value="">Company</option>
 
           {companies.map((item) => (
-
-            <option
-              key={item.id}
-              value={item.id}
-            >
-
+            <option key={item.id} value={item.id}>
               {item.name}
-
             </option>
-
           ))}
-
         </select>
+      ) : (
+        <input
+          type="text"
+          value={
+            companies.find(
+              (item) => item.id === form.company_id
+            )?.name ?? "Company belum ditentukan"
+          }
+          readOnly
+          className="rounded-xl border bg-gray-100 p-3"
+        />
+      )}
 
         <select
 
@@ -475,83 +452,53 @@ const selectedModel =
 
 
 
-      {/* IP */}
+   
+{/* IP Management */}
+
 {selectedModel?.has_ip && (
+  <div className="flex flex-col gap-2">
 
-      <div
-  className="
-    flex
-    flex-col
-    gap-2
-  "
->
+    {isEditing ? (
+      <>
+        <label>IP Address</label>
 
-  <label>
+        <select
+          value={form.ip_management_id ?? ""}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              ip_management_id: e.target.value
+                ? Number(e.target.value)
+                : null,
+            })
+          }
+          className="rounded-xl border p-3"
+        >
+          <option value="">-- Pilih IP --</option>
 
-    IP Address
+          {ips.map((ip) => (
+            <option key={ip.id} value={ip.id}>
+              {ip.ip_terkini} - {ip.device ?? "Available"}
+            </option>
+          ))}
+        </select>
+      </>
+    ) : (
+      <div className="rounded-xl border border-blue-200 bg-blue-50 p-3">
+        <p className="font-medium text-blue-800">
+          IP Management otomatis
+        </p>
 
-  </label>
+        <p className="mt-1 text-sm text-blue-700">
+          Sistem akan membuat data IP Management
+          secara otomatis ketika Asset disimpan.
+        </p>
+      </div>
+    )}
 
-  <select
-
-    value={
-      form.ip_management_id ?? ""
-    }
-
-    onChange={(e) =>
-
-      setForm({
-
-        ...form,
-
-        ip_management_id:
-          e.target.value
-            ? Number(e.target.value)
-            : null,
-
-      })
-
-    }
-
-    className="
-      rounded-xl
-      border
-      p-3
-    "
-
-  >
-
-    <option value="">
-
-      -- Pilih IP --
-
-    </option>
-
-    {ips.map((ip) => (
-
-      <option
-
-        key={ip.id}
-
-        value={ip.id}
-
-      >
-
-        {ip.ip_terkini}
-
-        {" - "}
-
-        {ip.device ?? "Available"}
-
-      </option>
-
-    ))}
-
-  </select>
-
-</div>
+  </div>
 )}
-      {/* ip selesei */}
+
 
       {/* section 3 selesei */}
     <div

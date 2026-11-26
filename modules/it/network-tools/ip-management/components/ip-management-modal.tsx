@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { rooms } from "../constants/room-options";
-
+import { Location } from "@/modules/assets/types/masters/Location";
 import { Device } from "../types/ip-management";
 
 import { findAvailableIP } from "../utils/find-available-ip";
@@ -19,6 +18,11 @@ interface Props {
   usedIPs: string[];
 
   existingDevices: Device[];
+
+  rooms: Location[];
+
+    assetLocationName?: string | null;
+  isAssetLinked?: boolean;
 }
 
 export function IPManagementModal({
@@ -28,6 +32,9 @@ export function IPManagementModal({
   editingDevice,
   usedIPs,
   existingDevices,
+  rooms,
+    assetLocationName,
+  isAssetLinked = false,
 }: Props) {
   const [ipError, setIpError] =
     useState("");
@@ -56,68 +63,27 @@ const [
   setAvailableIPs,
 ] = useState<string[]>([]);
 
-  const [form, setForm] = useState({
-  ruangan: "",
-  jenis_network: "Network Office",
-
-  device: "",
-
-  ip_terkini: "",
-
-  fungsional: "Office",
-
-  whitelist: "-",
-
-  keterangan: "",
-
-  isp_utama: "",
-
-  isp_backup: "",
-
-
-  
-});
+const [form, setForm] = useState(emptyForm);
 
 
   useEffect(() => {
-    if (!editingDevice) {
-      setForm({
-        ruangan: "",
-        jenis_network:
-          "Network Office",
+  if (!editingDevice) {
+    setForm(emptyForm);
+    return;
+  }
 
-        device: "",
-
-        ip_terkini: "",
-
-        fungsional: "Office",
-
-        whitelist: "-",
-
-        keterangan: "",
-
-        isp_utama: "",
-
-        isp_backup: "",
-      });
-
-      return;
-    }
-
-    setForm({
-  ruangan: editingDevice.ruangan,
-  jenis_network: editingDevice.jenis_network,
-  device: editingDevice.device,
-  ip_terkini: editingDevice.ip_terkini,
-  fungsional: editingDevice.fungsional,
-  whitelist: editingDevice.whitelist,
-  keterangan: editingDevice.keterangan,
-
-  isp_utama: editingDevice.isp_utama ?? "",
-
-  isp_backup: editingDevice.isp_backup ?? "",
-});
-  }, [editingDevice]);
+  setForm({
+    ruangan: editingDevice.ruangan ?? "",
+    jenis_network: editingDevice.jenis_network ?? "Network Office",
+    device: editingDevice.device ?? "",
+    ip_terkini: editingDevice.ip_terkini ?? "",
+    fungsional: editingDevice.fungsional ?? "Office",
+    whitelist: editingDevice.whitelist ?? "-",
+    keterangan: editingDevice.keterangan ?? "",
+    isp_utama: editingDevice.isp_utama ?? "",
+    isp_backup: editingDevice.isp_backup ?? "",
+  });
+}, [editingDevice]);
 
  useEffect(() => {
 
@@ -248,51 +214,48 @@ const [
             md:grid-cols-2
           "
         >
-          <select
-          value={form.ruangan}
-          onChange={(e) => {
+      {editingDevice && isAssetLinked ? (
+        <div className="rounded-xl border bg-slate-100 p-3">
+          <label className="mb-1 block text-xs text-slate-500">
+            Lokasi Asset
+          </label>
 
-            const room =
-              e.target.value;
+          <p className="font-medium text-slate-800">
+            {assetLocationName || "Lokasi belum tersedia"}
+          </p>
+        </div>
+         ) : (
+            <select
+              value={form.ruangan ?? ""}
+              onChange={(e) => {
+                const room = e.target.value;
 
-            const serverRooms = [
-              "R19", // Server Utama
-              "R26", // Telemarketing & CS
-              "R18", // Operator
-              "R3", // Voucher
-            ];
+                const serverRooms = [
+                  "R19",
+                  "R26",
+                  "R18",
+                  "R3",
+                ];
 
-            setForm({
-              ...form,
+                setForm({
+                  ...form,
+                  ruangan: room,
+                  jenis_network: serverRooms.includes(room)
+                    ? "Network Server"
+                    : "Network Office",
+                });
+              }}
+              className="rounded-xl border p-3"
+            >
+              <option value="">Pilih Ruangan</option>
 
-              ruangan: room,
-
-              jenis_network:
-                serverRooms.includes(room)
-                  ? "Network Server"
-                  : "Network Office",
-            });
-
-          }}
-            className="
-              rounded-xl
-              border
-              p-3
-            "
-          >
-            <option value="">
-              Pilih Ruangan
-            </option>
-
-               {rooms.map((room) => (
-              <option
-                key={room.code}
-                value={room.code}
-              >
-                {room.name}
-              </option>
-            ))}
-          </select>
+              {rooms.map((room) => (
+                <option key={room.code} value={room.code}>
+                  {room.name}
+                </option>
+              ))}
+            </select>
+          )}
 
          <input
           value={
@@ -306,23 +269,29 @@ const [
             p-3
           "
         />
+        {isAssetLinked ? (
+          <div className="rounded-xl border bg-slate-100 p-3">
+            <label className="mb-1 block text-xs text-slate-500">
+              Nama Device (dari Asset)
+            </label>
 
+            <p className="font-medium text-slate-800">
+              {form.device || "Nama device belum tersedia"}
+            </p>
+          </div>
+        ) : (
           <input
             value={form.device}
             onChange={(e) =>
               setForm({
                 ...form,
-                device:
-                  e.target.value,
+                device: e.target.value,
               })
             }
             placeholder="Nama Device"
-            className="
-              rounded-xl
-              border
-              p-3
-            "
+            className="rounded-xl border p-3"
           />
+        )}
 
           <input
             value={
@@ -344,9 +313,7 @@ const [
           />
 
           <select
-            value={
-              form.fungsional
-            }
+          value={form.fungsional ?? "Office"}
             onChange={(e) =>
               setForm({
                 ...form,
@@ -378,9 +345,7 @@ const [
           </select>
 
           <select
-            value={
-              form.whitelist
-            }
+          value={form.whitelist ?? "-"}
             onChange={(e) =>
               setForm({
                 ...form,
@@ -621,7 +586,7 @@ const [
 
 )}
 
-        <textarea
+        {/* <textarea
           value={
             form.keterangan
           }
@@ -641,7 +606,7 @@ const [
             border
             p-3
           "
-        />
+        /> */}
 
         <div
           className="

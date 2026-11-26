@@ -265,23 +265,16 @@ exportDisabled={loading || fullAssets.length === 0}
 
       />
 
-        <AssetModal
-
-          open={openModal}
-
-          assetId={selectedAssetId}
-
-          onClose={() => {
-
-            setOpenModal(false);
-
-            setSelectedAssetId(null);
-
-          }}
-
-          onSuccess={loadAssets}
-
-        />
+<AssetModal
+  open={openModal}
+  assetId={selectedAssetId}
+  role={role ?? ""}
+  onClose={() => {
+    setOpenModal(false);
+    setSelectedAssetId(null);
+  }}
+  onSuccess={loadAssets}
+/>
 
         <AssetDetailModal
 

@@ -4,13 +4,30 @@ from "@/lib/supabase/client";
 const supabase =
   createClient();
 export async function getDevices() {
-
-  const { data, error } =
-    await supabase
-      .from("ip_management")
-      .select("*");
+  const { data, error } = await supabase
+    .from("ip_management")
+    .select(`
+      *,
+      asset:assets!assets_ip_management_id_fkey (
+        id,
+        location:locations!assets_location_id_fkey (
+          id,
+          code,
+          name
+        )
+      )
+    `);
 
   if (error) throw error;
+console.log(
+  "DETAIL RELASI IP:",
+  data.map((item: any) => ({
+    id: item.id,
+    device: item.device,
+    asset: item.asset,
+    assetLocation: item.asset?.[0]?.location,
+  }))
+);
 
   return data;
 }

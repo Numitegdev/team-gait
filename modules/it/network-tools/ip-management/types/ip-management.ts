@@ -18,5 +18,16 @@ export interface Device {
   isp_utama: string;
 
   isp_backup: string;
-}
 
+  // Relasi ke Asset
+  asset?: {
+    id: number;
+
+    location?: {
+      id: number;
+      code: string;
+      name: string;
+    } | null;
+
+  }[] | null;
+}

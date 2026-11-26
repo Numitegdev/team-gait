@@ -1,6 +1,6 @@
 "use client";
 
-import { rooms } from "../constants/room-options";
+import { Location } from "@/modules/assets/types/masters/Location";
 
 interface Props {
   search: string;
@@ -20,28 +20,23 @@ interface Props {
 
   ispUtamaOptions: string[];
   ispBackupOptions: string[];
+  rooms: Location[];
 }
 
 export function IPManagementFilters({
-
   search,
   setSearch,
-
   selectedRoom,
   setSelectedRoom,
-
   selectedNetwork,
   setSelectedNetwork,
-
   selectedISPUtama,
   setSelectedISPUtama,
-
   selectedISPBackup,
   setSelectedISPBackup,
-
   ispUtamaOptions,
   ispBackupOptions,
-
+  rooms,
 }: Props) {
   return (
  <div className="space-y-4">

@@ -2,8 +2,6 @@ export interface Location {
 
   id: number;
 
-  company_id: number;
-
   code: string;
 
   name: string;

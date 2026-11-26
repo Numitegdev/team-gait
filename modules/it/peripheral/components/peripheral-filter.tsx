@@ -1,7 +1,7 @@
 "use client";
 
 import { Addon } from "../types/peripheral.types";
-import { getRoomName } from "@/modules/it/network-tools/ip-management/constants/room-options";
+import { Location } from "@/modules/assets/types/masters/Location";
 interface Props {
 
   search: string;
@@ -14,7 +14,7 @@ interface Props {
 
   addons: Addon[];
 
-  rooms: string[];
+  rooms: Location[];
 
   networks: string[];
 
@@ -358,30 +358,23 @@ DDR5
   <select
   value={selectedRoom}
   onChange={(e) => {
-    console.log("ROOM :", e.target.value);
     onRoomChange(e.target.value);
   }}
-     className="rounded-lg border px-3 py-2"
+  className="rounded-lg border px-3 py-2"
 >
+  <option value="">
+    Semua Ruangan
+  </option>
 
-    <option value="">
-      Semua Ruangan
+  {rooms.map((room) => (
+    <option
+      key={room.code}
+      value={room.code}
+    >
+      {room.name}
     </option>
-
-    {rooms.map(room=>(
-
-      <option
-        key={room}
-        value={room}
-      >
-
-          {getRoomName(room)}
-
-      </option>
-
-    ))}
-
-  </select>
+  ))}
+</select>
 
 <select
   value={selectedNetwork}

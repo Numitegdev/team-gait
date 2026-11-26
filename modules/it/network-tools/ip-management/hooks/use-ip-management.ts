@@ -3,13 +3,16 @@
 import { useEffect, useState } from "react";
 
 import {
-  createDevice,
-  deleteDevice,
   getDevices,
   updateDevice,
 } from "../services/ip-management-service";
 
 import { Device } from "../types/ip-management";
+import { Location } from "@/modules/assets/types/masters/Location";
+
+import {
+  getLocations,
+} from "@/modules/assets/services/master-service";
 
 export function useIPManagement() {
 
@@ -21,6 +24,8 @@ export function useIPManagement() {
 
   const [search, setSearch] =
     useState("");
+
+    const [rooms, setRooms] = useState<Location[]>([]);
 
   const [selectedRoom, setSelectedRoom] =
     useState("");
@@ -56,6 +61,15 @@ const [selectedISPBackup, setSelectedISPBackup] =
   selectedISPBackup,
 ]);
 
+async function loadLocations() {
+  try {
+    const data = await getLocations();
+    setRooms(data ?? []);
+  } catch (error) {
+    console.error("Gagal mengambil lokasi:", error);
+  }
+}
+
   async function loadDevices() {
 
     try {
@@ -78,31 +92,6 @@ const [selectedISPBackup, setSelectedISPBackup] =
     }
   }
 
- async function addDevice(
-  payload: Omit<Device, "id">
-) {
-
-  try {
-
-    await createDevice(payload);
-
-    await loadDevices();
-
-  } catch (error: any) {
-
-    if (error.code === "23505") {
-
-      throw new Error(
-        "IP Address sudah digunakan."
-      );
-
-    }
-
-    throw error;
-
-  }
-
-}
 
   async function editDevice(
     id: number,
@@ -117,28 +106,10 @@ const [selectedISPBackup, setSelectedISPBackup] =
     await loadDevices();
   }
 
-  async function removeDevice(
-    id: number
-  ) {
-
-    const confirmDelete =
-      window.confirm(
-        "Hapus device ini?"
-      );
-
-    if (!confirmDelete) {
-      return;
-    }
-
-    await deleteDevice(id);
-
-    await loadDevices();
-  }
-
   useEffect(() => {
 
     loadDevices();
-
+ loadLocations();
   }, []);
 
   const filteredDevices =
@@ -305,9 +276,9 @@ const ispBackupOptions = [
 
   loadDevices,
 
-  addDevice,
+ 
   editDevice,
-  removeDevice,
+
 
   selectedISPUtama,
 setSelectedISPUtama,
@@ -317,5 +288,7 @@ setSelectedISPBackup,
 
 ispUtamaOptions,
 ispBackupOptions,
+
+  rooms,
 };
 }

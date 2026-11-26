@@ -22,33 +22,29 @@ import {
 from "../services/asset-code-service";
 
 import {
+  getAdminCompanyId,
+} from "@/lib/auth/company-permission";
+
+import {
 
   useAssets,
 
 } from "../hooks/use-assets";
 
 interface AssetModalProps {
-
   open: boolean;
-
   assetId?: number | null;
-
+  role: string;
   onClose: () => void;
-
   onSuccess: () => void;
-
 }
 
 export default function AssetModal({
-
   open,
-
   assetId,
-
+  role,
   onClose,
-
   onSuccess,
-
 }: AssetModalProps) {
 
   const {
@@ -108,13 +104,16 @@ useEffect(() => {
 
     }
 
-    if (!assetId) {
+if (!assetId) {
+  const adminCompanyId = getAdminCompanyId(role);
 
-      setForm(defaultAssetForm);
+  setForm({
+    ...defaultAssetForm,
+    company_id: adminCompanyId,
+  });
 
-      return;
-
-    }
+  return;
+}
 
     try {
 
@@ -191,6 +190,8 @@ useEffect(() => {
   open,
 
   assetId,
+
+    role,
 
 ]);
 
@@ -389,8 +390,7 @@ async function handleSave() {
     model_id:
       form.model_id,
 
-      ip_management_id:
-  form.ip_management_id,
+   ip_management_id: null,
 
     brand:
       form.brand || null,
@@ -575,6 +575,8 @@ async function handleSave() {
 
           <AssetForm
 
+      
+
             form={form}
 
             setForm={setForm}
@@ -592,6 +594,10 @@ async function handleSave() {
             statuses={statuses}
 
             ips={ips}
+
+             isEditing={Boolean(assetId)}
+            
+             role={role}
 
           />
 
