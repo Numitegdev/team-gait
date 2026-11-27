@@ -384,20 +384,17 @@ console.log(history);
           item.new_status?.name
         }
       />
-        <ChangeRow
-
-        label="IP Address"
-
-        oldValue={
-            item.old_ip?.ip_terkini
-        }
-
-        newValue={
-            item.new_ip?.ip_terkini
-        }
-
-        />
-
+       <ChangeRow
+  label="IP Address"
+  oldValue={
+    item.old_ip_address ??
+    item.old_ip?.ip_terkini
+  }
+  newValue={
+    item.new_ip_address ??
+    item.new_ip?.ip_terkini
+  }
+/>
 
     </div>
 

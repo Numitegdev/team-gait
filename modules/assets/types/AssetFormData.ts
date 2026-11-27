@@ -30,6 +30,6 @@ export interface AssetFormData {
 
   notes: string;
 
-  ip_management_id: number | null;
+  // ip_management_id: number | null;
 
 }

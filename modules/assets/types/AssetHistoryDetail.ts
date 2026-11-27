@@ -14,6 +14,9 @@ export interface AssetHistoryDetail {
 
   request_status: string | null;
 
+  old_ip_address: string | null;
+new_ip_address: string | null;
+
   old_company: {
 
     name: string;

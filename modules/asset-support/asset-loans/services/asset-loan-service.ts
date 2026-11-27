@@ -461,16 +461,20 @@ export async function approveLoan(
     error: loanError,
   } = await supabase
     .from("asset_loans")
-    .select(`
-      *,
-      asset:assets(
-        id,
-        asset_code,
-        asset_name,
-        company_id,
-        status_id
-      )
-    `)
+   .select(`
+  *,
+  asset:assets(
+    id,
+    asset_code,
+    asset_name,
+    company_id,
+    status_id
+  ),
+  borrower_company:companies!asset_loans_borrower_company_id_fkey(
+    id,
+    name
+  )
+`)
     .eq("id", loanId)
     .single();
 
@@ -1662,27 +1666,28 @@ export async function executeLoan(
   // 3. AMBIL DATA LOAN
   // ============================================
 
-  const {
-    data: loan,
-    error: loanError,
-  } =
-    await supabase
-      .from("asset_loans")
-      .select(`
-        *,
-       asset:assets(
-      id,
-      asset_code,
-      asset_name,
-      company_id,
-      status_id
-    )
-      `)
-      .eq(
-        "id",
-        loanId
+ const {
+  data: loan,
+  error: loanError,
+} =
+  await supabase
+    .from("asset_loans")
+    .select(`
+      *,
+      asset:assets(
+        id,
+        asset_code,
+        asset_name,
+        company_id,
+        status_id
+      ),
+      borrower_company:companies!asset_loans_borrower_company_id_fkey(
+        id,
+        name
       )
-      .single();
+    `)
+    .eq("id", loanId)
+    .single();
 
 
   if (loanError) {
@@ -1982,8 +1987,8 @@ await createAssetHistory({
   new_company_id:
     null,
 
-  remarks:
-    `Asset dipinjam oleh ${loan.borrower_company_id}.`,
+ remarks:
+  `Asset dipinjam oleh ${loan.borrower_company?.name ?? "Company tidak diketahui"}.`,
 
   requested_by:
     loan.requested_by,

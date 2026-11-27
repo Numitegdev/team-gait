@@ -44,7 +44,6 @@ export default function PeripheralPage() {
     addAddonToPeripheral,
     removeAddonFromPeripheral,
 
-    removePeripheral,
 
     loadPeripherals
 
@@ -663,7 +662,7 @@ const paginatedPeripherals =
             setSelectedPeripheral(id);
             setShowAssignModal(true);
         }}
-        onRemovePeripheral={removePeripheral}
+     
         onRemoveAddon={removeAddonFromPeripheral}
         onUploadScanner={(id) => {
             setSelectedPeripheral(id);

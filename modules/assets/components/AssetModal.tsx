@@ -12,9 +12,7 @@ import { useAssetMaster } from "../hooks/use-asset-master";
 
 import { createAsset , updateAsset } from "../services/asset-service";
 
-import {
-  useIPManagement,
-} from "../hooks/use-ip-management";
+
 
 import {
   generateAssetCode,
@@ -65,17 +63,7 @@ export default function AssetModal({
 
   } = useAssetMaster();
 
-const {
 
-  ips,
-
-  reloadIPs,
-
-} = useIPManagement(
-
-  assetId ?? undefined
-
-);
 
   const {
 
@@ -88,13 +76,20 @@ const {
       defaultAssetForm
     );
 
+const selectedModel = models.find(
+  (item) => item.id === form.model_id
+);
+
+const isManualSpec =
+  selectedModel?.spec_source === "manual";
+
 useEffect(() => {
 
     
 
   async function loadDetail() {
 
-    await reloadIPs();
+    
     
     if (!open) {
 
@@ -170,8 +165,6 @@ if (!assetId) {
         notes:
           asset.notes ?? "",
 
-        ip_management_id:
-          asset.ip_management_id,
 
       });
 
@@ -331,7 +324,7 @@ async function handleSave() {
       model_id:
         form.model_id,
 
-        ip_management_id: form.ip_management_id,
+
 
       brand:
         form.brand || null,
@@ -357,12 +350,13 @@ async function handleSave() {
       notes:
         form.notes || null,
 
+...(isManualSpec
+  ? {
       spec_json: {
-
-        description:
-          form.specification,
-
+        description: form.specification,
       },
+    }
+  : {}),
 
     }
 
@@ -416,12 +410,11 @@ async function handleSave() {
     notes:
       form.notes || null,
 
-    spec_json: {
-
-      description:
-        form.specification,
-
-      },
+spec_json: isManualSpec
+  ? {
+      description: form.specification,
+    }
+  : null,
 
       
 
@@ -592,10 +585,6 @@ async function handleSave() {
             conditions={conditions}
 
             statuses={statuses}
-
-            ips={ips}
-
-             isEditing={Boolean(assetId)}
             
              role={role}
 

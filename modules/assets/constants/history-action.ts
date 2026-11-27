@@ -6,4 +6,5 @@ export const HISTORY_ACTION = {
   RETURN: "RETURN",
   APPROVE: "APPROVE",
   REJECT: "REJECT",
+  DEACTIVATE: "DEACTIVATE",
 } as const;

@@ -8,88 +8,36 @@ export async function getDevices() {
     .from("ip_management")
     .select(`
       *,
-      asset:assets!assets_ip_management_id_fkey (
+      asset:assets!assets_ip_management_id_fkey!inner (
         id,
+        is_active,
         location:locations!assets_location_id_fkey (
           id,
           code,
           name
         )
       )
-    `);
+    `)
+    .eq("asset.is_active", true);
 
   if (error) throw error;
-console.log(
-  "DETAIL RELASI IP:",
-  data.map((item: any) => ({
-    id: item.id,
-    device: item.device,
-    asset: item.asset,
-    assetLocation: item.asset?.[0]?.location,
-  }))
-);
 
   return data;
 }
 
-export async function createDevice(
-  payload: any
-) {
 
-  const { error } =
-    await supabase
-      .from("ip_management")
-      .insert([payload]);
 
-  if (error) {
-    throw error;
-  }
-
-}
 export async function updateDevice(
   id: number,
   payload: any
 ) {
+  const { error } = await supabase.rpc(
+    "update_ip_management_with_history",
+    {
+      p_ip_management_id: id,
+      p_payload: payload,
+    }
+  );
 
-  const { error } =
-    await supabase
-      .from("ip_management")
-      .update(payload)
-      .eq("id", id);
-
-  if (error) {
-    throw error;
-  }
-
-}
-
-export async function deleteDevice(
-  id: number
-) {
-
-  const { error } =
-    await supabase
-      .from("ip_management")
-      .delete()
-      .eq("id", id);
-
-  if (error) {
-    throw error;
-  }
-
-}
-export async function bulkInsertDevices(
-  devices: any[]
-) {
-
-  const { error } =
-    await supabase
-      .from("ip_management")
-      .insert(devices);
-
-  if (error) {
-
-    throw error;
-
-  }
+  if (error) throw error;
 }

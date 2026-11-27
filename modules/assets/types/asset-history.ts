@@ -35,4 +35,7 @@ export interface AssetHistory {
   created_by: string | null;
 
   created_at: string;
+
+  old_ip_address: string | null;
+new_ip_address: string | null;
 }

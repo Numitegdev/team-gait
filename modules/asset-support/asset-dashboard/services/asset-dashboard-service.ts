@@ -354,8 +354,11 @@ function getFamilyName(familyCode: string): string {
     "92": "PC Workstation",
     "93": "PC Desktop Medium",
     "94": "PC Desktop High End",
-    "95": "PC & Server High End",
+    "95": "PC High End",
     "97": "Laptop",
+    "99": "PC Server",
+    "IP": "IP Cadangan",
+    "VM": "Virtual Machine",
   };
 
   return familyNames[familyCode] ?? `Family ${familyCode}`;

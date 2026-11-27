@@ -1,14 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import {
-  RoomUtilization,
-}
-from "./components/room-utilization";
+
 import { Device } from "./types/ip-management";
 
-import { IPManagementSummary }
-from "./components/ip-management-summary";
 import { useIPManagement }
 from "./hooks/use-ip-management";
 
@@ -48,8 +43,6 @@ export default function IPManagementPage() {
 
 
   editDevice,
- 
-  loadDevices,
 
    selectedISPUtama,
   setSelectedISPUtama,
@@ -165,7 +158,7 @@ rooms={rooms}
   }
   editingDevice={editingDevice}
   usedIPs={usedIPs}
-  existingDevices={devices}
+  existingDevices={fullDevices}
   onSave={handleSave}
   rooms={rooms}
 

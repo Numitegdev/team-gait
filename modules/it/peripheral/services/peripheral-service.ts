@@ -7,23 +7,14 @@ export async function getPeripherals(): Promise<Peripheral[]> {
     .from("peripherals")
     .select(`
       id,
-
       ip_management_id,
-
       score,
-
       score_detail,
-
       status,
-
       scanner_version,
-
       last_scan_at,
-
       last_scan_by,
-
       hardware,
-
       software,
 
       ip_management(
@@ -42,50 +33,54 @@ export async function getPeripherals(): Promise<Peripheral[]> {
         )
       )
     `)
+    .eq("is_active", true)
     .order("id");
 
   if (error) throw error;
 
- return (data ?? []).map((item: any) => ({
-  
-  ...item,
+  return (data ?? []).map((item: any) => ({
+    ...item,
 
-  ip_management: Array.isArray(item.ip_management)
-    ? item.ip_management[0]
-    : item.ip_management,
+    ip_management: Array.isArray(item.ip_management)
+      ? item.ip_management[0]
+      : item.ip_management,
 
-  peripheral_device_addons:
-    (item.peripheral_device_addons ?? []).map((addon: any) => ({
-      ...addon,
+    peripheral_device_addons:
+      (item.peripheral_device_addons ?? []).map((addon: any) => ({
+        ...addon,
 
-      addon: Array.isArray(addon.addon)
-        ? addon.addon[0]
-        : addon.addon,
-    })),
-})) as Peripheral[];
+        addon: Array.isArray(addon.addon)
+          ? addon.addon[0]
+          : addon.addon,
+      })),
+  })) as Peripheral[];
 }
-
 export async function getAvailableDevices() {
   const { data: peripherals, error: peripheralError } =
     await supabase
       .from("peripherals")
-      .select("ip_management_id");
+      .select("ip_management_id")
+      .eq("is_active", true);
 
   if (peripheralError) throw peripheralError;
 
   const ids =
     peripherals.map((item) => item.ip_management_id);
 
-  let query =
-    supabase
-      .from("ip_management")
-      .select(`
-        id,
-        device,
-        ip_terkini,
-        ruangan,
-        jenis_network
-      `);
+ let query = supabase
+  .from("ip_management")
+  .select(`
+    id,
+    device,
+    ip_terkini,
+    ruangan,
+    jenis_network,
+    asset:assets!assets_ip_management_id_fkey!inner (
+      id,
+      is_active
+    )
+  `)
+  .eq("asset.is_active", true);
 
   if (ids.length > 0) {
     query = query.not("id", "in", `(${ids.join(",")})`);
@@ -108,15 +103,6 @@ export async function createPeripheral(
         ip_management_id,
       },
     ]);
-}
-
-export async function deletePeripheral(
-  id: number
-) {
-  return supabase
-    .from("peripherals")
-    .delete()
-    .eq("id", id);
 }
 
 export async function getAddons() {

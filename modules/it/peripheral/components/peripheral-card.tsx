@@ -11,10 +11,6 @@ interface Props {
     peripheralId: number
   ) => void;
 
-  onRemovePeripheral: (
-    id: number
-  ) => void;
-
   onRemoveAddon: (
     id: number
   ) => void;
@@ -35,7 +31,6 @@ export default function PeripheralCard({
   addons,
   rooms,
   onAssignAddon,
-  onRemovePeripheral,
   onRemoveAddon,
   onUploadScanner,
   onDetail,
@@ -429,47 +424,10 @@ function scoreBar(
       </div>
     
 
-      {/* <div className="flex justify-between border-t p-4">
-        <button
-        onClick={() =>
-          onUploadScanner(peripheral.id)
-        }
-        className="rounded-lg bg-green-600 px-3 py-2 text-sm text-white"
-      >
-        Upload Scan
-      </button>
 
-      <button
-        onClick={() => onDetail(peripheral)}
-        className="rounded-lg bg-gray-700 px-3 py-2 text-sm text-white"
-      >
-        Detail
-      </button>
-      
-        <button
-          onClick={() =>
-            onAssignAddon(peripheral.id)
-          }
-          className="rounded-lg bg-blue-600 px-3 py-2 text-sm text-white"
-        >
-          + Addon
-        </button>
-
-        <button
-          onClick={() =>
-            onRemovePeripheral(peripheral.id)
-          }
-          className="rounded-lg bg-red-600 px-3 py-2 text-sm text-white"
-        >
-          Hapus PC
-        </button>
-
-      </div> */}
-
-
-<div className="border-t p-4">
+<div className="border-t p-3">
   {/* Grid otomatis: 2 kolom di HP (mobile), 4 kolom di layar komputer (sm ke atas) */}
-  <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
     
     <button
       onClick={() => onUploadScanner(peripheral.id)}
@@ -492,12 +450,6 @@ function scoreBar(
       + Addon
     </button>
 
-    <button
-      onClick={() => onRemovePeripheral(peripheral.id)}
-      className="flex items-center justify-center rounded-lg bg-rose-600 py-2 px-1 text-center text-xs font-medium text-white transition-colors hover:bg-rose-700 active:bg-rose-800"
-    >
-      Hapus PC
-    </button>
 
   </div>
 </div>

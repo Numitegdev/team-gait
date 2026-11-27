@@ -7,7 +7,7 @@ import {
   createAddon,
   createPeripheral,
   deleteAddon,
-  deletePeripheral,
+
   getAddons,
   getAvailableDevices,
   getPeripherals,
@@ -81,21 +81,7 @@ console.log(data);
     ]);
   };
 
-  const removePeripheral = async (
-    id: number
-  ) => {
-    if (!window.confirm("Hapus PC ini?")) return;
 
-    const { error } =
-      await deletePeripheral(id);
-
-    if (error) throw error;
-
-    await Promise.all([
-      loadPeripherals(),
-      loadAvailableDevices(),
-    ]);
-  };
 
   // ===========================
   // MASTER ADDON
@@ -203,7 +189,7 @@ async (
 
     addPeripheral,
 
-    removePeripheral,
+  
 
     addAddon,
 

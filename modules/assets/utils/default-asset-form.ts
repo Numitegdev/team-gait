@@ -32,6 +32,6 @@ export const defaultAssetForm: AssetFormData = {
 
   notes: "",
 
-  ip_management_id: null,
+
 
 };

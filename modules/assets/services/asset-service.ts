@@ -174,11 +174,15 @@ export async function createAsset(
 }
 
 
+
 export async function updateAsset(
   id: number,
   payload: any
 ) {
-  // 1. Ambil data aset lama
+  // Relasi IP tidak boleh diubah dari halaman Asset
+  const assetPayload = { ...payload };
+  delete assetPayload.ip_management_id;
+  // 1. Ambil data asset lama
   const {
     data: oldAsset,
     error: oldError,
@@ -188,16 +192,28 @@ export async function updateAsset(
     .eq("id", id)
     .single();
 
-  if (oldError) {
-    throw oldError;
-  }
+  if (oldError) throw oldError;
 
-  // 2. Ambil user login
+  // 2. Ambil IP lama sebelum proses update
+  const {
+    data: oldIP,
+    error: oldIPError,
+  } = oldAsset.ip_management_id
+    ? await supabase
+        .from("ip_management")
+        .select("ip_terkini")
+        .eq("id", oldAsset.ip_management_id)
+        .maybeSingle()
+    : { data: null, error: null };
+
+  if (oldIPError) throw oldIPError;
+
+  // 3. Ambil user login
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // 3. Periksa apakah aset sedang dipinjam
+  // 4. Periksa apakah asset sedang dipinjam
   const {
     data: activeLoan,
     error: activeLoanError,
@@ -208,11 +224,9 @@ export async function updateAsset(
     .eq("status", "ACTIVE")
     .maybeSingle();
 
-  if (activeLoanError) {
-    throw activeLoanError;
-  }
+  if (activeLoanError) throw activeLoanError;
 
-  // 4. Cegah perubahan status manual saat aset dipinjam
+  // 5. Cegah perubahan status manual saat asset dipinjam
   if (
     activeLoan &&
     payload.status_id !== undefined &&
@@ -224,7 +238,7 @@ export async function updateAsset(
     );
   }
 
-  // 5. Cegah status Loan ditetapkan secara manual
+  // 6. Cegah status Loan ditetapkan secara manual
   if (
     payload.status_id !== undefined &&
     Number(payload.status_id) === 4 &&
@@ -235,47 +249,78 @@ export async function updateAsset(
     );
   }
 
-  // 6. Buat riwayat perubahan
-  const history = buildAssetHistory(
-    oldAsset,
-    payload,
-    user?.id
-  );
+  // 7. Simpan perubahan asset
+const {
+  data,
+  error,
+} = await supabase
+  .from("assets")
+  .update(assetPayload)
+  .eq("id", id)
+  .select()
+  .single();
 
-  // 7. Simpan perubahan aset
-  const {
-    data,
-    error,
-  } = await supabase
-    .from("assets")
-    .update(payload)
-    .eq("id", id)
-    .select()
-    .single();
-
-  if (error) {
-    throw error;
-  }
+  if (error) throw error;
 
   // 8. Sinkronisasi IP Management
-  console.log({
-    oldIP: oldAsset.ip_management_id,
-    newIP: data.ip_management_id,
-  });
-
   await syncIPManagementDevice({
     oldIPId: oldAsset.ip_management_id,
     newIPId: data.ip_management_id,
     device: `${data.asset_code} - ${data.asset_name}`,
   });
 
-  // 9. Simpan history
-  if (history) {
-    await createAssetHistory(history);
+  // 9. Ambil IP baru setelah sinkronisasi
+  const {
+    data: newIP,
+    error: newIPError,
+  } = data.ip_management_id
+    ? await supabase
+        .from("ip_management")
+        .select("ip_terkini")
+        .eq("id", data.ip_management_id)
+        .maybeSingle()
+    : { data: null, error: null };
+
+  if (newIPError) throw newIPError;
+
+  // 10. Buat history perubahan asset
+  const history = buildAssetHistory(
+    oldAsset,
+    data,
+    user?.id
+  );
+
+  // 11. Periksa apakah alamat IP berubah
+  const oldIPAddress = oldIP?.ip_terkini ?? null;
+  const newIPAddress = newIP?.ip_terkini ?? null;
+
+  const ipChanged =
+    oldIPAddress !== newIPAddress;
+
+  // 12. Simpan history jika ada perubahan
+  if (history || ipChanged) {
+    const historyPayload = history ?? {
+      asset_id: id,
+      action_type: HISTORY_ACTION.UPDATE,
+      created_by: user?.id ?? null,
+      remarks: "Alamat IP asset diperbarui.",
+    };
+
+    historyPayload.old_ip_address = oldIPAddress;
+    historyPayload.new_ip_address = newIPAddress;
+
+    historyPayload.old_ip_management_id =
+      oldAsset.ip_management_id;
+
+    historyPayload.new_ip_management_id =
+      data.ip_management_id;
+
+    await createAssetHistory(historyPayload);
   }
 
   return data;
 }
+
 
 export async function finishAssetMaintenance(id: number) {
   const statusId = await getAssetStatusId("Available");
@@ -293,52 +338,49 @@ export async function finishAssetUse(id: number) {
   });
 }
 
-export async function deleteAsset(
-  id: number
-) {
+export async function deleteAsset(id: number) {
+  const { error } = await supabase.rpc("deactivate_asset", {
+    p_asset_id: id,
+  });
 
-  const { error } =
-    await supabase
-      .from("assets")
-      .update({
-        is_active: false,
-      })
-      .eq("id", id);
-
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
 }
 
 export async function getAssetById(
   id: number
 ): Promise<AssetDetail> {
-
-  const { data, error } =
-    await supabase
-
-      .from("assets")
-
-      .select(`
+  const { data, error } = await supabase
+    .from("assets")
+    .select(`
+      *,
+      company:companies(*),
+      location:locations(*),
+      category:asset_categories(*),
+      model:asset_models(*),
+      condition:asset_conditions(*),
+      status:asset_statuses(*),
+      ip_management:ip_management!assets_ip_management_id_fkey(
         *,
-        company:companies(*),
-        location:locations(*),
-        category:asset_categories(*),
-        model:asset_models(*),
-        condition:asset_conditions(*),
-        status:asset_statuses(*),
-       ip_management:ip_management!assets_ip_management_id_fkey(*)
-      `)
+        peripheral:peripherals(*)
+      )
+    `)
+    .eq("id", id)
+    .single();
 
-      .eq("id", id)
+  if (error) throw error;
+console.log(
+  "IP MANAGEMENT DETAIL:",
+  JSON.stringify(data.ip_management, null, 2)
+);
 
-      .single();
-
-  if (error)
-    throw error;
-
+console.log(
+  "MODEL DETAIL:",
+  data.model
+);
   return data;
-
 }
-
 async function getAssetStatusId(statusName: string) {
   const { data, error } = await supabase
     .from("asset_statuses")

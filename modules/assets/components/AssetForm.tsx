@@ -28,9 +28,6 @@ interface AssetFormProps {
 
   statuses: AssetStatus[];
 
-  ips: IPManagement[];
-
-    isEditing: boolean;
     role: string
 }
 
@@ -54,9 +51,7 @@ export default function AssetForm({
 
   statuses,
 
-   ips,
 
- isEditing,
 }: AssetFormProps) {
 
 const filteredModels =
@@ -415,35 +410,37 @@ const selectedModel =
 
       />
 
-      <textarea
+      {selectedModel?.spec_source === "manual" && (
+        <textarea
+          value={form.specification}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              specification: e.target.value,
+            })
+          }
+          rows={4}
+          placeholder="Specification"
+          className="
+            md:col-span-2
+            rounded-xl
+            border
+            p-3
+          "
+        />
+      )}
 
-        value={form.specification}
-
-        onChange={(e)=>
-
-          setForm({
-
-            ...form,
-
-            specification:
-              e.target.value,
-
-          })
-
-        }
-
-        rows={4}
-
-        placeholder="Specification"
-
-        className="
-          md:col-span-2
-          rounded-xl
-          border
-          p-3
-        "
-
-      />
+      {selectedModel?.spec_source === "peripheral" && (
+        <div className="md:col-span-2 rounded-xl border border-blue-200 bg-blue-50 p-3">
+          <p className="font-medium text-blue-800">
+            Spesifikasi melalui Peripheral
+          </p>
+          <p className="mt-1 text-sm text-blue-700">
+            Spesifikasi hardware dan software akan diperoleh
+            melalui proses scan pada menu Peripheral.
+          </p>
+        </div>
+      )}
 
               </div>
 
@@ -455,49 +452,7 @@ const selectedModel =
    
 {/* IP Management */}
 
-{selectedModel?.has_ip && (
-  <div className="flex flex-col gap-2">
 
-    {isEditing ? (
-      <>
-        <label>IP Address</label>
-
-        <select
-          value={form.ip_management_id ?? ""}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              ip_management_id: e.target.value
-                ? Number(e.target.value)
-                : null,
-            })
-          }
-          className="rounded-xl border p-3"
-        >
-          <option value="">-- Pilih IP --</option>
-
-          {ips.map((ip) => (
-            <option key={ip.id} value={ip.id}>
-              {ip.ip_terkini} - {ip.device ?? "Available"}
-            </option>
-          ))}
-        </select>
-      </>
-    ) : (
-      <div className="rounded-xl border border-blue-200 bg-blue-50 p-3">
-        <p className="font-medium text-blue-800">
-          IP Management otomatis
-        </p>
-
-        <p className="mt-1 text-sm text-blue-700">
-          Sistem akan membuat data IP Management
-          secara otomatis ketika Asset disimpan.
-        </p>
-      </div>
-    )}
-
-  </div>
-)}
 
 
       {/* section 3 selesei */}

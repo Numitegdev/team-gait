@@ -29,6 +29,10 @@ export interface CreateAssetHistoryPayload {
 
   new_ip_management_id?: number | null;
 
+  old_ip_address?: string | null;
+  
+new_ip_address?: string | null;
+
   request_status?: string | null;
 
   remarks?: string | null;
