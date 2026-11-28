@@ -1,4 +1,10 @@
-import { PDFDocument, rgb } from "pdf-lib";
+
+import {
+  PDFDocument,
+  rgb,
+  StandardFonts,
+} from "pdf-lib";
+
 import QRCode from "qrcode";
 import { AssetListItem } from "../types/AssetListItem";
 
@@ -38,6 +44,7 @@ function getCompanyLogo(companyName: string): string {
 export async function printAssetLabel(
   asset: AssetListItem
 ): Promise<void> {
+
   if (!asset.asset_code) {
     throw new Error("Kode asset tidak tersedia.");
   }
@@ -50,18 +57,32 @@ export async function printAssetLabel(
 
   const logoUrl = getCompanyLogo(companyName);
 
-  // Ukuran stiker: 50,8 mm x 21,6 mm
+  // ==========================================
+  // UKURAN STIKER
+  // ==========================================
+
   const width = (50.8 / 25.4) * 72;
   const height = (21.6 / 25.4) * 72;
 
   const pdfDoc = await PDFDocument.create();
-  const page = pdfDoc.addPage([width, height]);
 
-  // Buat QR Code dari kode asset
+  const page = pdfDoc.addPage([
+    width,
+    height,
+  ]);
+
+  const font = await pdfDoc.embedFont(
+    StandardFonts.HelveticaBold
+  );
+
+  // ==========================================
+  // QR CODE
+  // ==========================================
+
   const qrDataUrl = await QRCode.toDataURL(
     asset.asset_code,
     {
-      width: 300,
+      width: 400,
       margin: 1,
       errorCorrectionLevel: "M",
     }
@@ -80,7 +101,10 @@ export async function printAssetLabel(
 
   const qrImage = await pdfDoc.embedPng(qrBytes);
 
-  // Ambil logo langsung dari Supabase Storage
+  // ==========================================
+  // LOGO PERUSAHAAN
+  // ==========================================
+
   const logoResponse = await fetch(logoUrl);
 
   if (!logoResponse.ok) {
@@ -90,51 +114,133 @@ export async function printAssetLabel(
   }
 
   const logoBytes = await logoResponse.arrayBuffer();
+
   const logoImage = await pdfDoc.embedPng(logoBytes);
 
-  // QR Code di sebelah kiri
+  // ==========================================
+  // LAYOUT QR
+  // ==========================================
+
+  const marginLeft = 4;
+
+  const qrSize = 52;
+
+  const qrY = (height - qrSize) / 2;
+
   page.drawImage(qrImage, {
-    x: 3,
-    y: 3,
-    width: 55,
-    height: 55,
+    x: marginLeft,
+    y: qrY,
+    width: qrSize,
+    height: qrSize,
   });
 
-  // Logo PT di kanan atas
+  // ==========================================
+  // LAYOUT BAGIAN KANAN
+  // ==========================================
+
+  const contentX = 63;
+
+  const contentWidth = width - contentX - 6;
+
+  const logoMaxHeight = 15;
+  const logoMaxWidth = contentWidth;
+
+  // Pertahankan rasio asli logo.
+  const logoScale = Math.min(
+    logoMaxWidth / logoImage.width,
+    logoMaxHeight / logoImage.height
+  );
+
+  const logoWidth = logoImage.width * logoScale;
+  const logoHeight = logoImage.height * logoScale;
+
+  const fontMaxSize = 13;
+  const fontMinSize = 10.5;
+
+  // Sesuaikan ukuran font dengan panjang kode.
+  const measuredWidth = font.widthOfTextAtSize(
+    asset.asset_code,
+    fontMaxSize
+  );
+
+  const fontSize = Math.max(
+    fontMinSize,
+    Math.min(
+      fontMaxSize,
+      fontMaxSize * (contentWidth / measuredWidth)
+    )
+  );
+
+  // Tinggi visual blok kode.
+  const textBlockHeight = fontSize + 3;
+
+  const gap = 4;
+
+  // ==========================================
+  // POSISI VERTIKAL TERPUSAT
+  // ==========================================
+
+  const totalContentHeight =
+    logoHeight + gap + textBlockHeight;
+
+  const contentBottom =
+    (height - totalContentHeight) / 2;
+
+  // Logo berada di atas kode.
+  const logoY =
+    contentBottom + textBlockHeight + gap;
+
+  const logoX =
+    contentX + (contentWidth - logoWidth) / 2;
+
   page.drawImage(logoImage, {
-    x: 63,
-    y: 34,
-    width: 70,
-    height: 18,
+    x: logoX,
+    y: logoY,
+    width: logoWidth,
+    height: logoHeight,
   });
 
-  // Kode asset di bawah logo
+  // ==========================================
+  // ASSET CODE
+  // ==========================================
+
   page.drawText(asset.asset_code, {
-    x: 63,
-    y: 14,
-    size: 9,
+    x: contentX,
+    y: contentBottom + 1,
+    size: fontSize,
+    font,
     color: rgb(0, 0, 0),
-    maxWidth: 77,
+    maxWidth: contentWidth,
   });
+
+  // ==========================================
+  // DOWNLOAD PDF
+  // ==========================================
 
   const pdfBytes = await pdfDoc.save();
 
   const blob = new Blob(
     [new Uint8Array(pdfBytes)],
-    { type: "application/pdf" }
+    {
+      type: "application/pdf",
+    }
   );
 
   const url = URL.createObjectURL(blob);
+
   const link = document.createElement("a");
 
   link.href = url;
-  link.download = `${asset.asset_code}_sticker.pdf`;
+
+  link.download =
+    `${asset.asset_code}_sticker.pdf`;
 
   document.body.appendChild(link);
+
   link.click();
+
   link.remove();
 
-  // Beri waktu browser memproses unduhan
   setTimeout(() => {
     URL.revokeObjectURL(url);
   }, 1000);
