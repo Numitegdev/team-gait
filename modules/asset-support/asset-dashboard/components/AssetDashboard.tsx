@@ -1182,6 +1182,9 @@ onClick={() => {
 
     {/* LOANED BETWEEN COMPANIES */}
 
+
+{/* LOANED BETWEEN COMPANIES */}
+
 <div
   className="
     rounded-2xl
@@ -1191,69 +1194,35 @@ onClick={() => {
     shadow-sm
   "
 >
-
-  <h2
-    className="
-      text-lg
-      font-semibold
-    "
-  >
+  <h2 className="text-lg font-semibold">
     Asset Dipinjam Antar PT
   </h2>
 
   <div className="mt-4 space-y-3">
-
     {loanedAssets.length === 0 ? (
-
-      <p
-        className="
-          text-sm
-          text-gray-500
-        "
-      >
-        Tidak ada asset yang
-        sedang dipinjam antar PT.
+      <p className="text-sm text-gray-500">
+        Tidak ada asset yang sedang dipinjam antar PT.
       </p>
-
     ) : (
-
       Object.values(
         loanedAssets.reduce(
-          (
-            groups,
-            item
-          ) => {
-
+          (groups, item) => {
             const key =
               `${item.owner_company_id}-${item.borrower_company_id}`;
 
             if (!groups[key]) {
-
               groups[key] = {
-                owner_company_id:
-                  item.owner_company_id,
-
-                owner_company_name:
-                  item.owner_company_name,
-
-                borrower_company_id:
-                  item.borrower_company_id,
-
-                borrower_company_name:
-                  item.borrower_company_name,
-
-                families: [],
-
+                owner_company_id: item.owner_company_id,
+                owner_company_name: item.owner_company_name,
+                borrower_company_id: item.borrower_company_id,
+                borrower_company_name: item.borrower_company_name,
+                models: [],
               };
-
             }
 
-            groups[key].families.push(
-              item
-            );
+            groups[key].models.push(item);
 
             return groups;
-
           },
           {} as Record<
             string,
@@ -1262,249 +1231,152 @@ onClick={() => {
               owner_company_name: string;
               borrower_company_id: number;
               borrower_company_name: string;
-              families: AssetDashboardLoanedAsset[];
+              models: AssetDashboardLoanedAsset[];
             }
           >
         )
-      ).map(
-        (group) => (
+      ).map((group) => {
+        const totalAssets = group.models.reduce(
+          (total, model) => total + model.total,
+          0
+        );
 
+        const totalMonthlyBill = group.models.reduce(
+          (total, model) => {
+            const pricing = loanPricings.find(
+              (item) =>
+                item.owner_company_id === group.owner_company_id &&
+                item.borrower_company_id === group.borrower_company_id &&
+                item.model_id === model.model_id
+            );
+
+            const monthlyPrice = pricing?.monthly_price ?? 0;
+
+            return total + model.total * monthlyPrice;
+          },
+          0
+        );
+
+        return (
           <div
-            key={`
-              ${group.owner_company_id}-
-              ${group.borrower_company_id}
-            `}
-            className="
-              rounded-xl
-              border
-              p-4
-            "
+            key={`${group.owner_company_id}-${group.borrower_company_id}`}
+            className="rounded-xl border p-4"
           >
-
             {/* HEADER */}
 
-            <div
-              className="
-                flex
-                items-center
-                justify-between
-                gap-3
-              "
-            >
-
-
-              <p
-                className="
-                  font-semibold
-                "
-              >
-                {
-                  group.owner_company_name
-                }
-
+            <div className="flex items-center justify-between gap-3">
+              <p className="font-semibold">
+                {group.owner_company_name}
                 {" → "}
-
-                {
-                  group.borrower_company_name
-                }
+                {group.borrower_company_name}
               </p>
 
-              
-              {/* button invoice */}
-
-            <button
-              type="button"
-              onClick={() =>
-                setInvoiceTarget({
-                  ownerCompanyId: group.owner_company_id,
-                  ownerCompanyName: group.owner_company_name,
-                  borrowerCompanyId: group.borrower_company_id,
-                  borrowerCompanyName: group.borrower_company_name,
-                })
-              }
-              className="rounded-xl bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
-            >
-              Preview Invoice
-            </button>
-
+              <button
+                type="button"
+                onClick={() =>
+                  setInvoiceTarget({
+                    ownerCompanyId: group.owner_company_id,
+                    ownerCompanyName: group.owner_company_name,
+                    borrowerCompanyId: group.borrower_company_id,
+                    borrowerCompanyName: group.borrower_company_name,
+                  })
+                }
+                className="rounded-xl bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
+              >
+                Preview Invoice
+              </button>
             </div>
-            
 
-            {/* FAMILY */}
+            {/* MODEL */}
 
-            <div
-              className="
-                mt-3
-                space-y-2
-              "
-            >
+            <div className="mt-3 space-y-2">
+              {group.models.map((model) => {
+                const pricing = loanPricings.find(
+                  (item) =>
+                    item.owner_company_id === group.owner_company_id &&
+                    item.borrower_company_id === group.borrower_company_id &&
+                    item.model_id === model.model_id
+                );
 
-         {group.families.map((family) => {
+                const monthlyPrice = pricing?.monthly_price ?? 0;
 
-  const pricing =
-    loanPricings.find(
-      (item) =>
-        item.owner_company_id ===
-          group.owner_company_id &&
-        item.borrower_company_id ===
-          group.borrower_company_id &&
-        item.family_code ===
-          family.family_code
-    );
+                const subtotal = model.total * monthlyPrice;
 
-  const monthlyPrice =
-    pricing?.monthly_price ?? 0;
+                return (
+                  <div
+                    key={model.model_id}
+                    className="rounded-lg bg-gray-50 px-3 py-3"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-medium">
+                          {model.model_name}
+                        </p>
 
-  const subtotal =
-    family.total * monthlyPrice;
+                        <p className="mt-1 text-xs text-gray-500">
+                          Family {model.family_code}
+                        </p>
+                      </div>
 
-  return (
-    <div
-      key={family.family_code}
-      className="
-        rounded-lg
-        bg-gray-50
-        px-3
-        py-3
-      "
-    >
+                      <span className="font-semibold">
+                        {model.total}
+                      </span>
+                    </div>
 
-      <div
-        className="
-          flex
-          items-center
-          justify-between
-          gap-3
-        "
-      >
+                    <div className="mt-2 flex items-center justify-between gap-3 text-xs text-gray-500">
+                      <span>
+                        Rp {monthlyPrice.toLocaleString("id-ID")}
+                        {" / asset / bulan"}
+                      </span>
 
-        <span className="text-sm font-medium">
-          Family {family.family_code}
-        </span>
+                      <span>
+                        Subtotal:{" "}
+                        <span className="font-semibold text-gray-700">
+                          Rp {subtotal.toLocaleString("id-ID")}
+                        </span>
+                      </span>
+                    </div>
 
-        <span className="font-semibold">
-          {family.total}
-        </span>
-
-      </div>
-
-      <div
-        className="
-          mt-2
-          flex
-          items-center
-          justify-between
-          text-xs
-          text-gray-500
-        "
-      >
-
-        <span>
-          Rp{" "}
-          {monthlyPrice.toLocaleString("id-ID")}
-          {" / asset / bulan"}
-        </span>
-
-        <span>
-          Subtotal:{" "}
-          <span className="font-semibold text-gray-700">
-            Rp{" "}
-            {subtotal.toLocaleString("id-ID")}
-          </span>
-        </span>
-
-      </div>
-
-    </div>
-  );
-})}
-
+                    {!pricing && (
+                      <p className="mt-2 text-xs text-amber-700">
+                        Harga Model ini belum diatur.
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
             {/* TOTAL */}
 
-           <div
-            className="
-              mt-3
-              space-y-2
-              border-t
-              pt-3
-            "
-                >
+            <div className="mt-3 space-y-2 border-t pt-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-500">
+                  Total Asset
+                </span>
 
-        <div
-          className="
-            flex
-            items-center
-            justify-between
-          "
-        >
-          <span className="text-sm font-medium text-gray-500">
-            Total Asset
-          </span>
+                <span className="font-bold">
+                  {totalAssets}
+                </span>
+              </div>
 
-          <span className="font-bold">
-            {group.families.reduce(
-              (total, family) =>
-                total + family.total,
-              0
-            )}
-          </span>
-        </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-500">
+                  Total Tagihan / Bulan
+                </span>
 
-        <div
-          className="
-            flex
-            items-center
-            justify-between
-          "
-        >
-          <span className="text-sm font-medium text-gray-500">
-            Total Tagihan / Bulan
-          </span>
-
-          <span className="text-base font-bold">
-            Rp{" "}
-            {group.families.reduce(
-              (total, family) => {
-
-                const pricing =
-                  loanPricings.find(
-                    (item) =>
-                      item.owner_company_id ===
-                        group.owner_company_id &&
-                      item.borrower_company_id ===
-                        group.borrower_company_id &&
-                      item.family_code ===
-                        family.family_code
-                  );
-
-                const monthlyPrice =
-                  pricing?.monthly_price ?? 0;
-
-                return (
-                  total +
-                  family.total *
-                    monthlyPrice
-                );
-              },
-              0
-            ).toLocaleString("id-ID")}
-          </span>
-        </div>
-
-      </div>
-
+                <span className="text-base font-bold">
+                  Rp {totalMonthlyBill.toLocaleString("id-ID")}
+                </span>
+              </div>
+            </div>
           </div>
-
-        )
-      )
-
+        );
+      })
     )}
-
   </div>
-
 </div>
+
 
     </div>
 

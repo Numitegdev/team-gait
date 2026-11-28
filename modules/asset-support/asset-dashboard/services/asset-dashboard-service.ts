@@ -144,14 +144,17 @@ export interface AssetDashboardLoanedAsset {
   owner_company_name: string;
   borrower_company_id: number;
   borrower_company_name: string;
+  model_id: number;
+  model_name: string;
   family_code: string;
   total: number;
 }
 
+
 export interface AssetDashboardLoanPricing {
   owner_company_id: number;
   borrower_company_id: number;
-  family_code: string;
+  model_id: number;
   monthly_price: number;
 }
 
@@ -160,56 +163,29 @@ export async function getAssetDashboardLoanPricings(
   borrowerCompanyId: number
 ): Promise<AssetDashboardLoanPricing[]> {
 
-  const {
-    data,
-    error,
-  } = await supabase
-    .from("asset_loan_pricings")
+  const { data, error } = await supabase
+    .from("asset_model_loan_pricings")
     .select(`
       owner_company_id,
       borrower_company_id,
-      family_code,
+      model_id,
       monthly_price
     `)
-    .eq(
-      "owner_company_id",
-      ownerCompanyId
-    )
-    .eq(
-      "borrower_company_id",
-      borrowerCompanyId
-    )
-    .eq(
-      "is_active",
-      true
-    );
+    .eq("owner_company_id", ownerCompanyId)
+    .eq("borrower_company_id", borrowerCompanyId)
+    .eq("is_active", true);
 
   if (error) {
     throw error;
   }
 
-  return (
-    data ?? []
-  ).map(
-    (item) => ({
-      owner_company_id:
-        item.owner_company_id,
-
-      borrower_company_id:
-        item.borrower_company_id,
-
-      family_code:
-        item.family_code,
-
-      monthly_price:
-        Number(
-          item.monthly_price
-        ),
-    })
-  );
-
+  return (data ?? []).map((item) => ({
+    owner_company_id: Number(item.owner_company_id),
+    borrower_company_id: Number(item.borrower_company_id),
+    model_id: Number(item.model_id),
+    monthly_price: Number(item.monthly_price),
+  }));
 }
-
 export async function getAssetDashboardSummary(
   companyId?: number | null
 ): Promise<AssetDashboardSummary> {
@@ -439,110 +415,68 @@ export async function getAssetDashboardLoanedAssets(
     `)
     .eq("status", "ACTIVE");
 
-  // =========================
-  // FILTER OWNER COMPANY
-  // =========================
-
   if (companyId) {
-
-    query = query.eq(
-      "owner_company_id",
-      companyId
-    );
-
+    query = query.eq("owner_company_id", companyId);
   }
 
-  const {
-    data,
-    error,
-  } = await query;
+  const { data, error } = await query;
 
   if (error) {
-
     throw error;
-
   }
 
-  const grouped =
-    new Map<
-      string,
-      AssetDashboardLoanedAsset
-    >();
+  const grouped = new Map<string, AssetDashboardLoanedAsset>();
 
-  for (
-    const loan of data ?? []
-  ) {
+  for (const loan of data ?? []) {
 
-    const ownerCompany =
-      Array.isArray(loan.owner_company)
-        ? loan.owner_company[0]
-        : loan.owner_company;
+    const ownerCompany = Array.isArray(loan.owner_company)
+      ? loan.owner_company[0]
+      : loan.owner_company;
 
-    const borrowerCompany =
-      Array.isArray(loan.borrower_company)
-        ? loan.borrower_company[0]
-        : loan.borrower_company;
+    const borrowerCompany = Array.isArray(loan.borrower_company)
+      ? loan.borrower_company[0]
+      : loan.borrower_company;
 
-    const asset =
-      Array.isArray(loan.asset)
-        ? loan.asset[0]
-        : loan.asset;
+    const asset = Array.isArray(loan.asset)
+      ? loan.asset[0]
+      : loan.asset;
 
-    const model =
-      Array.isArray(asset?.model)
-        ? asset.model[0]
-        : asset?.model;
+    const model = Array.isArray(asset?.model)
+      ? asset.model[0]
+      : asset?.model;
 
     if (
       !ownerCompany ||
       !borrowerCompany ||
+      !model?.id ||
+      !model?.name ||
       !model?.family_code
     ) {
-
       continue;
-
     }
+
+    const modelId = Number(model.id);
 
     const key =
-      `${ownerCompany.id}-${borrowerCompany.id}-${model.family_code}`;
+      `${ownerCompany.id}-${borrowerCompany.id}-${modelId}`;
 
-    const existing =
-      grouped.get(key);
+    const existing = grouped.get(key);
 
     if (existing) {
-
       existing.total += 1;
-
     } else {
-
-      grouped.set(
-        key,
-        {
-          owner_company_id:
-            ownerCompany.id,
-
-          owner_company_name:
-            ownerCompany.name,
-
-          borrower_company_id:
-            borrowerCompany.id,
-
-          borrower_company_name:
-            borrowerCompany.name,
-
-          family_code:
-            model.family_code,
-
-          total: 1,
-        }
-      );
-
+      grouped.set(key, {
+        owner_company_id: ownerCompany.id,
+        owner_company_name: ownerCompany.name,
+        borrower_company_id: borrowerCompany.id,
+        borrower_company_name: borrowerCompany.name,
+        model_id: modelId,
+        model_name: model.name,
+        family_code: model.family_code,
+        total: 1,
+      });
     }
-
   }
 
-  return Array.from(
-    grouped.values()
-  );
-
+  return Array.from(grouped.values());
 }

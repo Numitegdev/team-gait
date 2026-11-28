@@ -353,15 +353,12 @@ const [savedInvoiceNo, setSavedInvoiceNo] = useState("");
 
                   <tbody>
                     {preview.items.map((item, index) => (
-                      <tr
-                        key={item.familyCode}
-                        className="border-t"
-                      >
+                  <tr key={item.modelId} className="border-t">
                         <td className="px-3 py-3">
                           {index + 1}
                         </td>
                         <td className="px-3 py-3">
-                          {item.familyName}
+                         {item.modelName}
                         </td>
                         <td className="px-3 py-3">
                           {String(month).padStart(2, "0")}/{year}

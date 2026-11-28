@@ -37,6 +37,8 @@ export interface InvoiceCompanyInfo {
 }
 
 export interface InvoiceAssetItem {
+  modelId: number;
+  modelName: string;
   familyCode: string;
   familyName: string;
   quantity: number;
@@ -773,42 +775,31 @@ const buyerCompany: InvoiceCompanyInfo = {
     ];
 
 
-  const {
+    const {
     data: models,
     error: modelError,
-  } =
-    await supabase
-      .from("asset_models")
-      .select(`
-        id,
-        family_code
-      `)
-      .in(
-        "id",
-        modelIds
-      );
+  } = await supabase
+    .from("asset_models")
+    .select(`
+      id,
+      name,
+      family_code
+    `)
+    .in(
+      "id",
+      modelIds
+    );
 
-
-  if (
-    modelError
-  ) {
-
+  if (modelError) {
     throw modelError;
-
   }
 
-
-  const modelMap =
-    new Map(
-      (
-        models ?? []
-      ).map(
-        (model) => [
-          model.id,
-          model,
-        ]
-      )
-    );
+  const modelMap = new Map(
+    (models ?? []).map((model) => [
+      Number(model.id),
+      model,
+    ])
+  );
 
 
   // ===================================================
@@ -874,175 +865,129 @@ const buyerCompany: InvoiceCompanyInfo = {
     );
 
 
-  // ===================================================
-  // GET PRICING
+    // ===================================================
+  // GET MODEL PRICING
   // ===================================================
 
   const {
     data: pricings,
     error: pricingError,
-  } =
-    await supabase
-      .from(
-        "asset_loan_pricings"
-      )
-      .select(`
-        family_code,
-        monthly_price
-      `)
-      .eq(
-        "owner_company_id",
-        ownerCompanyId
-      )
-      .eq(
-        "borrower_company_id",
-        borrowerCompanyId
-      )
-      .eq(
-        "is_active",
-        true
-      );
-
-
-  if (
-    pricingError
-  ) {
-
-    throw pricingError;
-
-  }
-
-
-  const pricingMap =
-    new Map(
-      (
-        pricings ?? []
-      ).map(
-        (pricing) => [
-          pricing.family_code,
-          Number(
-            pricing.monthly_price
-          ),
-        ]
-      )
+  } = await supabase
+    .from("asset_model_loan_pricings")
+    .select(`
+      model_id,
+      monthly_price
+    `)
+    .eq(
+      "owner_company_id",
+      ownerCompanyId
+    )
+    .eq(
+      "borrower_company_id",
+      borrowerCompanyId
+    )
+    .eq(
+      "is_active",
+      true
     );
 
+  if (pricingError) {
+    throw pricingError;
+  }
+
+  const pricingMap = new Map(
+    (pricings ?? []).map((pricing) => [
+      Number(pricing.model_id),
+      Number(pricing.monthly_price),
+    ])
+  );
+
 
   // ===================================================
-  // GROUP FAMILY
+  // GROUP BY MODEL
   // ===================================================
 
-  const grouped =
-    new Map<
-      string,
-      {
-        familyName: string;
-        quantity: number;
-        unitPrice: number;
-      }
-    >();
+  const grouped = new Map<
+    number,
+    {
+      modelName: string;
+      familyCode: string;
+      familyName: string;
+      quantity: number;
+      unitPrice: number;
+    }
+  >();
 
 
-  for (
-    const loan
-    of billableLoans
-  ) {
+  for (const loan of billableLoans) {
+    const asset = assetMap.get(
+      loan.asset_id
+    );
 
-    const asset =
-      assetMap.get(
-        loan.asset_id
-      );
-
-
-    if (
-      !asset
-    ) {
-
+    if (!asset) {
       continue;
-
     }
 
+    const model = modelMap.get(
+      Number(asset.model_id)
+    );
 
-    const model =
-      modelMap.get(
-        asset.model_id
-      );
-
-
-    if (
-      !model?.family_code
-    ) {
-
+    if (!model?.family_code) {
       continue;
-
     }
 
+    const modelId = Number(model.id);
 
-    const familyCode =
-      model.family_code;
+    const modelName = model.name;
 
-
-    const familyName =
-      familyMap.get(
-        familyCode
+    if (!modelName) {
+      throw new Error(
+        `Nama Model untuk Model ID ${modelId} belum tersedia.`
       );
+    }
 
+    const familyCode = model.family_code;
 
-    if (
-      !familyName
-    ) {
+    // Kelayakan invoice tetap berdasarkan Family.
+    const familyName = familyMap.get(
+      familyCode
+    );
 
+    if (!familyName) {
       throw new Error(
         `Family ${familyCode} belum memiliki nama invoice.`
       );
-
     }
 
+    // Harga sekarang diambil berdasarkan Model.
+    const unitPrice = pricingMap.get(
+      modelId
+    );
 
-    const unitPrice =
-      pricingMap.get(
-        familyCode
-      );
-
-
-    if (
-      unitPrice ===
-      undefined
-    ) {
-
+    if (unitPrice === undefined) {
       throw new Error(
-        `Harga invoice untuk Family ${familyCode} belum diatur.`
+        `Harga invoice untuk Model ${modelName} belum diatur.`
       );
-
     }
 
+    const existing = grouped.get(
+      modelId
+    );
 
-    const existing =
-      grouped.get(
-        familyCode
-      );
-
-
-    if (
-      existing
-    ) {
-
-      existing.quantity +=
-        1;
-
+    if (existing) {
+      existing.quantity += 1;
     } else {
-
       grouped.set(
-        familyCode,
+        modelId,
         {
+          modelName,
+          familyCode,
           familyName,
           quantity: 1,
           unitPrice,
         }
       );
-
     }
-
   }
 
 
@@ -1050,39 +995,31 @@ const buyerCompany: InvoiceCompanyInfo = {
   // BUILD ITEMS
   // ===================================================
 
-  const items =
+  const items: InvoiceAssetItem[] =
     Array.from(
       grouped.entries()
     ).map(
       ([
-        familyCode,
+        modelId,
         data,
       ]) => {
-
         const total =
           data.quantity *
           data.unitPrice;
 
-
         return {
-
-          familyCode,
-
-          familyName:
-            data.familyName,
-
-          quantity:
-            data.quantity,
-
-          unitPrice:
-            data.unitPrice,
-
+          modelId,
+          modelName: data.modelName,
+          familyCode: data.familyCode,
+          familyName: data.familyName,
+          quantity: data.quantity,
+          unitPrice: data.unitPrice,
           total,
-
         };
-
       }
     );
+
+  
 
 
   // ===================================================
@@ -1212,6 +1149,8 @@ export async function createAssetInvoice(
       p_pph23: preview.pph23,
       p_total: preview.total,
       p_items: preview.items.map((item) => ({
+        modelId: item.modelId,
+        modelName: item.modelName,
         familyCode: item.familyCode,
         familyName: item.familyName,
         quantity: item.quantity,
@@ -1550,10 +1489,13 @@ export interface SavedAssetInvoiceItem {
   quantity: number;
   unit_price: number;
   total: number;
+
   asset_family_code: string | null;
   asset_family_name: string | null;
-}
 
+  asset_model_id: number | null;
+  asset_model_name: string | null;
+}
 export async function getSavedAssetInvoiceDetail(
   invoiceId: number
 ): Promise<{
@@ -1616,7 +1558,9 @@ export async function getSavedAssetInvoiceDetail(
       unit_price,
       total,
       asset_family_code,
-      asset_family_name
+      asset_family_name,
+      asset_model_id,
+      asset_model_name
     `)
     .eq("invoice_id", invoiceId)
     .order("id", { ascending: true });
@@ -1647,6 +1591,10 @@ export async function getSavedAssetInvoiceDetail(
       quantity: Number(item.quantity),
       unit_price: Number(item.unit_price),
       total: Number(item.total),
+      asset_model_id:
+        item.asset_model_id == null
+          ? null
+          : Number(item.asset_model_id),
     })),
   };
 }

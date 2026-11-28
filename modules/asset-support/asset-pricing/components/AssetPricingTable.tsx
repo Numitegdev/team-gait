@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -9,12 +10,12 @@ interface AssetPricingTableProps {
   loading: boolean;
   saving: boolean;
   onAddPricing: (
-    familyCode: string,
+    modelId: number,
     monthlyPrice: number
   ) => Promise<unknown>;
   onEditPricing: (
     id: number,
-    familyCode: string,
+    modelId: number,
     monthlyPrice: number
   ) => Promise<unknown>;
 }
@@ -27,21 +28,18 @@ export default function AssetPricingTable({
   onEditPricing,
 }: AssetPricingTableProps) {
   const [prices, setPrices] = useState<
-    Record<string, string>
+    Record<number, string>
   >({});
 
-  const [editingFamily, setEditingFamily] =
-    useState<string | null>(null);
+  const [editingModel, setEditingModel] =
+    useState<number | null>(null);
 
   useEffect(() => {
-    const initialPrices: Record<
-      string,
-      string
-    > = {};
+    const initialPrices: Record<number, string> = {};
 
     for (const item of items) {
       if (item.pricing) {
-        initialPrices[item.family_code] =
+        initialPrices[item.model_id] =
           String(item.pricing.monthly_price);
       }
     }
@@ -50,33 +48,25 @@ export default function AssetPricingTable({
   }, [items]);
 
   function handlePriceChange(
-    familyCode: string,
+    modelId: number,
     value: string
   ) {
     setPrices((current) => ({
       ...current,
-      [familyCode]: value,
+      [modelId]: value,
     }));
   }
 
-  async function handleSave(
-    item: PricingItem
-  ) {
-    const rawPrice =
-      prices[item.family_code] ?? "";
-
-    const price =
-      Number(rawPrice);
+  async function handleSave(item: PricingItem) {
+    const rawPrice = prices[item.model_id] ?? "";
+    const price = Number(rawPrice);
 
     if (
-      rawPrice === "" ||
-      Number.isNaN(price) ||
+      rawPrice.trim() === "" ||
+      !Number.isFinite(price) ||
       price < 0
     ) {
-      alert(
-        "Harga sewa harus diisi dengan benar."
-      );
-
+      alert("Harga sewa harus diisi dengan benar.");
       return;
     }
 
@@ -84,17 +74,17 @@ export default function AssetPricingTable({
       if (item.pricing) {
         await onEditPricing(
           item.pricing.id,
-          item.family_code,
+          item.model_id,
           price
         );
       } else {
         await onAddPricing(
-          item.family_code,
+          item.model_id,
           price
         );
       }
 
-      setEditingFamily(null);
+      setEditingModel(null);
     } catch (error) {
       console.error(error);
     }
@@ -111,7 +101,7 @@ export default function AssetPricingTable({
   if (items.length === 0) {
     return (
       <div className="rounded-2xl border bg-white p-8 text-center text-sm text-gray-500">
-        Belum ada asset yang sedang dipinjam oleh PT ini.
+        Belum ada Model Asset milik PT ini.
       </div>
     );
   }
@@ -123,15 +113,15 @@ export default function AssetPricingTable({
           <thead>
             <tr className="border-b bg-gray-50 text-left">
               <th className="px-5 py-4 font-semibold">
-                Jenis Asset
+                Family
               </th>
 
               <th className="px-5 py-4 font-semibold">
-                Model
+                Model Asset
               </th>
 
               <th className="px-5 py-4 text-center font-semibold">
-                Jumlah
+                Jumlah Dipinjam
               </th>
 
               <th className="px-5 py-4 font-semibold">
@@ -150,41 +140,31 @@ export default function AssetPricingTable({
                 item.pricing !== null;
 
               const isEditing =
-                editingFamily ===
-                item.family_code;
+                editingModel === item.model_id;
 
               const price =
-                prices[item.family_code] ?? "";
+                prices[item.model_id] ?? "";
 
               return (
                 <tr
-                  key={item.family_code}
+                  key={item.model_id}
                   className="border-b last:border-b-0"
                 >
-                  {/* Family / Jenis Asset */}
+                  {/* Family */}
                   <td className="px-5 py-4 align-top">
                     <div className="font-semibold text-gray-900">
                       Family {item.family_code}
-                    </div>
-
-                    <div className="mt-1 text-xs text-gray-500">
-                      Tarif berdasarkan family
                     </div>
                   </td>
 
                   {/* Model */}
                   <td className="px-5 py-4 align-top">
-                    <div className="space-y-1">
-                      {item.model_names.map(
-                        (modelName) => (
-                          <div
-                            key={modelName}
-                            className="text-gray-700"
-                          >
-                            {modelName}
-                          </div>
-                        )
-                      )}
+                    <div className="font-medium text-gray-900">
+                      {item.model_name}
+                    </div>
+
+                    <div className="mt-1 text-xs text-gray-500">
+                      Model ID: {item.model_id}
                     </div>
                   </td>
 
@@ -197,16 +177,12 @@ export default function AssetPricingTable({
 
                   {/* Harga */}
                   <td className="px-5 py-4 align-top">
-                    {hasPricing &&
-                    !isEditing ? (
+                    {hasPricing && !isEditing ? (
                       <div className="font-semibold text-gray-900">
                         Rp{" "}
                         {Number(
-                          item.pricing
-                            ?.monthly_price ?? 0
-                        ).toLocaleString(
-                          "id-ID"
-                        )}
+                          item.pricing?.monthly_price ?? 0
+                        ).toLocaleString("id-ID")}
                       </div>
                     ) : (
                       <div className="flex items-center gap-2">
@@ -220,7 +196,7 @@ export default function AssetPricingTable({
                           value={price}
                           onChange={(e) =>
                             handlePriceChange(
-                              item.family_code,
+                              item.model_id,
                               e.target.value
                             )
                           }
@@ -246,9 +222,7 @@ export default function AssetPricingTable({
                     {!hasPricing ? (
                       <button
                         type="button"
-                        onClick={() =>
-                          handleSave(item)
-                        }
+                        onClick={() => handleSave(item)}
                         disabled={saving}
                         className="
                           rounded-xl
@@ -264,17 +238,13 @@ export default function AssetPricingTable({
                           disabled:opacity-50
                         "
                       >
-                        {saving
-                          ? "Saving..."
-                          : "Done"}
+                        {saving ? "Saving..." : "Done"}
                       </button>
                     ) : isEditing ? (
                       <div className="flex justify-center gap-2">
                         <button
                           type="button"
-                          onClick={() =>
-                            handleSave(item)
-                          }
+                          onClick={() => handleSave(item)}
                           disabled={saving}
                           className="
                             rounded-xl
@@ -288,16 +258,12 @@ export default function AssetPricingTable({
                             disabled:opacity-50
                           "
                         >
-                          {saving
-                            ? "Saving..."
-                            : "Simpan"}
+                          {saving ? "Saving..." : "Simpan"}
                         </button>
 
                         <button
                           type="button"
-                          onClick={() =>
-                            setEditingFamily(null)
-                          }
+                          onClick={() => setEditingModel(null)}
                           disabled={saving}
                           className="
                             rounded-xl
@@ -317,9 +283,7 @@ export default function AssetPricingTable({
                       <button
                         type="button"
                         onClick={() =>
-                          setEditingFamily(
-                            item.family_code
-                          )
+                          setEditingModel(item.model_id)
                         }
                         disabled={saving}
                         className="
