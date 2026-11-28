@@ -1,5 +1,6 @@
 import {
   LayoutDashboard,
+  Book,
   Car,
   Shield,
   ChefHat,
@@ -96,7 +97,7 @@ export const sidebarMenu: Record<
 
           children: [
         {
-          title: "Kelola PC Addon",
+          title: "Spec Detail Laptop dan PC ",
           url: "/dashboard/it/peripheral",
         },
       ]
@@ -199,6 +200,55 @@ export const sidebarMenu: Record<
           title: "Security Location",
           url: "/dashboard/security/security-location",
         },
+      ],
+    },
+
+     {
+      title: "Data Asset",
+      url: "",
+      icon: Book,
+       children: [
+         {
+          title: "Asset View",
+          url: "",
+
+              children: [
+              {
+          title: "Asset Analitic & Invoice",
+          url: "/dashboard/asset-dashboard",
+        },
+        {
+          title: "Asset Total",
+          url: "/dashboard/assets",
+        },
+          {
+          title: "Asset Loan",
+          url: "/dashboard/asset-support/asset-loans",
+        },
+        {
+          title: "Asset Mutasi",
+          url: "/dashboard/asset-support/mutations",
+        },
+          ]
+        },
+          {
+          title: "Asset Tools",
+          url: "",
+
+              children: [
+               {
+          title: "Asset Pricing",
+          url: "/dashboard/asset-support/asset-pricing",
+        },
+      
+        {
+          title: "Asset Audit",
+          url: "/dashboard/asset-support/asset-audit",
+        },
+          ]
+        },
+        
+      
       ],
     },
 
